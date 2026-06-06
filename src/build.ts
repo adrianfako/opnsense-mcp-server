@@ -162,12 +162,26 @@ class OPNsenseMCPServer {
     const { method: _, params = {}, ...otherArgs } = args;
     const callParams = { ...params, ...otherArgs };
     
-    // Only pass parameters if there are any
+    // The @richard-stovall/opnsense-typescript-client methods take POSITIONAL
+    // args (uuid, data, config) — NOT a single options bag. Passing one object
+    // made uuid land as the whole object (empty GETs, "uuid not in URL path",
+    // failed set/add/del). Map our generic params to positional args.
+    // Fixes upstream issues #1 (delHostOverride uuid) and #4 (writes always fail).
+    const { uuid, item, data } = callParams;
+    const body = item !== undefined ? item : data;
+    if (uuid !== undefined) {
+      return body !== undefined
+        ? await method.call(moduleObj, uuid, body)
+        : await method.call(moduleObj, uuid);
+    }
+    if (body !== undefined) {
+      return await method.call(moduleObj, body);
+    }
+    // search / list / no-arg getters take (config?) — keep prior behavior.
     if (Object.keys(callParams).length > 0) {
       return await method.call(moduleObj, callParams);
-    } else {
-      return await method.call(moduleObj);
     }
+    return await method.call(moduleObj);
   }
 
   async start() {
