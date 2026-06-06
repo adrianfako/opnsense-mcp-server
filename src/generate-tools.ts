@@ -70,6 +70,10 @@ function generateModularSchema(methods: string[]): any {
             type: 'integer',
             description: 'Rows per page (for search operations)',
             default: 20
+          },
+          args: {
+            type: 'array',
+            description: 'Explicit ordered positional arguments for the underlying client method (escape hatch for signatures not covered by uuid/item/data, e.g. backupDownload[host, backup]). When set, overrides the uuid/body mapping.'
           }
         }
       }

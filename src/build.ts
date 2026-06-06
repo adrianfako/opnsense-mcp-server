@@ -161,7 +161,15 @@ class OPNsenseMCPServer {
     // Extract params, excluding the method field
     const { method: _, params = {}, ...otherArgs } = args;
     const callParams = { ...params, ...otherArgs };
-    
+
+    // Power-user escape hatch: explicit ordered positional args, for methods whose
+    // signature isn't covered by the uuid/body convention below (e.g.
+    // backupDownload(host, backup, config), clientPsk(...), etc.). Pass
+    // params.args = [arg1, arg2, ...].
+    if (Array.isArray(callParams.args)) {
+      return await method.apply(moduleObj, callParams.args);
+    }
+
     // The @richard-stovall/opnsense-typescript-client methods take POSITIONAL
     // args (uuid, data, config) — NOT a single options bag. Passing one object
     // made uuid land as the whole object (empty GETs, "uuid not in URL path",
