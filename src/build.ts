@@ -98,6 +98,29 @@ class OPNsenseMCPServer {
         __fw.filterToggleRuleLog = (uuid, data, config) => __fw.http.post('/api/firewall/filter/toggleRuleLog/' + (uuid || ''), data, config);
         __fw.filterFlushInspectCache = (data, config) => __fw.http.post('/api/firewall/filter/flushInspectCache', data, config);
       }
+      // FORK ADD (interfaces searchItem + bridge): the client omits every interface
+      // *SettingsSearchItem (the box controllers have searchItem) and the entire
+      // BridgeSettings controller. Verified live 2026-06-10 (vlan_settings/searchItem
+      // = 17 rows on eu-6). Same stale-spec gap as the firewall searchRule.
+      const __if = this.client.interfaces;
+      if (__if && __if.http) {
+        const S = (p) => (data, config) => __if.http.post('/api/interfaces/' + p + '/searchItem', data || { current: 1, rowCount: 5000 }, config);
+        __if.vlanSettingsSearchItem = S('vlan_settings');
+        __if.vxlanSettingsSearchItem = S('vxlan_settings');
+        __if.laggSettingsSearchItem = S('lagg_settings');
+        __if.loopbackSettingsSearchItem = S('loopback_settings');
+        __if.neighborSettingsSearchItem = S('neighbor_settings');
+        __if.gifSettingsSearchItem = S('gif_settings');
+        __if.greSettingsSearchItem = S('gre_settings');
+        __if.vipSettingsSearchItem = S('vip_settings');
+        const B = '/api/interfaces/bridge_settings/';
+        __if.bridgeSettingsSearchItem = (data, config) => __if.http.post(B + 'searchItem', data || { current: 1, rowCount: 5000 }, config);
+        __if.bridgeSettingsGetItem = (uuid, config) => __if.http.get(B + 'getItem/' + (uuid || ''), config);
+        __if.bridgeSettingsAddItem = (data, config) => __if.http.post(B + 'addItem', data, config);
+        __if.bridgeSettingsSetItem = (uuid, data, config) => __if.http.post(B + 'setItem/' + uuid, data, config);
+        __if.bridgeSettingsDelItem = (uuid, data, config) => __if.http.post(B + 'delItem/' + uuid, data, config);
+        __if.bridgeSettingsReconfigure = (data, config) => __if.http.post(B + 'reconfigure', data, config);
+      }
     }
     return this.client;
   }
