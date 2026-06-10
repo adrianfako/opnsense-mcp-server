@@ -194,6 +194,16 @@ const TOOLS = [
       "categoryGetItem",
       "categorySet",
       "categorySetItem",
+      "dNatAddRule",
+      "dNatApply",
+      "dNatDelRule",
+      "dNatGet",
+      "dNatGetRule",
+      "dNatSearchRule",
+      "dNatSet",
+      "dNatSetRule",
+      "dNatToggleRule",
+      "filterAddRule",
       "filterBaseApply",
       "filterBaseCancelRollback",
       "filterBaseGet",
@@ -202,7 +212,6 @@ const TOOLS = [
       "filterBaseRevert",
       "filterBaseSavepoint",
       "filterBaseSet",
-      "filterAddRule",
       "filterDelRule",
       "filterGetInterfaceList",
       "filterGetRule",
@@ -11649,6 +11658,20 @@ class OPNsenseMCPServer {
         __fw.filterBaseCancelRollback = (rev, data, config) => __fw.http.post('/api/firewall/filter/cancel_rollback' + (rev ? '/' + rev : ''), data, config);
         __fw.filterBaseListCategories = (config) => __fw.http.get('/api/firewall/filter/list_categories', config);
         __fw.filterBaseListNetworkSelectOptions = (config) => __fw.http.get('/api/firewall/filter/list_network_select_options', config);
+        // FORK ADD (d_nat / port-forward): OPNsense 26.x added a Destination NAT
+        // (port-forward) MVC controller at /api/firewall/d_nat/* — absent from
+        // opnsense-typescript-client 0.5.3 (stale spec), so the MCP could not manage
+        // port-forwards. Mirror source_nat. Verified live 2026-06-10 (search/get/set/
+        // toggle/apply all 200). Method names also added to tools-generated.json.
+        __fw.dNatGet = (config) => __fw.http.get('/api/firewall/d_nat/get', config);
+        __fw.dNatSet = (data, config) => __fw.http.post('/api/firewall/d_nat/set', data, config);
+        __fw.dNatSearchRule = (data, config) => __fw.http.post('/api/firewall/d_nat/searchRule', data, config);
+        __fw.dNatAddRule = (data, config) => __fw.http.post('/api/firewall/d_nat/addRule', data, config);
+        __fw.dNatGetRule = (uuid, config) => __fw.http.get('/api/firewall/d_nat/getRule/' + (uuid || ''), config);
+        __fw.dNatSetRule = (uuid, data, config) => __fw.http.post('/api/firewall/d_nat/setRule/' + uuid, data, config);
+        __fw.dNatDelRule = (uuid, data, config) => __fw.http.post('/api/firewall/d_nat/delRule/' + uuid, data, config);
+        __fw.dNatToggleRule = (uuid, data, config) => __fw.http.post('/api/firewall/d_nat/toggleRule/' + (uuid || ''), data, config);
+        __fw.dNatApply = (rev, data, config) => __fw.http.post('/api/firewall/d_nat/apply' + (rev ? '/' + rev : ''), data, config);
       }
     }
     return this.client;
