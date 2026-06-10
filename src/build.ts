@@ -121,6 +121,30 @@ class OPNsenseMCPServer {
         __if.bridgeSettingsDelItem = (uuid, data, config) => __if.http.post(B + 'delItem/' + uuid, data, config);
         __if.bridgeSettingsReconfigure = (data, config) => __if.http.post(B + 'reconfigure', data, config);
       }
+      // FORK FIX (wireguard writes): opnsense-typescript-client 0.5.3 maps the
+      // WireGuard client/server WRITE actions to wrong routes/bodies, so every
+      // add/set/del returned a bare {result:"failed"} (GETs were fine). Same class
+      // as upstream issue #4. Re-map to the real plugin routes (verified live vs
+      // OPNsense 2026-06-10: POST /api/wireguard/client/addClient with body
+      // {client:{...}} = {result:"saved"}). Body is passed straight through (the
+      // caller sends {client:{...}} / {server:{...}}), matching addRule/aliasAddItem.
+      const __wg = this.client.wireguard;
+      if (__wg && __wg.http) {
+        const WG = '/api/wireguard/';
+        __wg.clientAddClient = (data, config) => __wg.http.post(WG + 'client/addClient', data, config);
+        __wg.clientSetClient = (uuid, data, config) => __wg.http.post(WG + 'client/setClient/' + uuid, data, config);
+        __wg.clientDelClient = (uuid, config) => __wg.http.post(WG + 'client/delClient/' + uuid, {}, config);
+        __wg.clientToggleClient = (uuid, data, config) => __wg.http.post(WG + 'client/toggleClient/' + (uuid || ''), data, config);
+        __wg.serverAddServer = (data, config) => __wg.http.post(WG + 'server/addServer', data, config);
+        __wg.serverSetServer = (uuid, data, config) => __wg.http.post(WG + 'server/setServer/' + uuid, data, config);
+        __wg.serverDelServer = (uuid, config) => __wg.http.post(WG + 'server/delServer/' + uuid, {}, config);
+        __wg.serverToggleServer = (uuid, data, config) => __wg.http.post(WG + 'server/toggleServer/' + (uuid || ''), data, config);
+        __wg.generalSet = (data, config) => __wg.http.post(WG + 'general/set', data, config);
+        __wg.serviceReconfigure = (data, config) => __wg.http.post(WG + 'service/reconfigure', data || {}, config);
+        __wg.serviceRestart = (data, config) => __wg.http.post(WG + 'service/restart', data || {}, config);
+        __wg.serviceStart = (data, config) => __wg.http.post(WG + 'service/start', data || {}, config);
+        __wg.serviceStop = (data, config) => __wg.http.post(WG + 'service/stop', data || {}, config);
+      }
     }
     return this.client;
   }
