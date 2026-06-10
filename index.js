@@ -192,8 +192,15 @@ const TOOLS = [
       "categoryDelItem",
       "categoryGet",
       "categoryGetItem",
+      "categorySearchItem",
       "categorySet",
       "categorySetItem",
+      "aliasSearchItem",
+      "groupSearchItem",
+      "filterSearchRule",
+      "filterToggleRuleLog",
+      "filterFlushInspectCache",
+      "filterBaseListPortSelectOptions",
       "dNatAddRule",
       "dNatApply",
       "dNatDelRule",
@@ -278,6 +285,22 @@ const TOOLS = [
             "categoryGetItem",
             "categorySet",
             "categorySetItem",
+            "categorySearchItem",
+            "dNatAddRule",
+            "dNatApply",
+            "dNatDelRule",
+            "dNatGet",
+            "dNatGetRule",
+            "dNatSearchRule",
+            "dNatSet",
+            "dNatSetRule",
+            "dNatToggleRule",
+            "aliasSearchItem",
+            "groupSearchItem",
+            "filterSearchRule",
+            "filterToggleRuleLog",
+            "filterFlushInspectCache",
+            "filterBaseListPortSelectOptions",
             "filterBaseApply",
             "filterBaseCancelRollback",
             "filterBaseGet",
@@ -11672,6 +11695,20 @@ class OPNsenseMCPServer {
         __fw.dNatDelRule = (uuid, data, config) => __fw.http.post('/api/firewall/d_nat/delRule/' + uuid, data, config);
         __fw.dNatToggleRule = (uuid, data, config) => __fw.http.post('/api/firewall/d_nat/toggleRule/' + (uuid || ''), data, config);
         __fw.dNatApply = (rev, data, config) => __fw.http.post('/api/firewall/d_nat/apply' + (rev ? '/' + rev : ''), data, config);
+        // FORK ADD (missing list/search): the client omits searchRule + the *SearchItem
+        // grid endpoints (real controller actions), so the MCP could not ENUMERATE
+        // rules/aliases/groups/categories — getRule needs a uuid, and "list" returned
+        // []. searchRule is the key one (lists firewall rules). Verified vs live
+        // OPNsense controllers 2026-06-10. No-arg call POSTs an empty body -> all rows.
+        // searchRule/searchItem 400 on an empty POST body, so default to a wide page
+        // (caller can still pass {current,rowCount,searchPhrase,sort} to override).
+        __fw.filterSearchRule = (data, config) => __fw.http.post('/api/firewall/filter/searchRule', data || { current: 1, rowCount: 5000 }, config);
+        __fw.aliasSearchItem = (data, config) => __fw.http.post('/api/firewall/alias/searchItem', data || { current: 1, rowCount: 5000 }, config);
+        __fw.groupSearchItem = (data, config) => __fw.http.post('/api/firewall/group/searchItem', data || { current: 1, rowCount: 5000 }, config);
+        __fw.categorySearchItem = (data, config) => __fw.http.post('/api/firewall/category/searchItem', data || { current: 1, rowCount: 5000 }, config);
+        __fw.filterBaseListPortSelectOptions = (config) => __fw.http.get('/api/firewall/filter/list_port_select_options', config);
+        __fw.filterToggleRuleLog = (uuid, data, config) => __fw.http.post('/api/firewall/filter/toggleRuleLog/' + (uuid || ''), data, config);
+        __fw.filterFlushInspectCache = (data, config) => __fw.http.post('/api/firewall/filter/flushInspectCache', data, config);
       }
     }
     return this.client;
