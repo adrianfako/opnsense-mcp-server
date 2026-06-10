@@ -53,6 +53,23 @@ class OPNsenseMCPServer {
         apiSecret: this.config.apiSecret,
         verifySsl: this.config.verifySsl ?? true,
       });
+      // FORK FIX (filter_base 404): @richard-stovall/opnsense-typescript-client
+      // 0.5.3 maps 8 firewall model-base methods to /api/firewall/filter_base/*,
+      // which 404 on OPNsense. The real route is /api/firewall/filter/* (verified
+      // vs live OPNsense 2026-06-10: filter/get=401, filter/apply=411 EXIST;
+      // filter_base/get=404). filterBaseApply being broken = firewall changes
+      // never applied. Re-map the 8 to the correct route. Upstream bug.
+      const __fw = this.client.firewall;
+      if (__fw && __fw.http) {
+        __fw.filterBaseGet = (config) => __fw.http.get('/api/firewall/filter/get', config);
+        __fw.filterBaseSet = (data, config) => __fw.http.post('/api/firewall/filter/set', data, config);
+        __fw.filterBaseApply = (rev, data, config) => __fw.http.post('/api/firewall/filter/apply' + (rev ? '/' + rev : ''), data, config);
+        __fw.filterBaseSavepoint = (data, config) => __fw.http.post('/api/firewall/filter/savepoint', data, config);
+        __fw.filterBaseRevert = (rev, data, config) => __fw.http.post('/api/firewall/filter/revert' + (rev ? '/' + rev : ''), data, config);
+        __fw.filterBaseCancelRollback = (rev, data, config) => __fw.http.post('/api/firewall/filter/cancel_rollback' + (rev ? '/' + rev : ''), data, config);
+        __fw.filterBaseListCategories = (config) => __fw.http.get('/api/firewall/filter/list_categories', config);
+        __fw.filterBaseListNetworkSelectOptions = (config) => __fw.http.get('/api/firewall/filter/list_network_select_options', config);
+      }
     }
     return this.client;
   }
