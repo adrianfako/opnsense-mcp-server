@@ -11761,6 +11761,15 @@ class OPNsenseMCPServer {
         __if.bridgeSettingsDelItem = (uuid, data, config) => __if.http.post(B + 'delItem/' + uuid, data, config);
         __if.bridgeSettingsReconfigure = (data, config) => __if.http.post(B + 'reconfigure', data, config);
       }
+      // GUARD: do NOT remap the CORE firewall writes (alias/filter/group/category/
+      // source_nat add/set/del/toggle/reconfigure). OPNsense's core MVC controllers
+      // use camelCase actions (addItem/setItem/addRule/toggleItem/reconfigure) and the
+      // upstream client maps them CORRECTLY — they work unmodified. Verified live
+      // 2026-06-11: firewall aliasSetItem -> {result:"saved"}. The breakage below is
+      // specific to the WireGuard PLUGIN, which uniquely uses SNAKE_CASE commands.
+      // If a future write "fails", check the controller's real action casing first;
+      // only snake_case-command plugins need a remap here.
+      //
       // FORK FIX (wireguard writes): opnsense-typescript-client 0.5.3 maps the
       // WireGuard client/server WRITE actions to wrong routes/bodies, so every
       // add/set/del returned a bare {result:"failed"} (GETs were fine). Same class
