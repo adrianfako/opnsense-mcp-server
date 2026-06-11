@@ -162,7 +162,7 @@ const TOOLS = [
   },
   {
     "name": "firewall_manage",
-    "description": "Firewall management - 67 available methods including: aliasAddItem, aliasDelItem, aliasGet, aliasGetAliasUUID, aliasGetGeoIP...",
+    "description": "Firewall management - 89 available methods. WRITE-BODY SCHEMA (live-validated on OPNsense 26.x, 2026-06-11): add/set bodies MUST be the family's nested editable model — the shape its *GetRule/*GetItem returns (call with no uuid for an empty template). NEVER send the flat dotted keys that *SearchRule/*SearchItem return: OPNsense answers HTTP 200 'saved' but silently drops mis-shaped fields (e.g. a d_nat rule built from search-shaped keys saves with an EMPTY destination and matches everything). Wrappers: params.item = {rule:{...}} for dNat/filter/sourceNat/oneToOne/npt, {alias:{...}}, {group:{...}}, {category:{...}}. Field dialects: dNat is the outlier — NESTED source/destination objects {network,address,port,not}, flag 'disabled', text 'descr', lowercase protocol keys (tcp, udp, tcp/udp); filter/sourceNat/oneToOne/npt use FLAT source_net/source_not/source_port + destination_net/destination_not/destination_port, flag 'enabled', text 'description', UPPERCASE protocol (TCP, UDP, TCP/UDP). Family extras: sourceNat target/target_port/staticnatport/nonat; oneToOne external + type (binat|nat); npt trackif; filter action (pass|block|reject)/quick/direction (in|out|any)/gateway/statetype; alias name/type (host|network|port|url|urltable|geoip|networkgroup|mac|asn|...)/content (newline-separated entries)/proto; group ifname/members (comma-separated interfaces; uuid IS the ifname)/nogroup; category name/auto/color (hex, no #). 'categories' everywhere = comma-separated category UUIDs. Writes only STAGE config — follow with the family apply (dNatApply/sourceNatApply/oneToOneApply/nptApply/filterBaseApply) or aliasReconfigure/groupReconfigure. Worked dNat example: {item:{rule:{interface:'wan',ipprotocol:'inet',protocol:'tcp',source:{network:'',address:'',port:'',not:'0'},destination:{network:'wanip',address:'',port:'29998',not:'0'},target:'10.1.2.249','local-port':'22',descr:'x',nordr:'0',disabled:'0'}}}",
     "module": "firewall",
     "methods": [
       "aliasAddItem",
@@ -234,18 +234,24 @@ const TOOLS = [
       "groupSet",
       "groupSetItem",
       "nptAddRule",
+      "nptApply",
       "nptDelRule",
       "nptGetRule",
+      "nptSearchRule",
       "nptSetRule",
       "nptToggleRule",
       "oneToOneAddRule",
+      "oneToOneApply",
       "oneToOneDelRule",
       "oneToOneGetRule",
+      "oneToOneSearchRule",
       "oneToOneSetRule",
       "oneToOneToggleRule",
       "sourceNatAddRule",
+      "sourceNatApply",
       "sourceNatDelRule",
       "sourceNatGetRule",
+      "sourceNatSearchRule",
       "sourceNatSetRule",
       "sourceNatToggleRule"
     ],
@@ -325,18 +331,24 @@ const TOOLS = [
             "groupSet",
             "groupSetItem",
             "nptAddRule",
+            "nptApply",
             "nptDelRule",
             "nptGetRule",
+            "nptSearchRule",
             "nptSetRule",
             "nptToggleRule",
             "oneToOneAddRule",
+            "oneToOneApply",
             "oneToOneDelRule",
             "oneToOneGetRule",
+            "oneToOneSearchRule",
             "oneToOneSetRule",
             "oneToOneToggleRule",
             "sourceNatAddRule",
+            "sourceNatApply",
             "sourceNatDelRule",
             "sourceNatGetRule",
+            "sourceNatSearchRule",
             "sourceNatSetRule",
             "sourceNatToggleRule"
           ]
@@ -9268,6 +9280,7 @@ const METHOD_DOCS = {
       "aliasListNetworkAliases",
       "aliasListUserGroups",
       "aliasReconfigure",
+      "aliasSearchItem",
       "aliasSet",
       "aliasSetItem",
       "aliasToggleItem",
@@ -9282,44 +9295,65 @@ const METHOD_DOCS = {
       "categoryDelItem",
       "categoryGet",
       "categoryGetItem",
+      "categorySearchItem",
       "categorySet",
       "categorySetItem",
+      "dNatAddRule",
+      "dNatApply",
+      "dNatDelRule",
+      "dNatGet",
+      "dNatGetRule",
+      "dNatSearchRule",
+      "dNatSet",
+      "dNatSetRule",
+      "dNatToggleRule",
+      "filterAddRule",
       "filterBaseApply",
       "filterBaseCancelRollback",
       "filterBaseGet",
       "filterBaseListCategories",
       "filterBaseListNetworkSelectOptions",
+      "filterBaseListPortSelectOptions",
       "filterBaseRevert",
       "filterBaseSavepoint",
       "filterBaseSet",
-      "filterAddRule",
       "filterDelRule",
+      "filterFlushInspectCache",
       "filterGetInterfaceList",
       "filterGetRule",
       "filterMoveRuleBefore",
+      "filterSearchRule",
       "filterSetRule",
       "filterToggleRule",
+      "filterToggleRuleLog",
       "filterUtilRuleStats",
       "groupAddItem",
       "groupDelItem",
       "groupGet",
       "groupGetItem",
       "groupReconfigure",
+      "groupSearchItem",
       "groupSet",
       "groupSetItem",
       "nptAddRule",
+      "nptApply",
       "nptDelRule",
       "nptGetRule",
+      "nptSearchRule",
       "nptSetRule",
       "nptToggleRule",
       "oneToOneAddRule",
+      "oneToOneApply",
       "oneToOneDelRule",
       "oneToOneGetRule",
+      "oneToOneSearchRule",
       "oneToOneSetRule",
       "oneToOneToggleRule",
       "sourceNatAddRule",
+      "sourceNatApply",
       "sourceNatDelRule",
       "sourceNatGetRule",
+      "sourceNatSearchRule",
       "sourceNatSetRule",
       "sourceNatToggleRule"
     ]
@@ -11737,6 +11771,30 @@ class OPNsenseMCPServer {
         __fw.filterBaseListPortSelectOptions = (config) => __fw.http.get('/api/firewall/filter/list_port_select_options', config);
         __fw.filterToggleRuleLog = (uuid, data, config) => __fw.http.post('/api/firewall/filter/toggleRuleLog/' + (uuid || ''), data, config);
         __fw.filterFlushInspectCache = (data, config) => __fw.http.post('/api/firewall/filter/flushInspectCache', data, config);
+        // FORK ADD (NAT search/apply): client 0.5.3 also omits searchRule and
+        // apply for source_nat / one_to_one / npt, so those rule families could
+        // be written but never ENUMERATED or APPLIED via the MCP (writes only
+        // stage config). Routes verified live 2026-06-11 (homelab OPNsense:
+        // searchRule 200 for all three).
+        __fw.sourceNatSearchRule = (data, config) => __fw.http.post('/api/firewall/source_nat/searchRule', data || { current: 1, rowCount: 5000 }, config);
+        __fw.sourceNatApply = (data, config) => __fw.http.post('/api/firewall/source_nat/apply', data || {}, config);
+        __fw.oneToOneSearchRule = (data, config) => __fw.http.post('/api/firewall/one_to_one/searchRule', data || { current: 1, rowCount: 5000 }, config);
+        __fw.oneToOneApply = (data, config) => __fw.http.post('/api/firewall/one_to_one/apply', data || {}, config);
+        __fw.nptSearchRule = (data, config) => __fw.http.post('/api/firewall/npt/searchRule', data || { current: 1, rowCount: 5000 }, config);
+        __fw.nptApply = (data, config) => __fw.http.post('/api/firewall/npt/apply', data || {}, config);
+        // FORK FIX (no-uuid template fetch): the upstream GetRule/GetItem
+        // methods URL-format an undefined uuid (/getRule/undefined), which
+        // returns [] (or 500 for alias/getItem) instead of the empty editable
+        // model. That template is the authoritative write schema per family
+        // (see firewall_manage description), so make uuid optional like the
+        // fork's dNatGetRule already is.
+        __fw.filterGetRule = (uuid, config) => __fw.http.get('/api/firewall/filter/getRule/' + (uuid || ''), config);
+        __fw.sourceNatGetRule = (uuid, config) => __fw.http.get('/api/firewall/source_nat/getRule/' + (uuid || ''), config);
+        __fw.oneToOneGetRule = (uuid, config) => __fw.http.get('/api/firewall/one_to_one/getRule/' + (uuid || ''), config);
+        __fw.nptGetRule = (uuid, config) => __fw.http.get('/api/firewall/npt/getRule/' + (uuid || ''), config);
+        __fw.aliasGetItem = (uuid, config) => __fw.http.get('/api/firewall/alias/getItem/' + (uuid || ''), config);
+        __fw.groupGetItem = (uuid, config) => __fw.http.get('/api/firewall/group/getItem/' + (uuid || ''), config);
+        __fw.categoryGetItem = (uuid, config) => __fw.http.get('/api/firewall/category/getItem/' + (uuid || ''), config);
       }
       // FORK ADD (interfaces searchItem + bridge): the client omits every interface
       // *SettingsSearchItem (the box controllers have searchItem) and the entire

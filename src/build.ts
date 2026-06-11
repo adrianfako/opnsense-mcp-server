@@ -97,6 +97,30 @@ class OPNsenseMCPServer {
         __fw.filterBaseListPortSelectOptions = (config) => __fw.http.get('/api/firewall/filter/list_port_select_options', config);
         __fw.filterToggleRuleLog = (uuid, data, config) => __fw.http.post('/api/firewall/filter/toggleRuleLog/' + (uuid || ''), data, config);
         __fw.filterFlushInspectCache = (data, config) => __fw.http.post('/api/firewall/filter/flushInspectCache', data, config);
+        // FORK ADD (NAT search/apply): client 0.5.3 also omits searchRule and
+        // apply for source_nat / one_to_one / npt, so those rule families could
+        // be written but never ENUMERATED or APPLIED via the MCP (writes only
+        // stage config). Routes verified live 2026-06-11 (homelab OPNsense:
+        // searchRule 200 for all three).
+        __fw.sourceNatSearchRule = (data, config) => __fw.http.post('/api/firewall/source_nat/searchRule', data || { current: 1, rowCount: 5000 }, config);
+        __fw.sourceNatApply = (data, config) => __fw.http.post('/api/firewall/source_nat/apply', data || {}, config);
+        __fw.oneToOneSearchRule = (data, config) => __fw.http.post('/api/firewall/one_to_one/searchRule', data || { current: 1, rowCount: 5000 }, config);
+        __fw.oneToOneApply = (data, config) => __fw.http.post('/api/firewall/one_to_one/apply', data || {}, config);
+        __fw.nptSearchRule = (data, config) => __fw.http.post('/api/firewall/npt/searchRule', data || { current: 1, rowCount: 5000 }, config);
+        __fw.nptApply = (data, config) => __fw.http.post('/api/firewall/npt/apply', data || {}, config);
+        // FORK FIX (no-uuid template fetch): the upstream GetRule/GetItem
+        // methods URL-format an undefined uuid (/getRule/undefined), which
+        // returns [] (or 500 for alias/getItem) instead of the empty editable
+        // model. That template is the authoritative write schema per family
+        // (see firewall_manage description), so make uuid optional like the
+        // fork's dNatGetRule already is.
+        __fw.filterGetRule = (uuid, config) => __fw.http.get('/api/firewall/filter/getRule/' + (uuid || ''), config);
+        __fw.sourceNatGetRule = (uuid, config) => __fw.http.get('/api/firewall/source_nat/getRule/' + (uuid || ''), config);
+        __fw.oneToOneGetRule = (uuid, config) => __fw.http.get('/api/firewall/one_to_one/getRule/' + (uuid || ''), config);
+        __fw.nptGetRule = (uuid, config) => __fw.http.get('/api/firewall/npt/getRule/' + (uuid || ''), config);
+        __fw.aliasGetItem = (uuid, config) => __fw.http.get('/api/firewall/alias/getItem/' + (uuid || ''), config);
+        __fw.groupGetItem = (uuid, config) => __fw.http.get('/api/firewall/group/getItem/' + (uuid || ''), config);
+        __fw.categoryGetItem = (uuid, config) => __fw.http.get('/api/firewall/category/getItem/' + (uuid || ''), config);
       }
       // FORK ADD (interfaces searchItem + bridge): the client omits every interface
       // *SettingsSearchItem (the box controllers have searchItem) and the entire
