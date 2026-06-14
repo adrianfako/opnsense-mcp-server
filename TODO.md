@@ -1,3 +1,8 @@
+---
+type: "Backlog"
+title: "TODO — embed correct write-schemas for firewall (and other MVC) methods"
+---
+
 # TODO — embed correct write-schemas for firewall (and other MVC) methods
 
 _Status: **DONE 2026-06-11** — live-validated against the homelab OPNsense firewall._

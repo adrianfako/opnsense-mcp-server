@@ -1,3 +1,8 @@
+---
+type: "Index"
+title: "OPNsense MCP Server"
+---
+
 # OPNsense MCP Server
 
 A modular Model Context Protocol (MCP) server that provides **88 module-based tools** giving access to over 2000 OPNsense firewall management methods through a type-safe TypeScript interface.
