@@ -2844,7 +2844,7 @@ const TOOLS = [
   },
   {
     "name": "wireguard_manage",
-    "description": "Wireguard management - 28 available methods including: clientAddClient, clientAddClientBuilder, clientDelClient, clientGet, clientGetClient...",
+    "description": "Wireguard management - 28 methods. WRITE-BODY SCHEMA (live-validated eu-2/homelab 2026-06-15): client add/set bodies MUST wrap params.item = {client:{...}}; server add/set MUST wrap params.item = {server:{...}}. Sending the fields FLAT (item.{...}, unwrapped) returns {result:failed} as a silent no-op — the single most common WG write mistake. Multi-value fields (tunneladdress, servers, peers, dns) are comma-separated STRINGS in the write body (the GET echoes them back as selected-maps); 'servers' on a client = the server UUID(s), 'peers' on a server = client UUID(s). psk:'' is safe to send on a no-PSK peer (no wipe). Client fields: enabled, name, pubkey, psk, tunneladdress, serveraddress, serverport, endpoint, keepalive, servers. Server fields: enabled, name, instance, pubkey, privkey, port, mtu, dns, tunneladdress, disableroutes, gateway, peers. Fetch the empty editable template via clientGetClient / serverGetServer with NO uuid (fork makes uuid optional). Writes only STAGE config — apply with serviceReconfigure (runs wg syncconf: non-disruptive delta, won't bounce live peers). Worked example: clientAddClient params.item={client:{enabled:'1',name:'peer1',pubkey:'<b64>',psk:'',tunneladdress:'10.10.10.5/32',serveraddress:'',serverport:'',keepalive:'25',servers:'<server-uuid>'}}.",
     "module": "wireguard",
     "methods": [
       "clientAddClient",
@@ -11848,6 +11848,13 @@ class OPNsenseMCPServer {
         __wg.serverDelServer = (uuid, config) => __wg.http.post(WG + 'server/del_server/' + uuid, {}, config);
         __wg.serverToggleServer = (uuid, data, config) => __wg.http.post(WG + 'server/toggle_server/' + (uuid || ''), data, config);
         __wg.generalSet = (data, config) => __wg.http.post(WG + 'general/set', data, config);
+        // FORK FIX (no-uuid template fetch): upstream clientGetClient/serverGetServer
+        // URL-format an undefined uuid (.../get_client/undefined) -> [] instead of the
+        // empty editable model. That template is the authoritative write schema (the
+        // {client:{...}} / {server:{...}} body), so make uuid optional — the bare route
+        // .../get_client returns the empty template (verified live 2026-06-15).
+        __wg.clientGetClient = (uuid, config) => __wg.http.get(WG + 'client/get_client/' + (uuid || ''), config);
+        __wg.serverGetServer = (uuid, config) => __wg.http.get(WG + 'server/get_server/' + (uuid || ''), config);
         __wg.serviceReconfigure = (data, config) => __wg.http.post(WG + 'service/reconfigure', data || {}, config);
         __wg.serviceRestart = (data, config) => __wg.http.post(WG + 'service/restart', data || {}, config);
         __wg.serviceStart = (data, config) => __wg.http.post(WG + 'service/start', data || {}, config);

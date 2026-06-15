@@ -174,6 +174,13 @@ class OPNsenseMCPServer {
         __wg.serverDelServer = (uuid, config) => __wg.http.post(WG + 'server/del_server/' + uuid, {}, config);
         __wg.serverToggleServer = (uuid, data, config) => __wg.http.post(WG + 'server/toggle_server/' + (uuid || ''), data, config);
         __wg.generalSet = (data, config) => __wg.http.post(WG + 'general/set', data, config);
+        // FORK FIX (no-uuid template fetch): upstream clientGetClient/serverGetServer
+        // URL-format an undefined uuid (.../get_client/undefined) -> [] instead of the
+        // empty editable model. That template is the authoritative write schema (the
+        // {client:{...}} / {server:{...}} body), so make uuid optional — the bare route
+        // .../get_client returns the empty template (verified live 2026-06-15).
+        __wg.clientGetClient = (uuid, config) => __wg.http.get(WG + 'client/get_client/' + (uuid || ''), config);
+        __wg.serverGetServer = (uuid, config) => __wg.http.get(WG + 'server/get_server/' + (uuid || ''), config);
         __wg.serviceReconfigure = (data, config) => __wg.http.post(WG + 'service/reconfigure', data || {}, config);
         __wg.serviceRestart = (data, config) => __wg.http.post(WG + 'service/restart', data || {}, config);
         __wg.serviceStart = (data, config) => __wg.http.post(WG + 'service/start', data || {}, config);
