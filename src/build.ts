@@ -186,6 +186,28 @@ class OPNsenseMCPServer {
         __wg.serviceStart = (data, config) => __wg.http.post(WG + 'service/start', data || {}, config);
         __wg.serviceStop = (data, config) => __wg.http.post(WG + 'service/stop', data || {}, config);
       }
+
+      // FORK FIX (kea dhcpv4 reservations): opnsense-typescript-client 0.5.3 maps
+      // dhcpv4GetReservation to the wrong route — it returns [] even when reservations
+      // exist. Verified live 2026-06-20: raw POST /api/kea/dhcpv4/searchReservation
+      // returned 85 reservations on eu-6 while the client method returned []. Listing
+      // needs searchReservation (POST); the single editable model is getReservation/<uuid>
+      // (GET) — verified live read-side. add/set/del share the /api/kea/dhcpv4/ controller
+      // (camelCase actions, like the core firewall — NOT snake_case like the WG plugin).
+      const __kea = this.client.kea;
+      if (__kea && __kea.http) {
+        const KR = '/api/kea/dhcpv4/';
+        // Overloaded: a uuid string -> the one editable model; a params object
+        // {searchPhrase,current,rowCount} or nothing -> the full list (search).
+        __kea.dhcpv4GetReservation = (a, config) => {
+          if (typeof a === 'string' && a) return __kea.http.get(KR + 'getReservation/' + a, config);
+          const body = (a && typeof a === 'object') ? a : {};
+          return __kea.http.post(KR + 'searchReservation', { current: 1, rowCount: 5000, ...body }, config);
+        };
+        __kea.dhcpv4AddReservation = (data, config) => __kea.http.post(KR + 'addReservation', data, config);
+        __kea.dhcpv4SetReservation = (uuid, data, config) => __kea.http.post(KR + 'setReservation/' + uuid, data, config);
+        __kea.dhcpv4DelReservation = (uuid, config) => __kea.http.post(KR + 'delReservation/' + (uuid || ''), {}, config);
+      }
     }
     return this.client;
   }
