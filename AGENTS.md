@@ -1,3 +1,10 @@
+---
+type: "Agent Config"
+title: "AGENTS"
+description: "Working rules for agents in this repo."
+timestamp: "2026-07-19"
+---
+
 # AGENTS
 
 <!-- fleet-memory:begin -->
