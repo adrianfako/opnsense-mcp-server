@@ -1,5 +1,5 @@
 node_modules
-.yarn
-dist
-out
-coverage
+vendor
+.venv
+venv
+site-packages
