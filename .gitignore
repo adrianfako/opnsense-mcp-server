@@ -39,3 +39,9 @@ CLAUDE.md
 claude
 testing
 prompt.md
+
+# Python caches
+__pycache__/
+*.pyc
+.pytest_cache/
+.hypothesis/
