@@ -187,6 +187,50 @@ class OPNsenseMCPServer {
         __wg.serviceStop = (data, config) => __wg.http.post(WG + 'service/stop', data || {}, config);
       }
 
+      // FORK FIX (firmware wrong base path): opnsense-typescript-client 0.5.3 maps
+      // the ENTIRE firmware module to /api/firmware/* — which 404s ("Endpoint not
+      // found"). The real controller is /api/core/firmware/*. Verified live
+      // 2026-07-31 on fw-leon (OPNsense 26.7.1) AND fw-doda (26.1.9): the 404 is
+      // NOT version-specific — it's a stale base path, broken on every version.
+      // status/running/info/health/upgradestatus/connection/get/getOptions = GET
+      // (confirmed 200); the mutating actions are POST; per-package actions carry
+      // the pkg in the path. Read methods restore firmware/update visibility; the
+      // POST/action methods are remapped for correctness but are disruptive — do
+      // not fire them casually.
+      const __firm = this.client.firmware;
+      if (__firm && __firm.http) {
+        const FW = '/api/core/firmware/';
+        // reads (GET)
+        __firm.firmwareStatus = (config) => __firm.http.get(FW + 'status', config);
+        __firm.firmwareRunning = (config) => __firm.http.get(FW + 'running', config);
+        __firm.firmwareInfo = (config) => __firm.http.get(FW + 'info', config);
+        __firm.firmwareHealth = (config) => __firm.http.get(FW + 'health', config);
+        __firm.firmwareUpgradestatus = (config) => __firm.http.get(FW + 'upgradestatus', config);
+        __firm.firmwareConnection = (config) => __firm.http.get(FW + 'connection', config);
+        __firm.firmwareGet = (config) => __firm.http.get(FW + 'get', config);
+        __firm.firmwareGetOptions = (config) => __firm.http.get(FW + 'getOptions', config);
+        __firm.firmwareChangelog = (version, config) => __firm.http.get(FW + 'changelog/' + (version || ''), config);
+        __firm.firmwareLog = (clear, config) => __firm.http.get(FW + 'log/' + (clear || ''), config);
+        __firm.firmwareLicense = (pkg, config) => __firm.http.get(FW + 'license/' + (pkg || ''), config);
+        // mutating actions (POST)
+        __firm.firmwareCheck = (data, config) => __firm.http.post(FW + 'check', data || {}, config);
+        __firm.firmwareAudit = (data, config) => __firm.http.post(FW + 'audit', data || {}, config);
+        __firm.firmwareUpdate = (data, config) => __firm.http.post(FW + 'update', data || {}, config);
+        __firm.firmwareUpgrade = (data, config) => __firm.http.post(FW + 'upgrade', data || {}, config);
+        __firm.firmwareSet = (data, config) => __firm.http.post(FW + 'set', data || {}, config);
+        __firm.firmwarePoweroff = (data, config) => __firm.http.post(FW + 'poweroff', data || {}, config);
+        __firm.firmwareReboot = (data, config) => __firm.http.post(FW + 'reboot', data || {}, config);
+        __firm.firmwareResyncPlugins = (data, config) => __firm.http.post(FW + 'resyncPlugins', data || {}, config);
+        __firm.firmwareSyncPlugins = (data, config) => __firm.http.post(FW + 'syncPlugins', data || {}, config);
+        // per-package actions (POST, pkg in path)
+        __firm.firmwareInstall = (pkg, config) => __firm.http.post(FW + 'install/' + (pkg || ''), {}, config);
+        __firm.firmwareReinstall = (pkg, config) => __firm.http.post(FW + 'reinstall/' + (pkg || ''), {}, config);
+        __firm.firmwareRemove = (pkg, config) => __firm.http.post(FW + 'remove/' + (pkg || ''), {}, config);
+        __firm.firmwareLock = (pkg, config) => __firm.http.post(FW + 'lock/' + (pkg || ''), {}, config);
+        __firm.firmwareUnlock = (pkg, config) => __firm.http.post(FW + 'unlock/' + (pkg || ''), {}, config);
+        __firm.firmwareDetails = (pkg, config) => __firm.http.post(FW + 'details/' + (pkg || ''), {}, config);
+      }
+
       // FORK FIX (kea dhcpv4 reservations): opnsense-typescript-client 0.5.3 maps
       // dhcpv4GetReservation to the wrong route — it returns [] even when reservations
       // exist. Verified live 2026-06-20: raw POST /api/kea/dhcpv4/searchReservation
