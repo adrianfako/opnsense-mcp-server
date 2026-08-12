@@ -88,7 +88,7 @@ node /path/to/opnsense-mcp-server/index.js \
 Expected output:
 
 ```
-OPNsense MCP server v0.6.0 (modular) started
+OPNsense MCP server v0.7.0 (modular) started
 Core tools: 24 modules
 Plugin tools: 64 modules (disabled)
 Total available: 24 modules

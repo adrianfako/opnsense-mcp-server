@@ -102,7 +102,7 @@ class OPNsenseMCPServer {
     this.server = new Server(
       {
         name: 'opnsense-mcp-server',
-        version: '0.6.0',
+        version: '0.7.0',
       },
       {
         capabilities: {
@@ -139,9 +139,10 @@ class OPNsenseMCPServer {
       }
 
       // OPNsense 26.7 moved the captive-portal template actions off
-      // ServiceController onto a TemplateController. The fleet straddles the
-      // change (26.1.11 and 26.7 both in production), so keep the pre-26.7
-      // method names working on both: new route first, old route on 404.
+      // ServiceController onto a TemplateController. The fleet is all 26.7 as of
+      // 2026-08-12, but the pre-26.7 method names are kept working on both
+      // versions — new route first, old route on 404 — so this server stays
+      // usable against a 26.1.x box.
       const __cp = this.client.captiveportal;
       if (__cp && __cp.http) {
         for (const verb of ['getTemplate', 'saveTemplate', 'delTemplate', 'searchTemplates']) {
@@ -174,8 +175,8 @@ class OPNsenseMCPServer {
         __fw.filterBaseApply = (rev, data, config) => __fw.http.post('/api/firewall/filter/apply' + (rev ? '/' + rev : ''), data, config);
         // REMOVED UPSTREAM in OPNsense 26.7: savepoint / revert / cancel_rollback
         // are gone from FilterBaseController and 404 on every 26.7 box (whole
-        // fleet, verified 2026-08-12). `apply` also lost its rollback-revision
-        // argument. Kept for boxes still on 26.1.x and so the method names stay
+        // fleet, verified 2026-08-12). The apply action also lost its
+        // rollback-revision argument. Kept for boxes on 26.1.x and so names stay
         // resolvable; the rollback-before-apply pattern now needs a config.xml
         // snapshot instead (see infrastructure/tools/firewall/reconcile_firewall.py).
         __fw.filterBaseSavepoint = (data, config) => __fw.http.post('/api/firewall/filter/savepoint', data, config);
@@ -508,7 +509,7 @@ class OPNsenseMCPServer {
   async start() {
     const transport = new StdioServerTransport();
     await this.server.connect(transport);
-    console.error('OPNsense MCP server v0.6.0 (modular) started');
+    console.error('OPNsense MCP server v0.7.0 (modular) started');
     console.error(\`Core tools: ${toolsData.coreTools} modules\`);
     console.error(\`Plugin tools: ${toolsData.pluginTools} modules (\${this.config.includePlugins ? 'enabled' : 'disabled'})\`);
     console.error(\`Total available: \${this.config.includePlugins ? '${toolsData.totalTools}' : '${toolsData.coreTools}'} modules\`);
@@ -559,7 +560,7 @@ function parseArgs() {
 
 function showHelp() {
   console.log(\`
-OPNsense MCP Server v0.6.0 (Modular Edition)
+OPNsense MCP Server v0.7.0 (Modular Edition)
 
 Usage: opnsense-mcp-server --url <url> --api-key <key> --api-secret <secret> [options]
 
