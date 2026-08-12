@@ -8,6 +8,44 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url));
 // Read the tools data from parent directory
 const toolsData = JSON.parse(fs.readFileSync(path.join(__dirname, '..', 'tools-generated.json'), 'utf8'));
 
+// The live MVC API surface, discovered off a box running the newest OPNsense
+// (see tools/discover_routes.py + tools/probe_verbs.py). This is the source of
+// truth for what exists; @richard-stovall/opnsense-typescript-client 0.5.3 ships
+// a spec that is several releases stale and has been wrong about routes, verbs
+// and whole controllers. Every entry here is {path, post, params, search}.
+const apiRoutes: Record<string, Record<string, { path: string; post: boolean; params: number; search: boolean }>> =
+  JSON.parse(fs.readFileSync(path.join(__dirname, 'api-routes.json'), 'utf8'));
+
+// OPNsense keeps these in its own namespace, but the MCP surfaces them as
+// plugin tools (client.plugins.<name>), so they attach one level deeper.
+const PLUGIN_MODULES = ['telegraf', 'dmidecode', 'hwprobe'];
+
+// Union the discovered methods into the generated tool definitions. `methods`
+// is the allowlist the dispatcher checks and `inputSchema...enum` is what the
+// model sees, so both have to grow. Descriptions are left alone: firewall_manage
+// carries the hand-written write-schema cheat sheet.
+for (const [key, routes] of Object.entries(apiRoutes)) {
+  const names = Object.keys(routes);
+  let tool = toolsData.tools.find((t: any) => (t.module === 'plugins' ? t.submodule : t.module) === key);
+  if (!tool) {
+    const isPlugin = PLUGIN_MODULES.includes(key);
+    tool = {
+      name: isPlugin ? `plugin_${key}_manage` : `${key}_manage`,
+      module: isPlugin ? 'plugins' : key,
+      ...(isPlugin ? { submodule: key } : {}),
+      description: `${key} management - ${names.length} available methods including: ${names.slice(0, 5).join(', ')}...`,
+      inputSchema: JSON.parse(JSON.stringify(toolsData.tools[0].inputSchema)),
+      methods: [],
+    };
+    toolsData.tools.push(tool);
+  }
+  tool.methods = [...new Set([...tool.methods, ...names])].sort();
+  tool.inputSchema.properties.method.enum = tool.methods;
+}
+toolsData.coreTools = toolsData.tools.filter((t: any) => t.module !== 'plugins').length;
+toolsData.pluginTools = toolsData.tools.filter((t: any) => t.module === 'plugins').length;
+toolsData.totalTools = toolsData.tools.length;
+
 // Generate the single-file server with modular tools
 const serverCode = `#!/usr/bin/env node
 import { Server } from '@modelcontextprotocol/sdk/server/index.js';
@@ -25,6 +63,37 @@ const TOOLS = ${JSON.stringify(toolsData.tools, null, 2)};
 
 // Method documentation for help
 const METHOD_DOCS = ${JSON.stringify(toolsData.methodDocs, null, 2)};
+
+// Discovered MVC API surface — see src/api-routes.json and the note in build.ts.
+const API_ROUTES = ${JSON.stringify(apiRoutes)};
+const PLUGIN_MODULES = ${JSON.stringify(PLUGIN_MODULES)};
+
+// One caller for every discovered route. The dispatcher hands methods
+// (uuid, body) or (body), so: leading primitives fill the path parameters the
+// controller action declares, and the first object is the body. Two-parameter
+// actions (toggleRuleLog(uuid, log), toggleroute(uuid, enabled)) take both
+// segments. Anything more exotic goes through params.args.
+function makeRoute(mod, r) {
+  const seg = (v) => v !== undefined && v !== null && typeof v !== 'object';
+  return function (a, b) {
+    let url = r.path;
+    let body;
+    if (r.params > 0 && seg(a)) {
+      url += '/' + a;
+      if (r.params > 1 && seg(b)) {
+        url += '/' + b;
+      } else {
+        body = b;
+      }
+    } else {
+      body = typeof a === 'object' && a !== null ? a : b;
+    }
+    if (!r.post) {
+      return mod.http.get(url, undefined);
+    }
+    return mod.http.post(url, body || (r.search ? { current: 1, rowCount: 5000 } : {}), undefined);
+  };
+}
 
 class OPNsenseMCPServer {
   constructor(config) {
@@ -53,6 +122,45 @@ class OPNsenseMCPServer {
         apiSecret: this.config.apiSecret,
         verifySsl: this.config.verifySsl ?? true,
       });
+
+      // Attach every discovered route. These OVERWRITE the client's own methods
+      // on purpose — the routes come from a live box, the client's spec does
+      // not — and they create the modules the client omits entirely (backup,
+      // hostdiscovery, ntpd, radvd). The hand-written fork fixes below run
+      // afterwards and still win where they exist.
+      for (const [mod, routes] of Object.entries(API_ROUTES)) {
+        const parent = PLUGIN_MODULES.includes(mod) ? this.client.plugins : this.client;
+        if (!parent[mod]) parent[mod] = {};
+        const target = parent[mod];
+        if (!target.http) target.http = this.client.http;
+        for (const [name, r] of Object.entries(routes)) {
+          target[name] = makeRoute(target, r);
+        }
+      }
+
+      // OPNsense 26.7 moved the captive-portal template actions off
+      // ServiceController onto a TemplateController. The fleet straddles the
+      // change (26.1.11 and 26.7 both in production), so keep the pre-26.7
+      // method names working on both: new route first, old route on 404.
+      const __cp = this.client.captiveportal;
+      if (__cp && __cp.http) {
+        for (const verb of ['getTemplate', 'saveTemplate', 'delTemplate', 'searchTemplates']) {
+          const name = 'service' + verb[0].toUpperCase() + verb.slice(1);
+          const post = verb !== 'getTemplate';
+          __cp[name] = async (a, b) => {
+            const call = (base) => post
+              ? __cp.http.post('/api/captiveportal/' + base + '/' + verb, (typeof a === 'object' ? a : b) || {})
+              : __cp.http.get('/api/captiveportal/' + base + '/' + verb + (a ? '/' + a : ''));
+            try {
+              return await call('template');
+            } catch (e) {
+              if (e && e.response && e.response.status === 404) return await call('service');
+              throw e;
+            }
+          };
+        }
+      }
+
       // FORK FIX (filter_base 404): @richard-stovall/opnsense-typescript-client
       // 0.5.3 maps 8 firewall model-base methods to /api/firewall/filter_base/*,
       // which 404 on OPNsense. The real route is /api/firewall/filter/* (verified
@@ -64,6 +172,12 @@ class OPNsenseMCPServer {
         __fw.filterBaseGet = (config) => __fw.http.get('/api/firewall/filter/get', config);
         __fw.filterBaseSet = (data, config) => __fw.http.post('/api/firewall/filter/set', data, config);
         __fw.filterBaseApply = (rev, data, config) => __fw.http.post('/api/firewall/filter/apply' + (rev ? '/' + rev : ''), data, config);
+        // REMOVED UPSTREAM in OPNsense 26.7: savepoint / revert / cancel_rollback
+        // are gone from FilterBaseController and 404 on every 26.7 box (whole
+        // fleet, verified 2026-08-12). `apply` also lost its rollback-revision
+        // argument. Kept for boxes still on 26.1.x and so the method names stay
+        // resolvable; the rollback-before-apply pattern now needs a config.xml
+        // snapshot instead (see infrastructure/tools/firewall/reconcile_firewall.py).
         __fw.filterBaseSavepoint = (data, config) => __fw.http.post('/api/firewall/filter/savepoint', data, config);
         __fw.filterBaseRevert = (rev, data, config) => __fw.http.post('/api/firewall/filter/revert' + (rev ? '/' + rev : ''), data, config);
         __fw.filterBaseCancelRollback = (rev, data, config) => __fw.http.post('/api/firewall/filter/cancel_rollback' + (rev ? '/' + rev : ''), data, config);

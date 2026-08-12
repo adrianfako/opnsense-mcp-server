@@ -27,6 +27,10 @@ const TOOLS = [
       "dashboardProductInfoFeed",
       "dashboardRestoreDefaults",
       "dashboardSaveWidgets",
+      "defaultsFactoryDefaults",
+      "defaultsGet",
+      "defaultsGetInstalledSections",
+      "defaultsReset",
       "hasyncGet",
       "hasyncReconfigure",
       "hasyncSet",
@@ -37,6 +41,8 @@ const TOOLS = [
       "hasyncStatusStart",
       "hasyncStatusStop",
       "hasyncStatusVersion",
+      "initialSetupAbort",
+      "initialSetupConfigure",
       "menuSearch",
       "menuTree",
       "serviceRestart",
@@ -60,6 +66,7 @@ const TOOLS = [
       "tunablesGetItem",
       "tunablesReconfigure",
       "tunablesReset",
+      "tunablesSearchItem",
       "tunablesSet",
       "tunablesSetItem"
     ],
@@ -81,6 +88,10 @@ const TOOLS = [
             "dashboardProductInfoFeed",
             "dashboardRestoreDefaults",
             "dashboardSaveWidgets",
+            "defaultsFactoryDefaults",
+            "defaultsGet",
+            "defaultsGetInstalledSections",
+            "defaultsReset",
             "hasyncGet",
             "hasyncReconfigure",
             "hasyncSet",
@@ -91,6 +102,8 @@ const TOOLS = [
             "hasyncStatusStart",
             "hasyncStatusStop",
             "hasyncStatusVersion",
+            "initialSetupAbort",
+            "initialSetupConfigure",
             "menuSearch",
             "menuTree",
             "serviceRestart",
@@ -114,6 +127,7 @@ const TOOLS = [
             "tunablesGetItem",
             "tunablesReconfigure",
             "tunablesReset",
+            "tunablesSearchItem",
             "tunablesSet",
             "tunablesSetItem"
           ]
@@ -167,6 +181,7 @@ const TOOLS = [
     "methods": [
       "aliasAddItem",
       "aliasDelItem",
+      "aliasExport",
       "aliasGet",
       "aliasGetAliasUUID",
       "aliasGetGeoIP",
@@ -182,6 +197,7 @@ const TOOLS = [
       "aliasSet",
       "aliasSetItem",
       "aliasToggleItem",
+      "aliasUpdate",
       "aliasUtilAdd",
       "aliasUtilAliases",
       "aliasUtilDelete",
@@ -191,21 +207,31 @@ const TOOLS = [
       "aliasUtilUpdateBogons",
       "categoryAddItem",
       "categoryDelItem",
+      "categoryDownload",
       "categoryGet",
       "categoryGetItem",
       "categorySearchItem",
       "categorySet",
       "categorySetItem",
+      "categoryUpload",
       "dNatAddRule",
       "dNatApply",
       "dNatDelRule",
+      "dNatDownloadRules",
       "dNatGet",
       "dNatGetRule",
+      "dNatListCategories",
+      "dNatListNetworkSelectOptions",
+      "dNatListPortSelectOptions",
+      "dNatMoveRuleBefore",
       "dNatSearchRule",
       "dNatSet",
       "dNatSetRule",
       "dNatToggleRule",
+      "dNatToggleRuleLog",
+      "dNatUploadRules",
       "filterAddRule",
+      "filterApply",
       "filterBaseApply",
       "filterBaseCancelRollback",
       "filterBaseGet",
@@ -216,14 +242,19 @@ const TOOLS = [
       "filterBaseSavepoint",
       "filterBaseSet",
       "filterDelRule",
+      "filterDownloadRules",
       "filterFlushInspectCache",
       "filterGetInterfaceList",
       "filterGetRule",
+      "filterListCategories",
+      "filterListNetworkSelectOptions",
+      "filterListPortSelectOptions",
       "filterMoveRuleBefore",
       "filterSearchRule",
       "filterSetRule",
       "filterToggleRule",
       "filterToggleRuleLog",
+      "filterUploadRules",
       "filterUtilRuleStats",
       "groupAddItem",
       "groupDelItem",
@@ -233,27 +264,56 @@ const TOOLS = [
       "groupSearchItem",
       "groupSet",
       "groupSetItem",
+      "migrationCountOutbound",
+      "migrationCountRules",
+      "migrationDownloadOutbound",
+      "migrationDownloadRules",
+      "migrationFlush",
+      "migrationFlushOutbound",
       "nptAddRule",
       "nptApply",
       "nptDelRule",
+      "nptDownloadRules",
       "nptGetRule",
+      "nptListCategories",
+      "nptListNetworkSelectOptions",
+      "nptListPortSelectOptions",
+      "nptMoveRuleBefore",
       "nptSearchRule",
       "nptSetRule",
       "nptToggleRule",
+      "nptToggleRuleLog",
+      "nptUploadRules",
       "oneToOneAddRule",
       "oneToOneApply",
       "oneToOneDelRule",
+      "oneToOneDownloadRules",
       "oneToOneGetRule",
+      "oneToOneListCategories",
+      "oneToOneListNetworkSelectOptions",
+      "oneToOneListPortSelectOptions",
+      "oneToOneMoveRuleBefore",
       "oneToOneSearchRule",
       "oneToOneSetRule",
       "oneToOneToggleRule",
+      "oneToOneToggleRuleLog",
+      "oneToOneUploadRules",
       "sourceNatAddRule",
       "sourceNatApply",
       "sourceNatDelRule",
+      "sourceNatDownloadRules",
+      "sourceNatGet",
       "sourceNatGetRule",
+      "sourceNatListCategories",
+      "sourceNatListNetworkSelectOptions",
+      "sourceNatListPortSelectOptions",
+      "sourceNatMoveRuleBefore",
       "sourceNatSearchRule",
+      "sourceNatSet",
       "sourceNatSetRule",
-      "sourceNatToggleRule"
+      "sourceNatToggleRule",
+      "sourceNatToggleRuleLog",
+      "sourceNatUploadRules"
     ],
     "inputSchema": {
       "type": "object",
@@ -264,6 +324,7 @@ const TOOLS = [
           "enum": [
             "aliasAddItem",
             "aliasDelItem",
+            "aliasExport",
             "aliasGet",
             "aliasGetAliasUUID",
             "aliasGetGeoIP",
@@ -279,6 +340,7 @@ const TOOLS = [
             "aliasSet",
             "aliasSetItem",
             "aliasToggleItem",
+            "aliasUpdate",
             "aliasUtilAdd",
             "aliasUtilAliases",
             "aliasUtilDelete",
@@ -288,21 +350,31 @@ const TOOLS = [
             "aliasUtilUpdateBogons",
             "categoryAddItem",
             "categoryDelItem",
+            "categoryDownload",
             "categoryGet",
             "categoryGetItem",
             "categorySearchItem",
             "categorySet",
             "categorySetItem",
+            "categoryUpload",
             "dNatAddRule",
             "dNatApply",
             "dNatDelRule",
+            "dNatDownloadRules",
             "dNatGet",
             "dNatGetRule",
+            "dNatListCategories",
+            "dNatListNetworkSelectOptions",
+            "dNatListPortSelectOptions",
+            "dNatMoveRuleBefore",
             "dNatSearchRule",
             "dNatSet",
             "dNatSetRule",
             "dNatToggleRule",
+            "dNatToggleRuleLog",
+            "dNatUploadRules",
             "filterAddRule",
+            "filterApply",
             "filterBaseApply",
             "filterBaseCancelRollback",
             "filterBaseGet",
@@ -313,14 +385,19 @@ const TOOLS = [
             "filterBaseSavepoint",
             "filterBaseSet",
             "filterDelRule",
+            "filterDownloadRules",
             "filterFlushInspectCache",
             "filterGetInterfaceList",
             "filterGetRule",
+            "filterListCategories",
+            "filterListNetworkSelectOptions",
+            "filterListPortSelectOptions",
             "filterMoveRuleBefore",
             "filterSearchRule",
             "filterSetRule",
             "filterToggleRule",
             "filterToggleRuleLog",
+            "filterUploadRules",
             "filterUtilRuleStats",
             "groupAddItem",
             "groupDelItem",
@@ -330,27 +407,56 @@ const TOOLS = [
             "groupSearchItem",
             "groupSet",
             "groupSetItem",
+            "migrationCountOutbound",
+            "migrationCountRules",
+            "migrationDownloadOutbound",
+            "migrationDownloadRules",
+            "migrationFlush",
+            "migrationFlushOutbound",
             "nptAddRule",
             "nptApply",
             "nptDelRule",
+            "nptDownloadRules",
             "nptGetRule",
+            "nptListCategories",
+            "nptListNetworkSelectOptions",
+            "nptListPortSelectOptions",
+            "nptMoveRuleBefore",
             "nptSearchRule",
             "nptSetRule",
             "nptToggleRule",
+            "nptToggleRuleLog",
+            "nptUploadRules",
             "oneToOneAddRule",
             "oneToOneApply",
             "oneToOneDelRule",
+            "oneToOneDownloadRules",
             "oneToOneGetRule",
+            "oneToOneListCategories",
+            "oneToOneListNetworkSelectOptions",
+            "oneToOneListPortSelectOptions",
+            "oneToOneMoveRuleBefore",
             "oneToOneSearchRule",
             "oneToOneSetRule",
             "oneToOneToggleRule",
+            "oneToOneToggleRuleLog",
+            "oneToOneUploadRules",
             "sourceNatAddRule",
             "sourceNatApply",
             "sourceNatDelRule",
+            "sourceNatDownloadRules",
+            "sourceNatGet",
             "sourceNatGetRule",
+            "sourceNatListCategories",
+            "sourceNatListNetworkSelectOptions",
+            "sourceNatListPortSelectOptions",
+            "sourceNatMoveRuleBefore",
             "sourceNatSearchRule",
+            "sourceNatSet",
             "sourceNatSetRule",
-            "sourceNatToggleRule"
+            "sourceNatToggleRule",
+            "sourceNatToggleRuleLog",
+            "sourceNatUploadRules"
           ]
         },
         "params": {
@@ -403,6 +509,7 @@ const TOOLS = [
       "groupAdd",
       "groupDel",
       "groupGet",
+      "groupSearch",
       "groupSet",
       "privGet",
       "privGetItem",
@@ -416,6 +523,7 @@ const TOOLS = [
       "userDownload",
       "userGet",
       "userNewOtpSeed",
+      "userSearch",
       "userSearchApiKey",
       "userSet",
       "userUpload"
@@ -430,6 +538,7 @@ const TOOLS = [
             "groupAdd",
             "groupDel",
             "groupGet",
+            "groupSearch",
             "groupSet",
             "privGet",
             "privGetItem",
@@ -443,6 +552,7 @@ const TOOLS = [
             "userDownload",
             "userGet",
             "userNewOtpSeed",
+            "userSearch",
             "userSearchApiKey",
             "userSet",
             "userUpload"
@@ -495,6 +605,12 @@ const TOOLS = [
     "description": "Network interfaces management - 63 available methods including: gifSettingsAddItem, gifSettingsDelItem, gifSettingsGet, gifSettingsGetIfOptions, gifSettingsGetItem...",
     "module": "interfaces",
     "methods": [
+      "assignmentAddItem",
+      "assignmentDelItem",
+      "assignmentGetItem",
+      "assignmentReconfigure",
+      "assignmentSearchItem",
+      "assignmentSetItem",
       "bridgeSettingsAddItem",
       "bridgeSettingsDelItem",
       "bridgeSettingsGetItem",
@@ -547,6 +663,8 @@ const TOOLS = [
       "overviewGetInterface",
       "overviewInterfacesInfo",
       "overviewReloadInterface",
+      "settingsGet",
+      "settingsReconfigure",
       "vipSettingsAddItem",
       "vipSettingsDelItem",
       "vipSettingsGet",
@@ -580,6 +698,12 @@ const TOOLS = [
           "type": "string",
           "description": "The method to call on this module",
           "enum": [
+            "assignmentAddItem",
+            "assignmentDelItem",
+            "assignmentGetItem",
+            "assignmentReconfigure",
+            "assignmentSearchItem",
+            "assignmentSetItem",
             "bridgeSettingsAddItem",
             "bridgeSettingsDelItem",
             "bridgeSettingsGetItem",
@@ -632,6 +756,8 @@ const TOOLS = [
             "overviewGetInterface",
             "overviewInterfacesInfo",
             "overviewReloadInterface",
+            "settingsGet",
+            "settingsReconfigure",
             "vipSettingsAddItem",
             "vipSettingsDelItem",
             "vipSettingsGet",
@@ -709,6 +835,7 @@ const TOOLS = [
       "accessApi",
       "accessLogoff",
       "accessLogon",
+      "accessStatus",
       "serviceDelTemplate",
       "serviceGetTemplate",
       "serviceReconfigure",
@@ -723,9 +850,14 @@ const TOOLS = [
       "settingsDelZone",
       "settingsGet",
       "settingsGetZone",
+      "settingsSearchZones",
       "settingsSet",
       "settingsSetZone",
       "settingsToggleZone",
+      "templateDelTemplate",
+      "templateGetTemplate",
+      "templateSaveTemplate",
+      "templateSearchTemplates",
       "voucherDropExpiredVouchers",
       "voucherDropVoucherGroup",
       "voucherExpireVoucher",
@@ -744,6 +876,7 @@ const TOOLS = [
             "accessApi",
             "accessLogoff",
             "accessLogon",
+            "accessStatus",
             "serviceDelTemplate",
             "serviceGetTemplate",
             "serviceReconfigure",
@@ -758,9 +891,14 @@ const TOOLS = [
             "settingsDelZone",
             "settingsGet",
             "settingsGetZone",
+            "settingsSearchZones",
             "settingsSet",
             "settingsSetZone",
             "settingsToggleZone",
+            "templateDelTemplate",
+            "templateGetTemplate",
+            "templateSaveTemplate",
+            "templateSearchTemplates",
             "voucherDropExpiredVouchers",
             "voucherDropVoucherGroup",
             "voucherExpireVoucher",
@@ -822,6 +960,7 @@ const TOOLS = [
       "settingsDelJob",
       "settingsGet",
       "settingsGetJob",
+      "settingsSearchJobs",
       "settingsSet",
       "settingsSetJob",
       "settingsToggleJob"
@@ -838,6 +977,7 @@ const TOOLS = [
             "settingsDelJob",
             "settingsGet",
             "settingsGetJob",
+            "settingsSearchJobs",
             "settingsSet",
             "settingsSetJob",
             "settingsToggleJob"
@@ -1042,6 +1182,8 @@ const TOOLS = [
       "settingsGet",
       "settingsGetDest",
       "settingsGetRelay",
+      "settingsSearchDest",
+      "settingsSearchRelay",
       "settingsSet",
       "settingsSetDest",
       "settingsSetRelay",
@@ -1062,6 +1204,8 @@ const TOOLS = [
             "settingsGet",
             "settingsGetDest",
             "settingsGetRelay",
+            "settingsSearchDest",
+            "settingsSearchRelay",
             "settingsSet",
             "settingsSetDest",
             "settingsSetRelay",
@@ -1118,9 +1262,9 @@ const TOOLS = [
       "activityGetActivity",
       "cpuUsageGetCPUType",
       "cpuUsageStream",
-      "dnsReverseLookup",
       "dnsDiagnosticsGet",
       "dnsDiagnosticsSet",
+      "dnsReverseLookup",
       "firewallDelState",
       "firewallFlushSources",
       "firewallFlushStates",
@@ -1156,12 +1300,14 @@ const TOOLS = [
       "lvtemplateDelItem",
       "lvtemplateGet",
       "lvtemplateGetItem",
+      "lvtemplateSearchItem",
       "lvtemplateSet",
       "lvtemplateSetItem",
       "netflowCacheStats",
       "netflowGetconfig",
       "netflowIsEnabled",
       "netflowReconfigure",
+      "netflowReset",
       "netflowSetconfig",
       "netflowStatus",
       "networkinsightExport",
@@ -1196,15 +1342,18 @@ const TOOLS = [
       "systemSystemSwap",
       "systemSystemTemperature",
       "systemSystemTime",
+      "systemhealthDelRRD",
       "systemhealthExportAsCSV",
       "systemhealthGetInterfaces",
       "systemhealthGetRRDlist",
+      "systemhealthGetRrdList",
       "systemhealthGetSystemHealth",
+      "systemhealthReconfigure",
       "tracerouteGet",
       "tracerouteSet",
       "trafficInterface",
-      "trafficTop",
-      "trafficStream"
+      "trafficStream",
+      "trafficTop"
     ],
     "inputSchema": {
       "type": "object",
@@ -1216,9 +1365,9 @@ const TOOLS = [
             "activityGetActivity",
             "cpuUsageGetCPUType",
             "cpuUsageStream",
-            "dnsReverseLookup",
             "dnsDiagnosticsGet",
             "dnsDiagnosticsSet",
+            "dnsReverseLookup",
             "firewallDelState",
             "firewallFlushSources",
             "firewallFlushStates",
@@ -1254,12 +1403,14 @@ const TOOLS = [
             "lvtemplateDelItem",
             "lvtemplateGet",
             "lvtemplateGetItem",
+            "lvtemplateSearchItem",
             "lvtemplateSet",
             "lvtemplateSetItem",
             "netflowCacheStats",
             "netflowGetconfig",
             "netflowIsEnabled",
             "netflowReconfigure",
+            "netflowReset",
             "netflowSetconfig",
             "netflowStatus",
             "networkinsightExport",
@@ -1294,15 +1445,18 @@ const TOOLS = [
             "systemSystemSwap",
             "systemSystemTemperature",
             "systemSystemTime",
+            "systemhealthDelRRD",
             "systemhealthExportAsCSV",
             "systemhealthGetInterfaces",
             "systemhealthGetRRDlist",
+            "systemhealthGetRrdList",
             "systemhealthGetSystemHealth",
+            "systemhealthReconfigure",
             "tracerouteGet",
             "tracerouteSet",
             "trafficInterface",
-            "trafficTop",
-            "trafficStream"
+            "trafficStream",
+            "trafficTop"
           ]
         },
         "params": {
@@ -1379,6 +1533,12 @@ const TOOLS = [
       "settingsGetRange",
       "settingsGetTag",
       "settingsGetTagList",
+      "settingsSearchBoot",
+      "settingsSearchDomain",
+      "settingsSearchHost",
+      "settingsSearchOption",
+      "settingsSearchRange",
+      "settingsSearchTag",
       "settingsSet",
       "settingsSetBoot",
       "settingsSetDomain",
@@ -1422,6 +1582,12 @@ const TOOLS = [
             "settingsGetRange",
             "settingsGetTag",
             "settingsGetTagList",
+            "settingsSearchBoot",
+            "settingsSearchDomain",
+            "settingsSearchHost",
+            "settingsSearchOption",
+            "settingsSearchRange",
+            "settingsSearchTag",
             "settingsSet",
             "settingsSetBoot",
             "settingsSetDomain",
@@ -1482,29 +1648,30 @@ const TOOLS = [
       "firmwareAudit",
       "firmwareChangelog",
       "firmwareCheck",
+      "firmwareCleanup",
       "firmwareConnection",
+      "firmwareDetails",
       "firmwareGet",
       "firmwareGetOptions",
       "firmwareHealth",
       "firmwareInfo",
+      "firmwareInstall",
+      "firmwareLicense",
+      "firmwareLock",
       "firmwareLog",
       "firmwarePoweroff",
       "firmwareReboot",
+      "firmwareReinstall",
+      "firmwareRemove",
       "firmwareResyncPlugins",
       "firmwareRunning",
       "firmwareSet",
       "firmwareStatus",
       "firmwareSyncPlugins",
+      "firmwareUnlock",
       "firmwareUpdate",
       "firmwareUpgrade",
-      "firmwareUpgradestatus",
-      "firmwareDetails",
-      "firmwareInstall",
-      "firmwareLicense",
-      "firmwareLock",
-      "firmwareRemove",
-      "firmwareReinstall",
-      "firmwareUnlock"
+      "firmwareUpgradestatus"
     ],
     "inputSchema": {
       "type": "object",
@@ -1516,29 +1683,30 @@ const TOOLS = [
             "firmwareAudit",
             "firmwareChangelog",
             "firmwareCheck",
+            "firmwareCleanup",
             "firmwareConnection",
+            "firmwareDetails",
             "firmwareGet",
             "firmwareGetOptions",
             "firmwareHealth",
             "firmwareInfo",
+            "firmwareInstall",
+            "firmwareLicense",
+            "firmwareLock",
             "firmwareLog",
             "firmwarePoweroff",
             "firmwareReboot",
+            "firmwareReinstall",
+            "firmwareRemove",
             "firmwareResyncPlugins",
             "firmwareRunning",
             "firmwareSet",
             "firmwareStatus",
             "firmwareSyncPlugins",
+            "firmwareUnlock",
             "firmwareUpdate",
             "firmwareUpgrade",
-            "firmwareUpgradestatus",
-            "firmwareDetails",
-            "firmwareInstall",
-            "firmwareLicense",
-            "firmwareLock",
-            "firmwareRemove",
-            "firmwareReinstall",
-            "firmwareUnlock"
+            "firmwareUpgradestatus"
           ]
         },
         "params": {
@@ -1616,6 +1784,9 @@ const TOOLS = [
       "settingsListRuleMetadata",
       "settingsListRulesets",
       "settingsSearchInstalledRules",
+      "settingsSearchPolicy",
+      "settingsSearchPolicyRule",
+      "settingsSearchUserRule",
       "settingsSet",
       "settingsSetPolicy",
       "settingsSetPolicyRule",
@@ -1664,6 +1835,9 @@ const TOOLS = [
             "settingsListRuleMetadata",
             "settingsListRulesets",
             "settingsSearchInstalledRules",
+            "settingsSearchPolicy",
+            "settingsSearchPolicyRule",
+            "settingsSearchUserRule",
             "settingsSet",
             "settingsSetPolicy",
             "settingsSetPolicyRule",
@@ -1740,6 +1914,10 @@ const TOOLS = [
       "connectionsGetLocal",
       "connectionsGetRemote",
       "connectionsIsEnabled",
+      "connectionsSearchChild",
+      "connectionsSearchConnection",
+      "connectionsSearchLocal",
+      "connectionsSearchRemote",
       "connectionsSet",
       "connectionsSetChild",
       "connectionsSetConnection",
@@ -1756,6 +1934,7 @@ const TOOLS = [
       "keyPairsGenKeyPair",
       "keyPairsGet",
       "keyPairsGetItem",
+      "keyPairsSearchItem",
       "keyPairsSet",
       "keyPairsSetItem",
       "leasesPools",
@@ -1765,17 +1944,20 @@ const TOOLS = [
       "manualSpdAdd",
       "manualSpdDel",
       "manualSpdGet",
+      "manualSpdSearch",
       "manualSpdSet",
       "manualSpdToggle",
       "poolsAdd",
       "poolsDel",
       "poolsGet",
+      "poolsSearch",
       "poolsSet",
       "poolsToggle",
       "preSharedKeysAddItem",
       "preSharedKeysDelItem",
       "preSharedKeysGet",
       "preSharedKeysGetItem",
+      "preSharedKeysSearchItem",
       "preSharedKeysSet",
       "preSharedKeysSetItem",
       "sadDelete",
@@ -1803,6 +1985,7 @@ const TOOLS = [
       "vtiAdd",
       "vtiDel",
       "vtiGet",
+      "vtiSearch",
       "vtiSet",
       "vtiToggle"
     ],
@@ -1828,6 +2011,10 @@ const TOOLS = [
             "connectionsGetLocal",
             "connectionsGetRemote",
             "connectionsIsEnabled",
+            "connectionsSearchChild",
+            "connectionsSearchConnection",
+            "connectionsSearchLocal",
+            "connectionsSearchRemote",
             "connectionsSet",
             "connectionsSetChild",
             "connectionsSetConnection",
@@ -1844,6 +2031,7 @@ const TOOLS = [
             "keyPairsGenKeyPair",
             "keyPairsGet",
             "keyPairsGetItem",
+            "keyPairsSearchItem",
             "keyPairsSet",
             "keyPairsSetItem",
             "leasesPools",
@@ -1853,17 +2041,20 @@ const TOOLS = [
             "manualSpdAdd",
             "manualSpdDel",
             "manualSpdGet",
+            "manualSpdSearch",
             "manualSpdSet",
             "manualSpdToggle",
             "poolsAdd",
             "poolsDel",
             "poolsGet",
+            "poolsSearch",
             "poolsSet",
             "poolsToggle",
             "preSharedKeysAddItem",
             "preSharedKeysDelItem",
             "preSharedKeysGet",
             "preSharedKeysGetItem",
+            "preSharedKeysSearchItem",
             "preSharedKeysSet",
             "preSharedKeysSetItem",
             "sadDelete",
@@ -1891,6 +2082,7 @@ const TOOLS = [
             "vtiAdd",
             "vtiDel",
             "vtiGet",
+            "vtiSearch",
             "vtiSet",
             "vtiToggle"
           ]
@@ -1944,23 +2136,63 @@ const TOOLS = [
     "methods": [
       "ctrlAgentGet",
       "ctrlAgentSet",
+      "ddnsGet",
+      "dhcpv4AddOption",
       "dhcpv4AddPeer",
       "dhcpv4AddReservation",
       "dhcpv4AddSubnet",
+      "dhcpv4DelOption",
       "dhcpv4DelPeer",
       "dhcpv4DelReservation",
       "dhcpv4DelSubnet",
       "dhcpv4DownloadReservations",
       "dhcpv4Get",
+      "dhcpv4GetOption",
       "dhcpv4GetPeer",
       "dhcpv4GetReservation",
       "dhcpv4GetSubnet",
+      "dhcpv4SearchOption",
+      "dhcpv4SearchPeer",
+      "dhcpv4SearchReservation",
+      "dhcpv4SearchSubnet",
       "dhcpv4Set",
+      "dhcpv4SetOption",
       "dhcpv4SetPeer",
       "dhcpv4SetReservation",
       "dhcpv4SetSubnet",
       "dhcpv4UploadReservations",
+      "dhcpv6AddOption",
+      "dhcpv6AddPdPool",
+      "dhcpv6AddPeer",
+      "dhcpv6AddReservation",
+      "dhcpv6AddSubnet",
+      "dhcpv6DelOption",
+      "dhcpv6DelPdPool",
+      "dhcpv6DelPeer",
+      "dhcpv6DelReservation",
+      "dhcpv6DelSubnet",
+      "dhcpv6DownloadReservations",
+      "dhcpv6Get",
+      "dhcpv6GetOption",
+      "dhcpv6GetPdPool",
+      "dhcpv6GetPeer",
+      "dhcpv6GetReservation",
+      "dhcpv6GetSubnet",
+      "dhcpv6SearchOption",
+      "dhcpv6SearchPdPool",
+      "dhcpv6SearchPeer",
+      "dhcpv6SearchReservation",
+      "dhcpv6SearchSubnet",
+      "dhcpv6SetOption",
+      "dhcpv6SetPdPool",
+      "dhcpv6SetPeer",
+      "dhcpv6SetReservation",
+      "dhcpv6SetSubnet",
+      "dhcpv6UploadReservations",
+      "leases4DelLease",
       "leases4Search",
+      "leases6DelLease",
+      "leases6Search",
       "serviceReconfigure",
       "serviceRestart",
       "serviceStart",
@@ -1976,23 +2208,63 @@ const TOOLS = [
           "enum": [
             "ctrlAgentGet",
             "ctrlAgentSet",
+            "ddnsGet",
+            "dhcpv4AddOption",
             "dhcpv4AddPeer",
             "dhcpv4AddReservation",
             "dhcpv4AddSubnet",
+            "dhcpv4DelOption",
             "dhcpv4DelPeer",
             "dhcpv4DelReservation",
             "dhcpv4DelSubnet",
             "dhcpv4DownloadReservations",
             "dhcpv4Get",
+            "dhcpv4GetOption",
             "dhcpv4GetPeer",
             "dhcpv4GetReservation",
             "dhcpv4GetSubnet",
+            "dhcpv4SearchOption",
+            "dhcpv4SearchPeer",
+            "dhcpv4SearchReservation",
+            "dhcpv4SearchSubnet",
             "dhcpv4Set",
+            "dhcpv4SetOption",
             "dhcpv4SetPeer",
             "dhcpv4SetReservation",
             "dhcpv4SetSubnet",
             "dhcpv4UploadReservations",
+            "dhcpv6AddOption",
+            "dhcpv6AddPdPool",
+            "dhcpv6AddPeer",
+            "dhcpv6AddReservation",
+            "dhcpv6AddSubnet",
+            "dhcpv6DelOption",
+            "dhcpv6DelPdPool",
+            "dhcpv6DelPeer",
+            "dhcpv6DelReservation",
+            "dhcpv6DelSubnet",
+            "dhcpv6DownloadReservations",
+            "dhcpv6Get",
+            "dhcpv6GetOption",
+            "dhcpv6GetPdPool",
+            "dhcpv6GetPeer",
+            "dhcpv6GetReservation",
+            "dhcpv6GetSubnet",
+            "dhcpv6SearchOption",
+            "dhcpv6SearchPdPool",
+            "dhcpv6SearchPeer",
+            "dhcpv6SearchReservation",
+            "dhcpv6SearchSubnet",
+            "dhcpv6SetOption",
+            "dhcpv6SetPdPool",
+            "dhcpv6SetPeer",
+            "dhcpv6SetReservation",
+            "dhcpv6SetSubnet",
+            "dhcpv6UploadReservations",
+            "leases4DelLease",
             "leases4Search",
+            "leases6DelLease",
+            "leases6Search",
             "serviceReconfigure",
             "serviceRestart",
             "serviceStart",
@@ -2065,6 +2337,9 @@ const TOOLS = [
       "settingsGetGeneral",
       "settingsGetService",
       "settingsGetTest",
+      "settingsSearchAlert",
+      "settingsSearchService",
+      "settingsSearchTest",
       "settingsSet",
       "settingsSetAlert",
       "settingsSetService",
@@ -2098,6 +2373,9 @@ const TOOLS = [
             "settingsGetGeneral",
             "settingsGetService",
             "settingsGetTest",
+            "settingsSearchAlert",
+            "settingsSearchService",
+            "settingsSearchTest",
             "settingsSet",
             "settingsSetAlert",
             "settingsSetService",
@@ -2157,6 +2435,7 @@ const TOOLS = [
       "clientOverwritesAdd",
       "clientOverwritesDel",
       "clientOverwritesGet",
+      "clientOverwritesSearch",
       "clientOverwritesSet",
       "clientOverwritesToggle",
       "exportAccounts",
@@ -2172,6 +2451,8 @@ const TOOLS = [
       "instancesGenKey",
       "instancesGet",
       "instancesGetStaticKey",
+      "instancesSearch",
+      "instancesSearchStaticKey",
       "instancesSet",
       "instancesSetStaticKey",
       "instancesToggle",
@@ -2193,6 +2474,7 @@ const TOOLS = [
             "clientOverwritesAdd",
             "clientOverwritesDel",
             "clientOverwritesGet",
+            "clientOverwritesSearch",
             "clientOverwritesSet",
             "clientOverwritesToggle",
             "exportAccounts",
@@ -2208,6 +2490,8 @@ const TOOLS = [
             "instancesGenKey",
             "instancesGet",
             "instancesGetStaticKey",
+            "instancesSearch",
+            "instancesSearchStaticKey",
             "instancesSet",
             "instancesSetStaticKey",
             "instancesToggle",
@@ -2273,6 +2557,7 @@ const TOOLS = [
       "routesGet",
       "routesGetroute",
       "routesReconfigure",
+      "routesSearchroute",
       "routesSet",
       "routesSetroute",
       "routesToggleroute"
@@ -2290,6 +2575,7 @@ const TOOLS = [
             "routesGet",
             "routesGetroute",
             "routesReconfigure",
+            "routesSearchroute",
             "routesSet",
             "routesSetroute",
             "routesToggleroute"
@@ -2342,6 +2628,12 @@ const TOOLS = [
     "description": "Routing management - 9 available methods including: settingsAddGateway, settingsDelGateway, settingsGet, settingsGetGateway, settingsReconfigure...",
     "module": "routing",
     "methods": [
+      "groupSettingsAdd",
+      "groupSettingsDel",
+      "groupSettingsGet",
+      "groupSettingsReconfigure",
+      "groupSettingsSearch",
+      "groupSettingsSet",
       "settingsAddGateway",
       "settingsDelGateway",
       "settingsGet",
@@ -2359,6 +2651,12 @@ const TOOLS = [
           "type": "string",
           "description": "The method to call on this module",
           "enum": [
+            "groupSettingsAdd",
+            "groupSettingsDel",
+            "groupSettingsGet",
+            "groupSettingsReconfigure",
+            "groupSettingsSearch",
+            "groupSettingsSet",
             "settingsAddGateway",
             "settingsDelGateway",
             "settingsGet",
@@ -2428,6 +2726,7 @@ const TOOLS = [
       "settingsDelDestination",
       "settingsGet",
       "settingsGetDestination",
+      "settingsSearchDestinations",
       "settingsSet",
       "settingsSetDestination",
       "settingsToggleDestination"
@@ -2450,6 +2749,7 @@ const TOOLS = [
             "settingsDelDestination",
             "settingsGet",
             "settingsGetDestination",
+            "settingsSearchDestinations",
             "settingsSet",
             "settingsSetDestination",
             "settingsToggleDestination"
@@ -2511,17 +2811,24 @@ const TOOLS = [
       "settingsDelPipe",
       "settingsDelQueue",
       "settingsDelRule",
+      "settingsDownloadPipes",
+      "settingsDownloadQueues",
       "settingsGet",
       "settingsGetPipe",
       "settingsGetQueue",
       "settingsGetRule",
+      "settingsSearchPipes",
+      "settingsSearchQueues",
+      "settingsSearchRules",
       "settingsSet",
       "settingsSetPipe",
       "settingsSetQueue",
       "settingsSetRule",
       "settingsTogglePipe",
       "settingsToggleQueue",
-      "settingsToggleRule"
+      "settingsToggleRule",
+      "settingsUploadPipes",
+      "settingsUploadQueues"
     ],
     "inputSchema": {
       "type": "object",
@@ -2539,17 +2846,24 @@ const TOOLS = [
             "settingsDelPipe",
             "settingsDelQueue",
             "settingsDelRule",
+            "settingsDownloadPipes",
+            "settingsDownloadQueues",
             "settingsGet",
             "settingsGetPipe",
             "settingsGetQueue",
             "settingsGetRule",
+            "settingsSearchPipes",
+            "settingsSearchQueues",
+            "settingsSearchRules",
             "settingsSet",
             "settingsSetPipe",
             "settingsSetQueue",
             "settingsSetRule",
             "settingsTogglePipe",
             "settingsToggleQueue",
-            "settingsToggleRule"
+            "settingsToggleRule",
+            "settingsUploadPipes",
+            "settingsUploadQueues"
           ]
         },
         "params": {
@@ -2599,12 +2913,14 @@ const TOOLS = [
     "description": "Trust management - 25 available methods including: caCaInfo, caCaList, caDel, caGenerateFile, caGet...",
     "module": "trust",
     "methods": [
+      "caAdd",
       "caCaInfo",
       "caCaList",
       "caDel",
       "caGenerateFile",
       "caGet",
       "caRawDump",
+      "caSearch",
       "caSet",
       "certAdd",
       "certCaInfo",
@@ -2613,6 +2929,7 @@ const TOOLS = [
       "certGenerateFile",
       "certGet",
       "certRawDump",
+      "certSearch",
       "certSet",
       "certUserList",
       "crlDel",
@@ -2632,12 +2949,14 @@ const TOOLS = [
           "type": "string",
           "description": "The method to call on this module",
           "enum": [
+            "caAdd",
             "caCaInfo",
             "caCaList",
             "caDel",
             "caGenerateFile",
             "caGet",
             "caRawDump",
+            "caSearch",
             "caSet",
             "certAdd",
             "certCaInfo",
@@ -2646,6 +2965,7 @@ const TOOLS = [
             "certGenerateFile",
             "certGet",
             "certRawDump",
+            "certSearch",
             "certSet",
             "certUserList",
             "crlDel",
@@ -2712,9 +3032,12 @@ const TOOLS = [
       "diagnosticsListlocaldata",
       "diagnosticsListlocalzones",
       "diagnosticsStats",
-      "overviewRolling",
+      "diagnosticsTestBlocklist",
+      "overviewGetPolicies",
       "overviewIsBlockListEnabled",
       "overviewIsEnabled",
+      "overviewReset",
+      "overviewRolling",
       "overviewSearchQueries",
       "overviewTotals",
       "serviceDnsbl",
@@ -2725,25 +3048,35 @@ const TOOLS = [
       "serviceStatus",
       "serviceStop",
       "settingsAddAcl",
+      "settingsAddDnsbl",
       "settingsAddForward",
       "settingsAddHostAlias",
       "settingsAddHostOverride",
       "settingsDelAcl",
+      "settingsDelDnsbl",
       "settingsDelForward",
       "settingsDelHostAlias",
       "settingsDelHostOverride",
       "settingsGet",
       "settingsGetAcl",
+      "settingsGetDnsbl",
       "settingsGetForward",
       "settingsGetHostAlias",
       "settingsGetHostOverride",
       "settingsGetNameservers",
+      "settingsSearchAcl",
+      "settingsSearchDnsbl",
+      "settingsSearchForward",
+      "settingsSearchHostAlias",
+      "settingsSearchHostOverride",
       "settingsSet",
       "settingsSetAcl",
+      "settingsSetDnsbl",
       "settingsSetForward",
       "settingsSetHostAlias",
       "settingsSetHostOverride",
       "settingsToggleAcl",
+      "settingsToggleDnsbl",
       "settingsToggleForward",
       "settingsToggleHostAlias",
       "settingsToggleHostOverride",
@@ -2762,9 +3095,12 @@ const TOOLS = [
             "diagnosticsListlocaldata",
             "diagnosticsListlocalzones",
             "diagnosticsStats",
-            "overviewRolling",
+            "diagnosticsTestBlocklist",
+            "overviewGetPolicies",
             "overviewIsBlockListEnabled",
             "overviewIsEnabled",
+            "overviewReset",
+            "overviewRolling",
             "overviewSearchQueries",
             "overviewTotals",
             "serviceDnsbl",
@@ -2775,25 +3111,35 @@ const TOOLS = [
             "serviceStatus",
             "serviceStop",
             "settingsAddAcl",
+            "settingsAddDnsbl",
             "settingsAddForward",
             "settingsAddHostAlias",
             "settingsAddHostOverride",
             "settingsDelAcl",
+            "settingsDelDnsbl",
             "settingsDelForward",
             "settingsDelHostAlias",
             "settingsDelHostOverride",
             "settingsGet",
             "settingsGetAcl",
+            "settingsGetDnsbl",
             "settingsGetForward",
             "settingsGetHostAlias",
             "settingsGetHostOverride",
             "settingsGetNameservers",
+            "settingsSearchAcl",
+            "settingsSearchDnsbl",
+            "settingsSearchForward",
+            "settingsSearchHostAlias",
+            "settingsSearchHostOverride",
             "settingsSet",
             "settingsSetAcl",
+            "settingsSetDnsbl",
             "settingsSetForward",
             "settingsSetHostAlias",
             "settingsSetHostOverride",
             "settingsToggleAcl",
+            "settingsToggleDnsbl",
             "settingsToggleForward",
             "settingsToggleHostAlias",
             "settingsToggleHostOverride",
@@ -2856,6 +3202,7 @@ const TOOLS = [
       "clientGetServerInfo",
       "clientListServers",
       "clientPsk",
+      "clientSearchClient",
       "clientSet",
       "clientSetClient",
       "clientToggleClient",
@@ -2866,6 +3213,7 @@ const TOOLS = [
       "serverGet",
       "serverGetServer",
       "serverKeyPair",
+      "serverSearchServer",
       "serverSet",
       "serverSetServer",
       "serverToggleServer",
@@ -2892,6 +3240,7 @@ const TOOLS = [
             "clientGetServerInfo",
             "clientListServers",
             "clientPsk",
+            "clientSearchClient",
             "clientSet",
             "clientSetClient",
             "clientToggleClient",
@@ -2902,6 +3251,7 @@ const TOOLS = [
             "serverGet",
             "serverGetServer",
             "serverKeyPair",
+            "serverSearchServer",
             "serverSet",
             "serverSetServer",
             "serverToggleServer",
@@ -8187,6 +8537,7 @@ const TOOLS = [
       "keyDelKey",
       "keyGet",
       "keyGetKey",
+      "keySearchKey",
       "keySet",
       "keySetKey",
       "keyToggleKey",
@@ -8213,6 +8564,7 @@ const TOOLS = [
             "keyDelKey",
             "keyGet",
             "keyGetKey",
+            "keySearchKey",
             "keySet",
             "keySetKey",
             "keyToggleKey",
@@ -9208,6 +9560,258 @@ const TOOLS = [
         "method"
       ]
     }
+  },
+  {
+    "name": "backup_manage",
+    "module": "backup",
+    "description": "backup management - 1 available methods including: backupDownload...",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "method": {
+          "type": "string",
+          "description": "The method to call on this module",
+          "enum": [
+            "backupDownload"
+          ]
+        },
+        "params": {
+          "type": "object",
+          "description": "Parameters for the method (varies by method)",
+          "properties": {
+            "uuid": {
+              "type": "string",
+              "description": "Item UUID (for get/set/del operations)"
+            },
+            "data": {
+              "type": "object",
+              "description": "Configuration data (for set operations)"
+            },
+            "item": {
+              "type": "object",
+              "description": "Item data (for add/set operations)"
+            },
+            "searchPhrase": {
+              "type": "string",
+              "description": "Search phrase (for search operations)"
+            },
+            "current": {
+              "type": "integer",
+              "description": "Current page (for search operations)",
+              "default": 1
+            },
+            "rowCount": {
+              "type": "integer",
+              "description": "Rows per page (for search operations)",
+              "default": 20
+            },
+            "args": {
+              "type": "array",
+              "description": "Explicit ordered positional arguments for the underlying client method (escape hatch for signatures not covered by uuid/item/data, e.g. backupDownload[host, backup]). When set, overrides the uuid/body mapping."
+            }
+          }
+        }
+      },
+      "required": [
+        "method"
+      ]
+    },
+    "methods": [
+      "backupDownload"
+    ]
+  },
+  {
+    "name": "hostdiscovery_manage",
+    "module": "hostdiscovery",
+    "description": "hostdiscovery management - 1 available methods including: serviceSearch...",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "method": {
+          "type": "string",
+          "description": "The method to call on this module",
+          "enum": [
+            "serviceSearch"
+          ]
+        },
+        "params": {
+          "type": "object",
+          "description": "Parameters for the method (varies by method)",
+          "properties": {
+            "uuid": {
+              "type": "string",
+              "description": "Item UUID (for get/set/del operations)"
+            },
+            "data": {
+              "type": "object",
+              "description": "Configuration data (for set operations)"
+            },
+            "item": {
+              "type": "object",
+              "description": "Item data (for add/set operations)"
+            },
+            "searchPhrase": {
+              "type": "string",
+              "description": "Search phrase (for search operations)"
+            },
+            "current": {
+              "type": "integer",
+              "description": "Current page (for search operations)",
+              "default": 1
+            },
+            "rowCount": {
+              "type": "integer",
+              "description": "Rows per page (for search operations)",
+              "default": 20
+            },
+            "args": {
+              "type": "array",
+              "description": "Explicit ordered positional arguments for the underlying client method (escape hatch for signatures not covered by uuid/item/data, e.g. backupDownload[host, backup]). When set, overrides the uuid/body mapping."
+            }
+          }
+        }
+      },
+      "required": [
+        "method"
+      ]
+    },
+    "methods": [
+      "serviceSearch"
+    ]
+  },
+  {
+    "name": "ntpd_manage",
+    "module": "ntpd",
+    "description": "ntpd management - 3 available methods including: serviceGps, serviceMeta, serviceStatus...",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "method": {
+          "type": "string",
+          "description": "The method to call on this module",
+          "enum": [
+            "serviceGps",
+            "serviceMeta",
+            "serviceStatus"
+          ]
+        },
+        "params": {
+          "type": "object",
+          "description": "Parameters for the method (varies by method)",
+          "properties": {
+            "uuid": {
+              "type": "string",
+              "description": "Item UUID (for get/set/del operations)"
+            },
+            "data": {
+              "type": "object",
+              "description": "Configuration data (for set operations)"
+            },
+            "item": {
+              "type": "object",
+              "description": "Item data (for add/set operations)"
+            },
+            "searchPhrase": {
+              "type": "string",
+              "description": "Search phrase (for search operations)"
+            },
+            "current": {
+              "type": "integer",
+              "description": "Current page (for search operations)",
+              "default": 1
+            },
+            "rowCount": {
+              "type": "integer",
+              "description": "Rows per page (for search operations)",
+              "default": 20
+            },
+            "args": {
+              "type": "array",
+              "description": "Explicit ordered positional arguments for the underlying client method (escape hatch for signatures not covered by uuid/item/data, e.g. backupDownload[host, backup]). When set, overrides the uuid/body mapping."
+            }
+          }
+        }
+      },
+      "required": [
+        "method"
+      ]
+    },
+    "methods": [
+      "serviceGps",
+      "serviceMeta",
+      "serviceStatus"
+    ]
+  },
+  {
+    "name": "radvd_manage",
+    "module": "radvd",
+    "description": "radvd management - 7 available methods including: serviceReconfigure, settingsAddEntry, settingsDelEntry, settingsGetEntry, settingsSearchEntry...",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "method": {
+          "type": "string",
+          "description": "The method to call on this module",
+          "enum": [
+            "serviceReconfigure",
+            "settingsAddEntry",
+            "settingsDelEntry",
+            "settingsGetEntry",
+            "settingsSearchEntry",
+            "settingsSetEntry",
+            "settingsToggleEntry"
+          ]
+        },
+        "params": {
+          "type": "object",
+          "description": "Parameters for the method (varies by method)",
+          "properties": {
+            "uuid": {
+              "type": "string",
+              "description": "Item UUID (for get/set/del operations)"
+            },
+            "data": {
+              "type": "object",
+              "description": "Configuration data (for set operations)"
+            },
+            "item": {
+              "type": "object",
+              "description": "Item data (for add/set operations)"
+            },
+            "searchPhrase": {
+              "type": "string",
+              "description": "Search phrase (for search operations)"
+            },
+            "current": {
+              "type": "integer",
+              "description": "Current page (for search operations)",
+              "default": 1
+            },
+            "rowCount": {
+              "type": "integer",
+              "description": "Rows per page (for search operations)",
+              "default": 20
+            },
+            "args": {
+              "type": "array",
+              "description": "Explicit ordered positional arguments for the underlying client method (escape hatch for signatures not covered by uuid/item/data, e.g. backupDownload[host, backup]). When set, overrides the uuid/body mapping."
+            }
+          }
+        }
+      },
+      "required": [
+        "method"
+      ]
+    },
+    "methods": [
+      "serviceReconfigure",
+      "settingsAddEntry",
+      "settingsDelEntry",
+      "settingsGetEntry",
+      "settingsSearchEntry",
+      "settingsSetEntry",
+      "settingsToggleEntry"
+    ]
   }
 ];
 
@@ -11700,6 +12304,37 @@ const METHOD_DOCS = {
   }
 };
 
+// Discovered MVC API surface — see src/api-routes.json and the note in build.ts.
+const API_ROUTES = {"auth":{"groupAdd":{"mutating":true,"params":0,"path":"/api/auth/group/add","post":true,"search":false},"groupDel":{"mutating":true,"params":1,"path":"/api/auth/group/del","post":true,"search":false},"groupGet":{"mutating":false,"params":1,"path":"/api/auth/group/get","post":false,"search":false},"groupSearch":{"mutating":false,"params":0,"path":"/api/auth/group/search","post":false,"search":true},"groupSet":{"mutating":true,"params":1,"path":"/api/auth/group/set","post":true,"search":false},"privGetItem":{"mutating":false,"params":1,"path":"/api/auth/priv/getItem","post":false,"search":false},"privSearch":{"mutating":false,"params":0,"path":"/api/auth/priv/search","post":false,"search":true},"privSetItem":{"mutating":true,"params":1,"path":"/api/auth/priv/setItem","post":true,"search":false},"userAdd":{"mutating":true,"params":0,"path":"/api/auth/user/add","post":true,"search":false},"userAddApiKey":{"mutating":true,"params":1,"path":"/api/auth/user/addApiKey","post":true,"search":false},"userDel":{"mutating":true,"params":1,"path":"/api/auth/user/del","post":true,"search":false},"userDelApiKey":{"mutating":true,"params":1,"path":"/api/auth/user/delApiKey","post":true,"search":false},"userDownload":{"mutating":false,"params":0,"path":"/api/auth/user/download","post":false,"search":false},"userGet":{"mutating":false,"params":1,"path":"/api/auth/user/get","post":false,"search":false},"userNewOtpSeed":{"mutating":true,"params":0,"path":"/api/auth/user/newOtpSeed","post":false,"search":false},"userSearch":{"mutating":false,"params":0,"path":"/api/auth/user/search","post":false,"search":true},"userSearchApiKey":{"mutating":false,"params":0,"path":"/api/auth/user/searchApiKey","post":false,"search":true},"userSet":{"mutating":true,"params":1,"path":"/api/auth/user/set","post":true,"search":false},"userUpload":{"mutating":true,"params":0,"path":"/api/auth/user/upload","post":true,"search":false}},"backup":{"backupDownload":{"mutating":false,"params":1,"path":"/api/backup/backup/download","post":false,"search":false}},"captiveportal":{"accessApi":{"mutating":false,"params":0,"path":"/api/captiveportal/access/api","post":false,"search":false},"accessLogoff":{"mutating":false,"params":1,"path":"/api/captiveportal/access/logoff","post":true,"search":false},"accessLogon":{"mutating":false,"params":1,"path":"/api/captiveportal/access/logon","post":true,"search":false},"accessStatus":{"mutating":false,"params":1,"path":"/api/captiveportal/access/status","post":true,"search":false},"serviceReconfigure":{"mutating":true,"params":0,"path":"/api/captiveportal/service/reconfigure","post":true,"search":false},"sessionConnect":{"mutating":true,"params":1,"path":"/api/captiveportal/session/connect","post":true,"search":false},"sessionDisconnect":{"mutating":true,"params":1,"path":"/api/captiveportal/session/disconnect","post":true,"search":false},"sessionList":{"mutating":false,"params":1,"path":"/api/captiveportal/session/list","post":false,"search":false},"sessionSearch":{"mutating":false,"params":0,"path":"/api/captiveportal/session/search","post":false,"search":true},"sessionZones":{"mutating":false,"params":0,"path":"/api/captiveportal/session/zones","post":false,"search":false},"settingsAddZone":{"mutating":true,"params":0,"path":"/api/captiveportal/settings/addZone","post":true,"search":false},"settingsDelZone":{"mutating":true,"params":1,"path":"/api/captiveportal/settings/delZone","post":true,"search":false},"settingsGetZone":{"mutating":false,"params":1,"path":"/api/captiveportal/settings/getZone","post":false,"search":false},"settingsSearchZones":{"mutating":false,"params":0,"path":"/api/captiveportal/settings/searchZones","post":false,"search":true},"settingsSetZone":{"mutating":true,"params":1,"path":"/api/captiveportal/settings/setZone","post":true,"search":false},"settingsToggleZone":{"mutating":true,"params":2,"path":"/api/captiveportal/settings/toggleZone","post":true,"search":false},"templateDelTemplate":{"mutating":true,"params":1,"path":"/api/captiveportal/template/delTemplate","post":true,"search":false},"templateGetTemplate":{"mutating":false,"params":1,"path":"/api/captiveportal/template/getTemplate","post":false,"search":false},"templateSaveTemplate":{"mutating":true,"params":0,"path":"/api/captiveportal/template/saveTemplate","post":true,"search":false},"templateSearchTemplates":{"mutating":false,"params":0,"path":"/api/captiveportal/template/searchTemplates","post":false,"search":true},"voucherDropExpiredVouchers":{"mutating":false,"params":2,"path":"/api/captiveportal/voucher/dropExpiredVouchers","post":true,"search":false},"voucherDropVoucherGroup":{"mutating":false,"params":2,"path":"/api/captiveportal/voucher/dropVoucherGroup","post":true,"search":false},"voucherExpireVoucher":{"mutating":false,"params":1,"path":"/api/captiveportal/voucher/expireVoucher","post":true,"search":false},"voucherGenerateVouchers":{"mutating":true,"params":1,"path":"/api/captiveportal/voucher/generateVouchers","post":true,"search":false},"voucherListProviders":{"mutating":false,"params":0,"path":"/api/captiveportal/voucher/listProviders","post":false,"search":false},"voucherListVoucherGroups":{"mutating":false,"params":1,"path":"/api/captiveportal/voucher/listVoucherGroups","post":false,"search":false},"voucherListVouchers":{"mutating":false,"params":2,"path":"/api/captiveportal/voucher/listVouchers","post":false,"search":false}},"core":{"backupBackups":{"mutating":false,"params":1,"path":"/api/core/backup/backups","post":false,"search":false},"backupDeleteBackup":{"mutating":true,"params":1,"path":"/api/core/backup/deleteBackup","post":true,"search":false},"backupDiff":{"mutating":false,"params":3,"path":"/api/core/backup/diff","post":false,"search":false},"backupDownload":{"mutating":false,"params":2,"path":"/api/core/backup/download","post":false,"search":false},"backupProviders":{"mutating":false,"params":0,"path":"/api/core/backup/providers","post":false,"search":false},"backupRevertBackup":{"mutating":false,"params":1,"path":"/api/core/backup/revertBackup","post":true,"search":false},"dashboardGetDashboard":{"mutating":false,"params":0,"path":"/api/core/dashboard/getDashboard","post":false,"search":false},"dashboardPicture":{"mutating":true,"params":0,"path":"/api/core/dashboard/picture","post":true,"search":false},"dashboardProductInfoFeed":{"mutating":false,"params":0,"path":"/api/core/dashboard/productInfoFeed","post":false,"search":false},"dashboardRestoreDefaults":{"mutating":true,"params":0,"path":"/api/core/dashboard/restoreDefaults","post":true,"search":false},"dashboardSaveWidgets":{"mutating":true,"params":0,"path":"/api/core/dashboard/saveWidgets","post":true,"search":false},"defaultsFactoryDefaults":{"mutating":true,"params":0,"path":"/api/core/defaults/factoryDefaults","post":true,"search":false},"defaultsGet":{"mutating":false,"params":0,"path":"/api/core/defaults/get","post":false,"search":false},"defaultsGetInstalledSections":{"mutating":false,"params":0,"path":"/api/core/defaults/getInstalledSections","post":false,"search":false},"defaultsReset":{"mutating":true,"params":0,"path":"/api/core/defaults/reset","post":true,"search":false},"hasyncReconfigure":{"mutating":true,"params":0,"path":"/api/core/hasync/reconfigure","post":true,"search":false},"hasyncStatusRemoteService":{"mutating":false,"params":3,"path":"/api/core/hasync_status/remoteService","post":false,"search":false},"hasyncStatusRestart":{"mutating":true,"params":2,"path":"/api/core/hasync_status/restart","post":true,"search":false},"hasyncStatusRestartAll":{"mutating":true,"params":2,"path":"/api/core/hasync_status/restartAll","post":true,"search":false},"hasyncStatusServices":{"mutating":false,"params":0,"path":"/api/core/hasync_status/services","post":false,"search":false},"hasyncStatusStart":{"mutating":true,"params":2,"path":"/api/core/hasync_status/start","post":true,"search":false},"hasyncStatusStop":{"mutating":true,"params":2,"path":"/api/core/hasync_status/stop","post":true,"search":false},"hasyncStatusVersion":{"mutating":false,"params":0,"path":"/api/core/hasync_status/version","post":false,"search":false},"initialSetupAbort":{"mutating":true,"params":0,"path":"/api/core/initial_setup/abort","post":true,"search":false},"initialSetupConfigure":{"mutating":true,"params":0,"path":"/api/core/initial_setup/configure","post":true,"search":false},"menuSearch":{"mutating":false,"params":0,"path":"/api/core/menu/search","post":false,"search":true},"menuTree":{"mutating":false,"params":0,"path":"/api/core/menu/tree","post":false,"search":false},"serviceRestart":{"mutating":true,"params":2,"path":"/api/core/service/restart","post":true,"search":false},"serviceSearch":{"mutating":false,"params":0,"path":"/api/core/service/search","post":false,"search":true},"serviceStart":{"mutating":true,"params":2,"path":"/api/core/service/start","post":true,"search":false},"serviceStop":{"mutating":true,"params":2,"path":"/api/core/service/stop","post":true,"search":false},"snapshotsActivate":{"mutating":false,"params":1,"path":"/api/core/snapshots/activate","post":true,"search":false},"snapshotsAdd":{"mutating":true,"params":0,"path":"/api/core/snapshots/add","post":true,"search":false},"snapshotsDel":{"mutating":true,"params":1,"path":"/api/core/snapshots/del","post":true,"search":false},"snapshotsGet":{"mutating":false,"params":1,"path":"/api/core/snapshots/get","post":false,"search":false},"snapshotsIsSupported":{"mutating":false,"params":0,"path":"/api/core/snapshots/isSupported","post":false,"search":false},"snapshotsSearch":{"mutating":false,"params":0,"path":"/api/core/snapshots/search","post":false,"search":true},"snapshotsSet":{"mutating":true,"params":1,"path":"/api/core/snapshots/set","post":true,"search":false},"systemDismissStatus":{"mutating":true,"params":0,"path":"/api/core/system/dismissStatus","post":true,"search":false},"systemHalt":{"mutating":true,"params":0,"path":"/api/core/system/halt","post":true,"search":false},"systemReboot":{"mutating":true,"params":0,"path":"/api/core/system/reboot","post":true,"search":false},"systemStatus":{"mutating":false,"params":0,"path":"/api/core/system/status","post":false,"search":false},"tunablesAddItem":{"mutating":true,"params":0,"path":"/api/core/tunables/addItem","post":true,"search":false},"tunablesDelItem":{"mutating":true,"params":1,"path":"/api/core/tunables/delItem","post":true,"search":false},"tunablesGetItem":{"mutating":false,"params":1,"path":"/api/core/tunables/getItem","post":false,"search":false},"tunablesReconfigure":{"mutating":true,"params":0,"path":"/api/core/tunables/reconfigure","post":true,"search":false},"tunablesReset":{"mutating":true,"params":0,"path":"/api/core/tunables/reset","post":true,"search":false},"tunablesSearchItem":{"mutating":false,"params":0,"path":"/api/core/tunables/searchItem","post":false,"search":true},"tunablesSetItem":{"mutating":true,"params":1,"path":"/api/core/tunables/setItem","post":true,"search":false}},"cron":{"serviceReconfigure":{"mutating":true,"params":0,"path":"/api/cron/service/reconfigure","post":true,"search":false},"settingsAddJob":{"mutating":true,"params":0,"path":"/api/cron/settings/addJob","post":true,"search":false},"settingsDelJob":{"mutating":true,"params":1,"path":"/api/cron/settings/delJob","post":true,"search":false},"settingsGetJob":{"mutating":false,"params":1,"path":"/api/cron/settings/getJob","post":false,"search":false},"settingsSearchJobs":{"mutating":false,"params":0,"path":"/api/cron/settings/searchJobs","post":false,"search":true},"settingsSetJob":{"mutating":true,"params":1,"path":"/api/cron/settings/setJob","post":true,"search":false},"settingsToggleJob":{"mutating":true,"params":2,"path":"/api/cron/settings/toggleJob","post":true,"search":false}},"dhcrelay":{"serviceReconfigure":{"mutating":true,"params":0,"path":"/api/dhcrelay/service/reconfigure","post":true,"search":false},"settingsAddDest":{"mutating":true,"params":0,"path":"/api/dhcrelay/settings/addDest","post":true,"search":false},"settingsAddRelay":{"mutating":true,"params":0,"path":"/api/dhcrelay/settings/addRelay","post":true,"search":false},"settingsDelDest":{"mutating":true,"params":1,"path":"/api/dhcrelay/settings/delDest","post":true,"search":false},"settingsDelRelay":{"mutating":true,"params":1,"path":"/api/dhcrelay/settings/delRelay","post":true,"search":false},"settingsGetDest":{"mutating":false,"params":1,"path":"/api/dhcrelay/settings/getDest","post":false,"search":false},"settingsGetRelay":{"mutating":false,"params":1,"path":"/api/dhcrelay/settings/getRelay","post":false,"search":false},"settingsSearchDest":{"mutating":false,"params":0,"path":"/api/dhcrelay/settings/searchDest","post":false,"search":true},"settingsSearchRelay":{"mutating":false,"params":0,"path":"/api/dhcrelay/settings/searchRelay","post":false,"search":true},"settingsSetDest":{"mutating":true,"params":1,"path":"/api/dhcrelay/settings/setDest","post":true,"search":false},"settingsSetRelay":{"mutating":true,"params":1,"path":"/api/dhcrelay/settings/setRelay","post":true,"search":false},"settingsToggleRelay":{"mutating":true,"params":2,"path":"/api/dhcrelay/settings/toggleRelay","post":true,"search":false}},"diagnostics":{"activityGetActivity":{"mutating":false,"params":0,"path":"/api/diagnostics/activity/getActivity","post":false,"search":false},"cpuUsageGetCPUType":{"mutating":false,"params":0,"path":"/api/diagnostics/cpu_usage/getCPUType","post":false,"search":false},"cpuUsageStream":{"mutating":false,"params":0,"path":"/api/diagnostics/cpu_usage/stream","post":false,"search":false},"dnsDiagnosticsSet":{"mutating":true,"params":0,"path":"/api/diagnostics/dns_diagnostics/set","post":true,"search":false},"dnsReverseLookup":{"mutating":false,"params":0,"path":"/api/diagnostics/dns/reverseLookup","post":false,"search":false},"firewallDelState":{"mutating":true,"params":2,"path":"/api/diagnostics/firewall/delState","post":true,"search":false},"firewallFlushSources":{"mutating":true,"params":0,"path":"/api/diagnostics/firewall/flushSources","post":true,"search":false},"firewallFlushStates":{"mutating":true,"params":0,"path":"/api/diagnostics/firewall/flushStates","post":true,"search":false},"firewallKillStates":{"mutating":true,"params":0,"path":"/api/diagnostics/firewall/killStates","post":true,"search":false},"firewallListRuleIds":{"mutating":false,"params":0,"path":"/api/diagnostics/firewall/listRuleIds","post":false,"search":false},"firewallLog":{"mutating":false,"params":0,"path":"/api/diagnostics/firewall/log","post":false,"search":false},"firewallLogFilters":{"mutating":false,"params":0,"path":"/api/diagnostics/firewall/logFilters","post":false,"search":false},"firewallPfStates":{"mutating":false,"params":0,"path":"/api/diagnostics/firewall/pfStates","post":false,"search":false},"firewallPfStatistics":{"mutating":false,"params":1,"path":"/api/diagnostics/firewall/pfStatistics","post":false,"search":false},"firewallQueryPfTop":{"mutating":false,"params":0,"path":"/api/diagnostics/firewall/queryPfTop","post":false,"search":false},"firewallQueryStates":{"mutating":false,"params":0,"path":"/api/diagnostics/firewall/queryStates","post":false,"search":false},"firewallStats":{"mutating":false,"params":0,"path":"/api/diagnostics/firewall/stats","post":false,"search":false},"firewallStreamLog":{"mutating":false,"params":0,"path":"/api/diagnostics/firewall/streamLog","post":false,"search":false},"interfaceCarpStatus":{"mutating":false,"params":1,"path":"/api/diagnostics/interface/carpStatus","post":true,"search":false},"interfaceDelRoute":{"mutating":true,"params":0,"path":"/api/diagnostics/interface/delRoute","post":true,"search":false},"interfaceFlushArp":{"mutating":true,"params":0,"path":"/api/diagnostics/interface/flushArp","post":true,"search":false},"interfaceGetArp":{"mutating":false,"params":0,"path":"/api/diagnostics/interface/getArp","post":false,"search":false},"interfaceGetBpfStatistics":{"mutating":false,"params":0,"path":"/api/diagnostics/interface/getBpfStatistics","post":false,"search":false},"interfaceGetInterfaceConfig":{"mutating":false,"params":0,"path":"/api/diagnostics/interface/getInterfaceConfig","post":false,"search":false},"interfaceGetInterfaceNames":{"mutating":false,"params":0,"path":"/api/diagnostics/interface/getInterfaceNames","post":false,"search":false},"interfaceGetInterfaceStatistics":{"mutating":false,"params":0,"path":"/api/diagnostics/interface/getInterfaceStatistics","post":false,"search":false},"interfaceGetMemoryStatistics":{"mutating":false,"params":0,"path":"/api/diagnostics/interface/getMemoryStatistics","post":false,"search":false},"interfaceGetNdp":{"mutating":false,"params":0,"path":"/api/diagnostics/interface/getNdp","post":false,"search":false},"interfaceGetNetisrStatistics":{"mutating":false,"params":0,"path":"/api/diagnostics/interface/getNetisrStatistics","post":false,"search":false},"interfaceGetPfsyncNodes":{"mutating":false,"params":0,"path":"/api/diagnostics/interface/getPfsyncNodes","post":false,"search":false},"interfaceGetProtocolStatistics":{"mutating":false,"params":0,"path":"/api/diagnostics/interface/getProtocolStatistics","post":false,"search":false},"interfaceGetRoutes":{"mutating":false,"params":0,"path":"/api/diagnostics/interface/getRoutes","post":false,"search":false},"interfaceGetSocketStatistics":{"mutating":false,"params":0,"path":"/api/diagnostics/interface/getSocketStatistics","post":false,"search":false},"interfaceGetVipStatus":{"mutating":false,"params":0,"path":"/api/diagnostics/interface/getVipStatus","post":false,"search":false},"interfaceSearchArp":{"mutating":false,"params":0,"path":"/api/diagnostics/interface/searchArp","post":false,"search":true},"interfaceSearchNdp":{"mutating":false,"params":0,"path":"/api/diagnostics/interface/searchNdp","post":false,"search":true},"lvtemplateAddItem":{"mutating":true,"params":0,"path":"/api/diagnostics/lvtemplate/addItem","post":true,"search":false},"lvtemplateDelItem":{"mutating":true,"params":1,"path":"/api/diagnostics/lvtemplate/delItem","post":true,"search":false},"lvtemplateGetItem":{"mutating":false,"params":1,"path":"/api/diagnostics/lvtemplate/getItem","post":false,"search":false},"lvtemplateSearchItem":{"mutating":false,"params":0,"path":"/api/diagnostics/lvtemplate/searchItem","post":false,"search":true},"lvtemplateSetItem":{"mutating":true,"params":1,"path":"/api/diagnostics/lvtemplate/setItem","post":true,"search":false},"netflowCacheStats":{"mutating":false,"params":0,"path":"/api/diagnostics/netflow/cacheStats","post":false,"search":false},"netflowGetconfig":{"mutating":false,"params":0,"path":"/api/diagnostics/netflow/getconfig","post":false,"search":false},"netflowIsEnabled":{"mutating":false,"params":0,"path":"/api/diagnostics/netflow/isEnabled","post":false,"search":false},"netflowReconfigure":{"mutating":true,"params":0,"path":"/api/diagnostics/netflow/reconfigure","post":true,"search":false},"netflowReset":{"mutating":true,"params":0,"path":"/api/diagnostics/netflow/reset","post":true,"search":false},"netflowSetconfig":{"mutating":true,"params":0,"path":"/api/diagnostics/netflow/setconfig","post":true,"search":false},"netflowStatus":{"mutating":false,"params":0,"path":"/api/diagnostics/netflow/status","post":false,"search":false},"networkinsightExport":{"mutating":false,"params":4,"path":"/api/diagnostics/networkinsight/export","post":false,"search":false},"networkinsightGetInterfaces":{"mutating":false,"params":0,"path":"/api/diagnostics/networkinsight/getInterfaces","post":false,"search":false},"networkinsightGetMetadata":{"mutating":false,"params":0,"path":"/api/diagnostics/networkinsight/getMetadata","post":false,"search":false},"networkinsightGetProtocols":{"mutating":false,"params":0,"path":"/api/diagnostics/networkinsight/getProtocols","post":false,"search":false},"networkinsightGetServices":{"mutating":false,"params":0,"path":"/api/diagnostics/networkinsight/getServices","post":false,"search":false},"networkinsightTimeserie":{"mutating":false,"params":7,"path":"/api/diagnostics/networkinsight/timeserie","post":false,"search":false},"networkinsightTop":{"mutating":false,"params":6,"path":"/api/diagnostics/networkinsight/top","post":false,"search":false},"packetCaptureDownload":{"mutating":false,"params":1,"path":"/api/diagnostics/packet_capture/download","post":false,"search":false},"packetCaptureMacInfo":{"mutating":false,"params":1,"path":"/api/diagnostics/packet_capture/macInfo","post":false,"search":false},"packetCaptureRemove":{"mutating":true,"params":1,"path":"/api/diagnostics/packet_capture/remove","post":true,"search":false},"packetCaptureSearchJobs":{"mutating":false,"params":0,"path":"/api/diagnostics/packet_capture/searchJobs","post":false,"search":true},"packetCaptureSet":{"mutating":true,"params":0,"path":"/api/diagnostics/packet_capture/set","post":true,"search":false},"packetCaptureStart":{"mutating":true,"params":1,"path":"/api/diagnostics/packet_capture/start","post":true,"search":false},"packetCaptureStop":{"mutating":true,"params":1,"path":"/api/diagnostics/packet_capture/stop","post":true,"search":false},"packetCaptureView":{"mutating":false,"params":2,"path":"/api/diagnostics/packet_capture/view","post":false,"search":false},"pingRemove":{"mutating":true,"params":1,"path":"/api/diagnostics/ping/remove","post":true,"search":false},"pingSearchJobs":{"mutating":false,"params":0,"path":"/api/diagnostics/ping/searchJobs","post":false,"search":true},"pingSet":{"mutating":true,"params":0,"path":"/api/diagnostics/ping/set","post":true,"search":false},"pingStart":{"mutating":true,"params":1,"path":"/api/diagnostics/ping/start","post":true,"search":false},"pingStop":{"mutating":true,"params":1,"path":"/api/diagnostics/ping/stop","post":true,"search":false},"portprobeSet":{"mutating":true,"params":0,"path":"/api/diagnostics/portprobe/set","post":true,"search":false},"systemMemory":{"mutating":false,"params":0,"path":"/api/diagnostics/system/memory","post":false,"search":false},"systemSystemDisk":{"mutating":false,"params":0,"path":"/api/diagnostics/system/systemDisk","post":false,"search":false},"systemSystemInformation":{"mutating":false,"params":0,"path":"/api/diagnostics/system/systemInformation","post":false,"search":false},"systemSystemMbuf":{"mutating":false,"params":0,"path":"/api/diagnostics/system/systemMbuf","post":false,"search":false},"systemSystemResources":{"mutating":false,"params":0,"path":"/api/diagnostics/system/systemResources","post":false,"search":false},"systemSystemSwap":{"mutating":false,"params":0,"path":"/api/diagnostics/system/systemSwap","post":false,"search":false},"systemSystemTemperature":{"mutating":false,"params":0,"path":"/api/diagnostics/system/systemTemperature","post":false,"search":false},"systemSystemTime":{"mutating":false,"params":0,"path":"/api/diagnostics/system/systemTime","post":false,"search":false},"systemhealthDelRRD":{"mutating":true,"params":1,"path":"/api/diagnostics/systemhealth/delRRD","post":true,"search":false},"systemhealthExportAsCSV":{"mutating":false,"params":2,"path":"/api/diagnostics/systemhealth/exportAsCSV","post":false,"search":false},"systemhealthGetInterfaces":{"mutating":false,"params":0,"path":"/api/diagnostics/systemhealth/getInterfaces","post":false,"search":false},"systemhealthGetRrdList":{"mutating":false,"params":0,"path":"/api/diagnostics/systemhealth/getRrdList","post":false,"search":false},"systemhealthGetSystemHealth":{"mutating":false,"params":2,"path":"/api/diagnostics/systemhealth/getSystemHealth","post":false,"search":false},"systemhealthReconfigure":{"mutating":true,"params":0,"path":"/api/diagnostics/systemhealth/reconfigure","post":true,"search":false},"tracerouteSet":{"mutating":true,"params":0,"path":"/api/diagnostics/traceroute/set","post":true,"search":false},"trafficInterface":{"mutating":false,"params":0,"path":"/api/diagnostics/traffic/Interface","post":false,"search":false},"trafficStream":{"mutating":false,"params":1,"path":"/api/diagnostics/traffic/stream","post":false,"search":false},"trafficTop":{"mutating":false,"params":1,"path":"/api/diagnostics/traffic/Top","post":false,"search":false}},"dmidecode":{"serviceGet":{"mutating":false,"params":0,"path":"/api/dmidecode/service/get","post":false,"search":false}},"dnsmasq":{"leasesSearch":{"mutating":false,"params":0,"path":"/api/dnsmasq/leases/search","post":false,"search":true},"settingsAddBoot":{"mutating":true,"params":0,"path":"/api/dnsmasq/settings/addBoot","post":true,"search":false},"settingsAddDomain":{"mutating":true,"params":0,"path":"/api/dnsmasq/settings/addDomain","post":true,"search":false},"settingsAddHost":{"mutating":true,"params":0,"path":"/api/dnsmasq/settings/addHost","post":true,"search":false},"settingsAddOption":{"mutating":true,"params":0,"path":"/api/dnsmasq/settings/addOption","post":true,"search":false},"settingsAddRange":{"mutating":true,"params":0,"path":"/api/dnsmasq/settings/addRange","post":true,"search":false},"settingsAddTag":{"mutating":true,"params":0,"path":"/api/dnsmasq/settings/addTag","post":true,"search":false},"settingsDelBoot":{"mutating":true,"params":1,"path":"/api/dnsmasq/settings/delBoot","post":true,"search":false},"settingsDelDomain":{"mutating":true,"params":1,"path":"/api/dnsmasq/settings/delDomain","post":true,"search":false},"settingsDelHost":{"mutating":true,"params":1,"path":"/api/dnsmasq/settings/delHost","post":true,"search":false},"settingsDelOption":{"mutating":true,"params":1,"path":"/api/dnsmasq/settings/delOption","post":true,"search":false},"settingsDelRange":{"mutating":true,"params":1,"path":"/api/dnsmasq/settings/delRange","post":true,"search":false},"settingsDelTag":{"mutating":true,"params":1,"path":"/api/dnsmasq/settings/delTag","post":true,"search":false},"settingsDownloadHosts":{"mutating":false,"params":0,"path":"/api/dnsmasq/settings/downloadHosts","post":false,"search":false},"settingsGet":{"mutating":false,"params":0,"path":"/api/dnsmasq/settings/get","post":false,"search":false},"settingsGetBoot":{"mutating":false,"params":1,"path":"/api/dnsmasq/settings/getBoot","post":false,"search":false},"settingsGetDomain":{"mutating":false,"params":1,"path":"/api/dnsmasq/settings/getDomain","post":false,"search":false},"settingsGetHost":{"mutating":false,"params":1,"path":"/api/dnsmasq/settings/getHost","post":false,"search":false},"settingsGetOption":{"mutating":false,"params":1,"path":"/api/dnsmasq/settings/getOption","post":false,"search":false},"settingsGetRange":{"mutating":false,"params":1,"path":"/api/dnsmasq/settings/getRange","post":false,"search":false},"settingsGetTag":{"mutating":false,"params":1,"path":"/api/dnsmasq/settings/getTag","post":false,"search":false},"settingsGetTagList":{"mutating":false,"params":0,"path":"/api/dnsmasq/settings/getTagList","post":false,"search":false},"settingsSearchBoot":{"mutating":false,"params":0,"path":"/api/dnsmasq/settings/searchBoot","post":false,"search":true},"settingsSearchDomain":{"mutating":false,"params":0,"path":"/api/dnsmasq/settings/searchDomain","post":false,"search":true},"settingsSearchHost":{"mutating":false,"params":0,"path":"/api/dnsmasq/settings/searchHost","post":false,"search":true},"settingsSearchOption":{"mutating":false,"params":0,"path":"/api/dnsmasq/settings/searchOption","post":false,"search":true},"settingsSearchRange":{"mutating":false,"params":0,"path":"/api/dnsmasq/settings/searchRange","post":false,"search":true},"settingsSearchTag":{"mutating":false,"params":0,"path":"/api/dnsmasq/settings/searchTag","post":false,"search":true},"settingsSetBoot":{"mutating":true,"params":1,"path":"/api/dnsmasq/settings/setBoot","post":true,"search":false},"settingsSetDomain":{"mutating":true,"params":1,"path":"/api/dnsmasq/settings/setDomain","post":true,"search":false},"settingsSetHost":{"mutating":true,"params":1,"path":"/api/dnsmasq/settings/setHost","post":true,"search":false},"settingsSetOption":{"mutating":true,"params":1,"path":"/api/dnsmasq/settings/setOption","post":true,"search":false},"settingsSetRange":{"mutating":true,"params":1,"path":"/api/dnsmasq/settings/setRange","post":true,"search":false},"settingsSetTag":{"mutating":true,"params":1,"path":"/api/dnsmasq/settings/setTag","post":true,"search":false},"settingsUploadHosts":{"mutating":true,"params":0,"path":"/api/dnsmasq/settings/uploadHosts","post":true,"search":false}},"firewall":{"aliasAddItem":{"mutating":true,"params":0,"path":"/api/firewall/alias/addItem","post":true,"search":false},"aliasDelItem":{"mutating":true,"params":1,"path":"/api/firewall/alias/delItem","post":true,"search":false},"aliasExport":{"mutating":false,"params":0,"path":"/api/firewall/alias/export","post":false,"search":false},"aliasGetAliasUUID":{"mutating":false,"params":1,"path":"/api/firewall/alias/getAliasUUID","post":false,"search":false},"aliasGetGeoIP":{"mutating":false,"params":0,"path":"/api/firewall/alias/getGeoIP","post":false,"search":false},"aliasGetItem":{"mutating":false,"params":1,"path":"/api/firewall/alias/getItem","post":false,"search":false},"aliasGetTableSize":{"mutating":false,"params":0,"path":"/api/firewall/alias/getTableSize","post":false,"search":false},"aliasImport":{"mutating":true,"params":0,"path":"/api/firewall/alias/import","post":true,"search":false},"aliasListCategories":{"mutating":false,"params":0,"path":"/api/firewall/alias/listCategories","post":false,"search":false},"aliasListCountries":{"mutating":false,"params":0,"path":"/api/firewall/alias/listCountries","post":false,"search":false},"aliasListNetworkAliases":{"mutating":false,"params":0,"path":"/api/firewall/alias/listNetworkAliases","post":false,"search":false},"aliasListUserGroups":{"mutating":false,"params":0,"path":"/api/firewall/alias/listUserGroups","post":false,"search":false},"aliasReconfigure":{"mutating":true,"params":0,"path":"/api/firewall/alias/reconfigure","post":true,"search":false},"aliasSearchItem":{"mutating":false,"params":0,"path":"/api/firewall/alias/searchItem","post":false,"search":true},"aliasSetItem":{"mutating":true,"params":1,"path":"/api/firewall/alias/setItem","post":true,"search":false},"aliasToggleItem":{"mutating":true,"params":2,"path":"/api/firewall/alias/toggleItem","post":true,"search":false},"aliasUpdate":{"mutating":true,"params":1,"path":"/api/firewall/alias/update","post":true,"search":false},"aliasUtilAdd":{"mutating":true,"params":1,"path":"/api/firewall/alias_util/add","post":true,"search":false},"aliasUtilAliases":{"mutating":false,"params":0,"path":"/api/firewall/alias_util/aliases","post":false,"search":false},"aliasUtilDelete":{"mutating":true,"params":1,"path":"/api/firewall/alias_util/delete","post":true,"search":false},"aliasUtilFindReferences":{"mutating":false,"params":0,"path":"/api/firewall/alias_util/findReferences","post":false,"search":false},"aliasUtilFlush":{"mutating":true,"params":1,"path":"/api/firewall/alias_util/flush","post":true,"search":false},"aliasUtilList":{"mutating":false,"params":1,"path":"/api/firewall/alias_util/list","post":false,"search":false},"categoryAddItem":{"mutating":true,"params":0,"path":"/api/firewall/category/addItem","post":true,"search":false},"categoryDelItem":{"mutating":true,"params":1,"path":"/api/firewall/category/delItem","post":true,"search":false},"categoryDownload":{"mutating":false,"params":0,"path":"/api/firewall/category/download","post":false,"search":false},"categoryGetItem":{"mutating":false,"params":1,"path":"/api/firewall/category/getItem","post":false,"search":false},"categorySearchItem":{"mutating":false,"params":1,"path":"/api/firewall/category/searchItem","post":true,"search":true},"categorySetItem":{"mutating":true,"params":1,"path":"/api/firewall/category/setItem","post":true,"search":false},"categoryUpload":{"mutating":true,"params":0,"path":"/api/firewall/category/upload","post":true,"search":false},"dNatAddRule":{"mutating":true,"params":0,"path":"/api/firewall/d_nat/addRule","post":true,"search":false},"dNatApply":{"mutating":true,"params":0,"path":"/api/firewall/d_nat/apply","post":true,"search":false},"dNatDelRule":{"mutating":true,"params":1,"path":"/api/firewall/d_nat/delRule","post":true,"search":false},"dNatDownloadRules":{"mutating":false,"params":0,"path":"/api/firewall/d_nat/downloadRules","post":false,"search":false},"dNatGetRule":{"mutating":false,"params":1,"path":"/api/firewall/d_nat/getRule","post":false,"search":false},"dNatListCategories":{"mutating":false,"params":0,"path":"/api/firewall/d_nat/listCategories","post":false,"search":false},"dNatListNetworkSelectOptions":{"mutating":false,"params":0,"path":"/api/firewall/d_nat/listNetworkSelectOptions","post":false,"search":false},"dNatListPortSelectOptions":{"mutating":false,"params":0,"path":"/api/firewall/d_nat/listPortSelectOptions","post":false,"search":false},"dNatMoveRuleBefore":{"mutating":true,"params":2,"path":"/api/firewall/d_nat/moveRuleBefore","post":true,"search":false},"dNatSearchRule":{"mutating":false,"params":0,"path":"/api/firewall/d_nat/searchRule","post":false,"search":true},"dNatSetRule":{"mutating":true,"params":1,"path":"/api/firewall/d_nat/setRule","post":true,"search":false},"dNatToggleRule":{"mutating":true,"params":2,"path":"/api/firewall/d_nat/toggleRule","post":true,"search":false},"dNatToggleRuleLog":{"mutating":true,"params":2,"path":"/api/firewall/d_nat/toggleRuleLog","post":true,"search":false},"dNatUploadRules":{"mutating":true,"params":0,"path":"/api/firewall/d_nat/uploadRules","post":true,"search":false},"filterAddRule":{"mutating":true,"params":0,"path":"/api/firewall/filter/addRule","post":true,"search":false},"filterApply":{"mutating":true,"params":0,"path":"/api/firewall/filter/apply","post":true,"search":false},"filterDelRule":{"mutating":true,"params":1,"path":"/api/firewall/filter/delRule","post":true,"search":false},"filterDownloadRules":{"mutating":false,"params":0,"path":"/api/firewall/filter/downloadRules","post":false,"search":false},"filterFlushInspectCache":{"mutating":true,"params":0,"path":"/api/firewall/filter/flushInspectCache","post":true,"search":false},"filterGetInterfaceList":{"mutating":false,"params":0,"path":"/api/firewall/filter/getInterfaceList","post":false,"search":false},"filterGetRule":{"mutating":false,"params":1,"path":"/api/firewall/filter/getRule","post":false,"search":false},"filterListCategories":{"mutating":false,"params":0,"path":"/api/firewall/filter/listCategories","post":false,"search":false},"filterListNetworkSelectOptions":{"mutating":false,"params":0,"path":"/api/firewall/filter/listNetworkSelectOptions","post":false,"search":false},"filterListPortSelectOptions":{"mutating":false,"params":0,"path":"/api/firewall/filter/listPortSelectOptions","post":false,"search":false},"filterMoveRuleBefore":{"mutating":true,"params":2,"path":"/api/firewall/filter/moveRuleBefore","post":true,"search":false},"filterSearchRule":{"mutating":false,"params":0,"path":"/api/firewall/filter/searchRule","post":false,"search":true},"filterSetRule":{"mutating":true,"params":1,"path":"/api/firewall/filter/setRule","post":true,"search":false},"filterToggleRule":{"mutating":true,"params":2,"path":"/api/firewall/filter/toggleRule","post":true,"search":false},"filterToggleRuleLog":{"mutating":true,"params":2,"path":"/api/firewall/filter/toggleRuleLog","post":true,"search":false},"filterUploadRules":{"mutating":true,"params":0,"path":"/api/firewall/filter/uploadRules","post":true,"search":false},"filterUtilRuleStats":{"mutating":false,"params":0,"path":"/api/firewall/filter_util/ruleStats","post":false,"search":false},"groupAddItem":{"mutating":true,"params":0,"path":"/api/firewall/group/addItem","post":true,"search":false},"groupDelItem":{"mutating":true,"params":1,"path":"/api/firewall/group/delItem","post":true,"search":false},"groupGetItem":{"mutating":false,"params":1,"path":"/api/firewall/group/getItem","post":false,"search":false},"groupReconfigure":{"mutating":true,"params":0,"path":"/api/firewall/group/reconfigure","post":true,"search":false},"groupSearchItem":{"mutating":false,"params":0,"path":"/api/firewall/group/searchItem","post":false,"search":true},"groupSetItem":{"mutating":true,"params":1,"path":"/api/firewall/group/setItem","post":true,"search":false},"migrationCountOutbound":{"mutating":false,"params":0,"path":"/api/firewall/migration/countOutbound","post":false,"search":false},"migrationCountRules":{"mutating":false,"params":0,"path":"/api/firewall/migration/countRules","post":false,"search":false},"migrationDownloadOutbound":{"mutating":false,"params":0,"path":"/api/firewall/migration/downloadOutbound","post":false,"search":false},"migrationDownloadRules":{"mutating":false,"params":0,"path":"/api/firewall/migration/downloadRules","post":false,"search":false},"migrationFlush":{"mutating":true,"params":0,"path":"/api/firewall/migration/flush","post":true,"search":false},"migrationFlushOutbound":{"mutating":true,"params":0,"path":"/api/firewall/migration/flushOutbound","post":true,"search":false},"nptAddRule":{"mutating":true,"params":0,"path":"/api/firewall/npt/addRule","post":true,"search":false},"nptApply":{"mutating":true,"params":0,"path":"/api/firewall/npt/apply","post":true,"search":false},"nptDelRule":{"mutating":true,"params":1,"path":"/api/firewall/npt/delRule","post":true,"search":false},"nptDownloadRules":{"mutating":false,"params":0,"path":"/api/firewall/npt/downloadRules","post":false,"search":false},"nptGetRule":{"mutating":false,"params":1,"path":"/api/firewall/npt/getRule","post":false,"search":false},"nptListCategories":{"mutating":false,"params":0,"path":"/api/firewall/npt/listCategories","post":false,"search":false},"nptListNetworkSelectOptions":{"mutating":false,"params":0,"path":"/api/firewall/npt/listNetworkSelectOptions","post":false,"search":false},"nptListPortSelectOptions":{"mutating":false,"params":0,"path":"/api/firewall/npt/listPortSelectOptions","post":false,"search":false},"nptMoveRuleBefore":{"mutating":true,"params":2,"path":"/api/firewall/npt/moveRuleBefore","post":true,"search":false},"nptSearchRule":{"mutating":false,"params":0,"path":"/api/firewall/npt/searchRule","post":false,"search":true},"nptSetRule":{"mutating":true,"params":1,"path":"/api/firewall/npt/setRule","post":true,"search":false},"nptToggleRule":{"mutating":true,"params":2,"path":"/api/firewall/npt/toggleRule","post":true,"search":false},"nptToggleRuleLog":{"mutating":true,"params":2,"path":"/api/firewall/npt/toggleRuleLog","post":true,"search":false},"nptUploadRules":{"mutating":true,"params":0,"path":"/api/firewall/npt/uploadRules","post":true,"search":false},"oneToOneAddRule":{"mutating":true,"params":0,"path":"/api/firewall/one_to_one/addRule","post":true,"search":false},"oneToOneApply":{"mutating":true,"params":0,"path":"/api/firewall/one_to_one/apply","post":true,"search":false},"oneToOneDelRule":{"mutating":true,"params":1,"path":"/api/firewall/one_to_one/delRule","post":true,"search":false},"oneToOneDownloadRules":{"mutating":false,"params":0,"path":"/api/firewall/one_to_one/downloadRules","post":false,"search":false},"oneToOneGetRule":{"mutating":false,"params":1,"path":"/api/firewall/one_to_one/getRule","post":false,"search":false},"oneToOneListCategories":{"mutating":false,"params":0,"path":"/api/firewall/one_to_one/listCategories","post":false,"search":false},"oneToOneListNetworkSelectOptions":{"mutating":false,"params":0,"path":"/api/firewall/one_to_one/listNetworkSelectOptions","post":false,"search":false},"oneToOneListPortSelectOptions":{"mutating":false,"params":0,"path":"/api/firewall/one_to_one/listPortSelectOptions","post":false,"search":false},"oneToOneMoveRuleBefore":{"mutating":true,"params":2,"path":"/api/firewall/one_to_one/moveRuleBefore","post":true,"search":false},"oneToOneSearchRule":{"mutating":false,"params":0,"path":"/api/firewall/one_to_one/searchRule","post":false,"search":true},"oneToOneSetRule":{"mutating":true,"params":1,"path":"/api/firewall/one_to_one/setRule","post":true,"search":false},"oneToOneToggleRule":{"mutating":true,"params":2,"path":"/api/firewall/one_to_one/toggleRule","post":true,"search":false},"oneToOneToggleRuleLog":{"mutating":true,"params":2,"path":"/api/firewall/one_to_one/toggleRuleLog","post":true,"search":false},"oneToOneUploadRules":{"mutating":true,"params":0,"path":"/api/firewall/one_to_one/uploadRules","post":true,"search":false},"sourceNatAddRule":{"mutating":true,"params":0,"path":"/api/firewall/source_nat/addRule","post":true,"search":false},"sourceNatApply":{"mutating":true,"params":0,"path":"/api/firewall/source_nat/apply","post":true,"search":false},"sourceNatDelRule":{"mutating":true,"params":1,"path":"/api/firewall/source_nat/delRule","post":true,"search":false},"sourceNatDownloadRules":{"mutating":false,"params":0,"path":"/api/firewall/source_nat/downloadRules","post":false,"search":false},"sourceNatGet":{"mutating":false,"params":0,"path":"/api/firewall/source_nat/get","post":false,"search":false},"sourceNatGetRule":{"mutating":false,"params":1,"path":"/api/firewall/source_nat/getRule","post":false,"search":false},"sourceNatListCategories":{"mutating":false,"params":0,"path":"/api/firewall/source_nat/listCategories","post":false,"search":false},"sourceNatListNetworkSelectOptions":{"mutating":false,"params":0,"path":"/api/firewall/source_nat/listNetworkSelectOptions","post":false,"search":false},"sourceNatListPortSelectOptions":{"mutating":false,"params":0,"path":"/api/firewall/source_nat/listPortSelectOptions","post":false,"search":false},"sourceNatMoveRuleBefore":{"mutating":true,"params":2,"path":"/api/firewall/source_nat/moveRuleBefore","post":true,"search":false},"sourceNatSearchRule":{"mutating":false,"params":0,"path":"/api/firewall/source_nat/searchRule","post":false,"search":true},"sourceNatSet":{"mutating":true,"params":0,"path":"/api/firewall/source_nat/set","post":true,"search":false},"sourceNatSetRule":{"mutating":true,"params":1,"path":"/api/firewall/source_nat/setRule","post":true,"search":false},"sourceNatToggleRule":{"mutating":true,"params":2,"path":"/api/firewall/source_nat/toggleRule","post":true,"search":false},"sourceNatToggleRuleLog":{"mutating":true,"params":2,"path":"/api/firewall/source_nat/toggleRuleLog","post":true,"search":false},"sourceNatUploadRules":{"mutating":true,"params":0,"path":"/api/firewall/source_nat/uploadRules","post":true,"search":false}},"firmware":{"firmwareAudit":{"mutating":true,"params":0,"path":"/api/core/firmware/audit","post":true,"search":false},"firmwareChangelog":{"mutating":false,"params":1,"path":"/api/core/firmware/changelog","post":true,"search":false},"firmwareCheck":{"mutating":true,"params":0,"path":"/api/core/firmware/check","post":true,"search":false},"firmwareCleanup":{"mutating":true,"params":0,"path":"/api/core/firmware/cleanup","post":true,"search":false},"firmwareConnection":{"mutating":false,"params":0,"path":"/api/core/firmware/connection","post":false,"search":false},"firmwareDetails":{"mutating":false,"params":1,"path":"/api/core/firmware/details","post":true,"search":false},"firmwareGetOptions":{"mutating":false,"params":0,"path":"/api/core/firmware/getOptions","post":false,"search":false},"firmwareHealth":{"mutating":false,"params":0,"path":"/api/core/firmware/health","post":false,"search":false},"firmwareInfo":{"mutating":false,"params":0,"path":"/api/core/firmware/info","post":false,"search":false},"firmwareInstall":{"mutating":true,"params":1,"path":"/api/core/firmware/install","post":true,"search":false},"firmwareLicense":{"mutating":false,"params":1,"path":"/api/core/firmware/license","post":true,"search":false},"firmwareLock":{"mutating":true,"params":1,"path":"/api/core/firmware/lock","post":true,"search":false},"firmwareLog":{"mutating":false,"params":1,"path":"/api/core/firmware/log","post":true,"search":false},"firmwarePoweroff":{"mutating":true,"params":0,"path":"/api/core/firmware/poweroff","post":true,"search":false},"firmwareReboot":{"mutating":true,"params":0,"path":"/api/core/firmware/reboot","post":true,"search":false},"firmwareReinstall":{"mutating":true,"params":1,"path":"/api/core/firmware/reinstall","post":true,"search":false},"firmwareRemove":{"mutating":true,"params":1,"path":"/api/core/firmware/remove","post":true,"search":false},"firmwareResyncPlugins":{"mutating":true,"params":0,"path":"/api/core/firmware/resyncPlugins","post":true,"search":false},"firmwareRunning":{"mutating":false,"params":0,"path":"/api/core/firmware/running","post":false,"search":false},"firmwareSet":{"mutating":true,"params":0,"path":"/api/core/firmware/set","post":true,"search":false},"firmwareStatus":{"mutating":false,"params":0,"path":"/api/core/firmware/status","post":false,"search":false},"firmwareSyncPlugins":{"mutating":true,"params":0,"path":"/api/core/firmware/syncPlugins","post":true,"search":false},"firmwareUnlock":{"mutating":true,"params":1,"path":"/api/core/firmware/unlock","post":true,"search":false},"firmwareUpdate":{"mutating":true,"params":0,"path":"/api/core/firmware/update","post":true,"search":false},"firmwareUpgrade":{"mutating":true,"params":0,"path":"/api/core/firmware/upgrade","post":true,"search":false},"firmwareUpgradestatus":{"mutating":false,"params":0,"path":"/api/core/firmware/upgradestatus","post":false,"search":false}},"hostdiscovery":{"serviceSearch":{"mutating":false,"params":0,"path":"/api/hostdiscovery/service/search","post":false,"search":true}},"hwprobe":{"serviceReport":{"mutating":false,"params":0,"path":"/api/hwprobe/service/report","post":false,"search":false}},"ids":{"serviceDropAlertLog":{"mutating":true,"params":0,"path":"/api/ids/service/dropAlertLog","post":true,"search":false},"serviceGetAlertInfo":{"mutating":false,"params":2,"path":"/api/ids/service/getAlertInfo","post":false,"search":false},"serviceGetAlertLogs":{"mutating":false,"params":0,"path":"/api/ids/service/getAlertLogs","post":false,"search":false},"serviceQueryAlerts":{"mutating":false,"params":0,"path":"/api/ids/service/queryAlerts","post":false,"search":false},"serviceReconfigure":{"mutating":true,"params":0,"path":"/api/ids/service/reconfigure","post":true,"search":false},"serviceReloadRules":{"mutating":true,"params":0,"path":"/api/ids/service/reloadRules","post":true,"search":false},"serviceUpdateRules":{"mutating":true,"params":1,"path":"/api/ids/service/updateRules","post":true,"search":false},"settingsAddPolicy":{"mutating":true,"params":0,"path":"/api/ids/settings/addPolicy","post":true,"search":false},"settingsAddPolicyRule":{"mutating":true,"params":0,"path":"/api/ids/settings/addPolicyRule","post":true,"search":false},"settingsAddUserRule":{"mutating":true,"params":0,"path":"/api/ids/settings/addUserRule","post":true,"search":false},"settingsCheckPolicyRule":{"mutating":true,"params":0,"path":"/api/ids/settings/checkPolicyRule","post":false,"search":false},"settingsDelPolicy":{"mutating":true,"params":1,"path":"/api/ids/settings/delPolicy","post":true,"search":false},"settingsDelPolicyRule":{"mutating":true,"params":1,"path":"/api/ids/settings/delPolicyRule","post":true,"search":false},"settingsDelUserRule":{"mutating":true,"params":1,"path":"/api/ids/settings/delUserRule","post":true,"search":false},"settingsGetPolicy":{"mutating":false,"params":1,"path":"/api/ids/settings/getPolicy","post":false,"search":false},"settingsGetPolicyRule":{"mutating":false,"params":1,"path":"/api/ids/settings/getPolicyRule","post":false,"search":false},"settingsGetRuleInfo":{"mutating":false,"params":1,"path":"/api/ids/settings/getRuleInfo","post":false,"search":false},"settingsGetRuleset":{"mutating":false,"params":1,"path":"/api/ids/settings/getRuleset","post":false,"search":false},"settingsGetRulesetproperties":{"mutating":false,"params":0,"path":"/api/ids/settings/getRulesetproperties","post":false,"search":false},"settingsGetUserRule":{"mutating":false,"params":1,"path":"/api/ids/settings/getUserRule","post":false,"search":false},"settingsListRuleMetadata":{"mutating":false,"params":0,"path":"/api/ids/settings/listRuleMetadata","post":false,"search":false},"settingsListRulesets":{"mutating":false,"params":0,"path":"/api/ids/settings/listRulesets","post":false,"search":false},"settingsSearchInstalledRules":{"mutating":false,"params":0,"path":"/api/ids/settings/searchInstalledRules","post":false,"search":true},"settingsSearchPolicy":{"mutating":false,"params":0,"path":"/api/ids/settings/searchPolicy","post":false,"search":true},"settingsSearchPolicyRule":{"mutating":false,"params":0,"path":"/api/ids/settings/searchPolicyRule","post":false,"search":true},"settingsSearchUserRule":{"mutating":false,"params":0,"path":"/api/ids/settings/searchUserRule","post":false,"search":true},"settingsSetPolicy":{"mutating":true,"params":1,"path":"/api/ids/settings/setPolicy","post":true,"search":false},"settingsSetPolicyRule":{"mutating":true,"params":1,"path":"/api/ids/settings/setPolicyRule","post":true,"search":false},"settingsSetRule":{"mutating":true,"params":1,"path":"/api/ids/settings/setRule","post":true,"search":false},"settingsSetRuleset":{"mutating":true,"params":1,"path":"/api/ids/settings/setRuleset","post":true,"search":false},"settingsSetRulesetproperties":{"mutating":true,"params":0,"path":"/api/ids/settings/setRulesetproperties","post":true,"search":false},"settingsSetUserRule":{"mutating":true,"params":1,"path":"/api/ids/settings/setUserRule","post":true,"search":false},"settingsTogglePolicy":{"mutating":true,"params":2,"path":"/api/ids/settings/togglePolicy","post":true,"search":false},"settingsTogglePolicyRule":{"mutating":true,"params":2,"path":"/api/ids/settings/togglePolicyRule","post":true,"search":false},"settingsToggleRule":{"mutating":true,"params":2,"path":"/api/ids/settings/toggleRule","post":true,"search":false},"settingsToggleRuleset":{"mutating":true,"params":2,"path":"/api/ids/settings/toggleRuleset","post":true,"search":false},"settingsToggleUserRule":{"mutating":true,"params":2,"path":"/api/ids/settings/toggleUserRule","post":true,"search":false}},"interfaces":{"assignmentAddItem":{"mutating":true,"params":0,"path":"/api/interfaces/assignment/addItem","post":true,"search":false},"assignmentDelItem":{"mutating":true,"params":1,"path":"/api/interfaces/assignment/delItem","post":true,"search":false},"assignmentGetItem":{"mutating":false,"params":1,"path":"/api/interfaces/assignment/getItem","post":false,"search":false},"assignmentReconfigure":{"mutating":true,"params":0,"path":"/api/interfaces/assignment/reconfigure","post":true,"search":false},"assignmentSearchItem":{"mutating":false,"params":0,"path":"/api/interfaces/assignment/searchItem","post":false,"search":true},"assignmentSetItem":{"mutating":true,"params":1,"path":"/api/interfaces/assignment/setItem","post":true,"search":false},"bridgeSettingsAddItem":{"mutating":true,"params":0,"path":"/api/interfaces/bridge_settings/addItem","post":true,"search":false},"bridgeSettingsDelItem":{"mutating":true,"params":1,"path":"/api/interfaces/bridge_settings/delItem","post":true,"search":false},"bridgeSettingsGetItem":{"mutating":false,"params":1,"path":"/api/interfaces/bridge_settings/getItem","post":false,"search":false},"bridgeSettingsReconfigure":{"mutating":true,"params":0,"path":"/api/interfaces/bridge_settings/reconfigure","post":true,"search":false},"bridgeSettingsSearchItem":{"mutating":false,"params":0,"path":"/api/interfaces/bridge_settings/searchItem","post":false,"search":true},"bridgeSettingsSetItem":{"mutating":true,"params":1,"path":"/api/interfaces/bridge_settings/setItem","post":true,"search":false},"gifSettingsAddItem":{"mutating":true,"params":0,"path":"/api/interfaces/gif_settings/addItem","post":true,"search":false},"gifSettingsDelItem":{"mutating":true,"params":1,"path":"/api/interfaces/gif_settings/delItem","post":true,"search":false},"gifSettingsGetIfOptions":{"mutating":false,"params":0,"path":"/api/interfaces/gif_settings/getIfOptions","post":false,"search":false},"gifSettingsGetItem":{"mutating":false,"params":1,"path":"/api/interfaces/gif_settings/getItem","post":false,"search":false},"gifSettingsReconfigure":{"mutating":true,"params":0,"path":"/api/interfaces/gif_settings/reconfigure","post":true,"search":false},"gifSettingsSearchItem":{"mutating":false,"params":0,"path":"/api/interfaces/gif_settings/searchItem","post":false,"search":true},"gifSettingsSetItem":{"mutating":true,"params":1,"path":"/api/interfaces/gif_settings/setItem","post":true,"search":false},"greSettingsAddItem":{"mutating":true,"params":0,"path":"/api/interfaces/gre_settings/addItem","post":true,"search":false},"greSettingsDelItem":{"mutating":true,"params":1,"path":"/api/interfaces/gre_settings/delItem","post":true,"search":false},"greSettingsGetIfOptions":{"mutating":false,"params":0,"path":"/api/interfaces/gre_settings/getIfOptions","post":false,"search":false},"greSettingsGetItem":{"mutating":false,"params":1,"path":"/api/interfaces/gre_settings/getItem","post":false,"search":false},"greSettingsReconfigure":{"mutating":true,"params":0,"path":"/api/interfaces/gre_settings/reconfigure","post":true,"search":false},"greSettingsSearchItem":{"mutating":false,"params":0,"path":"/api/interfaces/gre_settings/searchItem","post":false,"search":true},"greSettingsSetItem":{"mutating":true,"params":1,"path":"/api/interfaces/gre_settings/setItem","post":true,"search":false},"laggSettingsAddItem":{"mutating":true,"params":0,"path":"/api/interfaces/lagg_settings/addItem","post":true,"search":false},"laggSettingsDelItem":{"mutating":true,"params":1,"path":"/api/interfaces/lagg_settings/delItem","post":true,"search":false},"laggSettingsGetItem":{"mutating":false,"params":1,"path":"/api/interfaces/lagg_settings/getItem","post":false,"search":false},"laggSettingsReconfigure":{"mutating":true,"params":0,"path":"/api/interfaces/lagg_settings/reconfigure","post":true,"search":false},"laggSettingsSearchItem":{"mutating":false,"params":0,"path":"/api/interfaces/lagg_settings/searchItem","post":false,"search":true},"laggSettingsSetItem":{"mutating":true,"params":1,"path":"/api/interfaces/lagg_settings/setItem","post":true,"search":false},"loopbackSettingsAddItem":{"mutating":true,"params":0,"path":"/api/interfaces/loopback_settings/addItem","post":true,"search":false},"loopbackSettingsDelItem":{"mutating":true,"params":1,"path":"/api/interfaces/loopback_settings/delItem","post":true,"search":false},"loopbackSettingsGetItem":{"mutating":false,"params":1,"path":"/api/interfaces/loopback_settings/getItem","post":false,"search":false},"loopbackSettingsReconfigure":{"mutating":true,"params":0,"path":"/api/interfaces/loopback_settings/reconfigure","post":true,"search":false},"loopbackSettingsSearchItem":{"mutating":false,"params":0,"path":"/api/interfaces/loopback_settings/searchItem","post":false,"search":true},"loopbackSettingsSetItem":{"mutating":true,"params":1,"path":"/api/interfaces/loopback_settings/setItem","post":true,"search":false},"neighborSettingsAddItem":{"mutating":true,"params":0,"path":"/api/interfaces/neighbor_settings/addItem","post":true,"search":false},"neighborSettingsDelItem":{"mutating":true,"params":1,"path":"/api/interfaces/neighbor_settings/delItem","post":true,"search":false},"neighborSettingsGetItem":{"mutating":false,"params":1,"path":"/api/interfaces/neighbor_settings/getItem","post":false,"search":false},"neighborSettingsReconfigure":{"mutating":true,"params":0,"path":"/api/interfaces/neighbor_settings/reconfigure","post":true,"search":false},"neighborSettingsSearchItem":{"mutating":false,"params":0,"path":"/api/interfaces/neighbor_settings/searchItem","post":false,"search":true},"neighborSettingsSetItem":{"mutating":true,"params":1,"path":"/api/interfaces/neighbor_settings/setItem","post":true,"search":false},"overviewExport":{"mutating":false,"params":0,"path":"/api/interfaces/overview/export","post":false,"search":false},"overviewGetInterface":{"mutating":false,"params":1,"path":"/api/interfaces/overview/getInterface","post":false,"search":false},"overviewInterfacesInfo":{"mutating":false,"params":1,"path":"/api/interfaces/overview/interfacesInfo","post":false,"search":false},"overviewReloadInterface":{"mutating":false,"params":1,"path":"/api/interfaces/overview/reloadInterface","post":true,"search":false},"settingsGet":{"mutating":false,"params":0,"path":"/api/interfaces/settings/get","post":false,"search":false},"settingsReconfigure":{"mutating":true,"params":0,"path":"/api/interfaces/settings/reconfigure","post":true,"search":false},"vipSettingsAddItem":{"mutating":true,"params":0,"path":"/api/interfaces/vip_settings/addItem","post":true,"search":false},"vipSettingsDelItem":{"mutating":true,"params":1,"path":"/api/interfaces/vip_settings/delItem","post":true,"search":false},"vipSettingsGetItem":{"mutating":false,"params":1,"path":"/api/interfaces/vip_settings/getItem","post":false,"search":false},"vipSettingsGetUnusedVhid":{"mutating":false,"params":0,"path":"/api/interfaces/vip_settings/getUnusedVhid","post":false,"search":false},"vipSettingsReconfigure":{"mutating":true,"params":0,"path":"/api/interfaces/vip_settings/reconfigure","post":true,"search":false},"vipSettingsSearchItem":{"mutating":false,"params":0,"path":"/api/interfaces/vip_settings/searchItem","post":false,"search":true},"vipSettingsSetItem":{"mutating":true,"params":1,"path":"/api/interfaces/vip_settings/setItem","post":true,"search":false},"vlanSettingsAddItem":{"mutating":true,"params":0,"path":"/api/interfaces/vlan_settings/addItem","post":true,"search":false},"vlanSettingsDelItem":{"mutating":true,"params":1,"path":"/api/interfaces/vlan_settings/delItem","post":true,"search":false},"vlanSettingsGetItem":{"mutating":false,"params":1,"path":"/api/interfaces/vlan_settings/getItem","post":false,"search":false},"vlanSettingsReconfigure":{"mutating":true,"params":0,"path":"/api/interfaces/vlan_settings/reconfigure","post":true,"search":false},"vlanSettingsSearchItem":{"mutating":false,"params":0,"path":"/api/interfaces/vlan_settings/searchItem","post":false,"search":true},"vlanSettingsSetItem":{"mutating":true,"params":1,"path":"/api/interfaces/vlan_settings/setItem","post":true,"search":false},"vxlanSettingsAddItem":{"mutating":true,"params":0,"path":"/api/interfaces/vxlan_settings/addItem","post":true,"search":false},"vxlanSettingsDelItem":{"mutating":true,"params":1,"path":"/api/interfaces/vxlan_settings/delItem","post":true,"search":false},"vxlanSettingsGetItem":{"mutating":false,"params":1,"path":"/api/interfaces/vxlan_settings/getItem","post":false,"search":false},"vxlanSettingsReconfigure":{"mutating":true,"params":0,"path":"/api/interfaces/vxlan_settings/reconfigure","post":true,"search":false},"vxlanSettingsSearchItem":{"mutating":false,"params":0,"path":"/api/interfaces/vxlan_settings/searchItem","post":false,"search":true},"vxlanSettingsSetItem":{"mutating":true,"params":1,"path":"/api/interfaces/vxlan_settings/setItem","post":true,"search":false}},"ipsec":{"connectionsAddChild":{"mutating":true,"params":0,"path":"/api/ipsec/connections/addChild","post":true,"search":false},"connectionsAddConnection":{"mutating":true,"params":0,"path":"/api/ipsec/connections/addConnection","post":true,"search":false},"connectionsAddLocal":{"mutating":true,"params":0,"path":"/api/ipsec/connections/addLocal","post":true,"search":false},"connectionsAddRemote":{"mutating":true,"params":0,"path":"/api/ipsec/connections/addRemote","post":true,"search":false},"connectionsConnectionExists":{"mutating":false,"params":1,"path":"/api/ipsec/connections/connectionExists","post":false,"search":false},"connectionsDelChild":{"mutating":true,"params":1,"path":"/api/ipsec/connections/delChild","post":true,"search":false},"connectionsDelConnection":{"mutating":true,"params":1,"path":"/api/ipsec/connections/delConnection","post":true,"search":false},"connectionsDelLocal":{"mutating":true,"params":1,"path":"/api/ipsec/connections/delLocal","post":true,"search":false},"connectionsDelRemote":{"mutating":true,"params":1,"path":"/api/ipsec/connections/delRemote","post":true,"search":false},"connectionsGetChild":{"mutating":false,"params":1,"path":"/api/ipsec/connections/getChild","post":false,"search":false},"connectionsGetConnection":{"mutating":false,"params":1,"path":"/api/ipsec/connections/getConnection","post":false,"search":false},"connectionsGetLocal":{"mutating":false,"params":1,"path":"/api/ipsec/connections/getLocal","post":false,"search":false},"connectionsGetRemote":{"mutating":false,"params":1,"path":"/api/ipsec/connections/getRemote","post":false,"search":false},"connectionsIsEnabled":{"mutating":false,"params":0,"path":"/api/ipsec/connections/isEnabled","post":false,"search":false},"connectionsSearchChild":{"mutating":false,"params":0,"path":"/api/ipsec/connections/searchChild","post":false,"search":true},"connectionsSearchConnection":{"mutating":false,"params":0,"path":"/api/ipsec/connections/searchConnection","post":false,"search":true},"connectionsSearchLocal":{"mutating":false,"params":0,"path":"/api/ipsec/connections/searchLocal","post":false,"search":true},"connectionsSearchRemote":{"mutating":false,"params":0,"path":"/api/ipsec/connections/searchRemote","post":false,"search":true},"connectionsSetChild":{"mutating":true,"params":1,"path":"/api/ipsec/connections/setChild","post":true,"search":false},"connectionsSetConnection":{"mutating":true,"params":1,"path":"/api/ipsec/connections/setConnection","post":true,"search":false},"connectionsSetLocal":{"mutating":true,"params":1,"path":"/api/ipsec/connections/setLocal","post":true,"search":false},"connectionsSetRemote":{"mutating":true,"params":1,"path":"/api/ipsec/connections/setRemote","post":true,"search":false},"connectionsSwanctl":{"mutating":false,"params":0,"path":"/api/ipsec/connections/swanctl","post":false,"search":false},"connectionsToggle":{"mutating":true,"params":1,"path":"/api/ipsec/connections/toggle","post":true,"search":false},"connectionsToggleChild":{"mutating":true,"params":2,"path":"/api/ipsec/connections/toggleChild","post":true,"search":false},"connectionsToggleConnection":{"mutating":true,"params":2,"path":"/api/ipsec/connections/toggleConnection","post":true,"search":false},"connectionsToggleLocal":{"mutating":true,"params":2,"path":"/api/ipsec/connections/toggleLocal","post":true,"search":false},"connectionsToggleRemote":{"mutating":true,"params":2,"path":"/api/ipsec/connections/toggleRemote","post":true,"search":false},"keyPairsAddItem":{"mutating":true,"params":0,"path":"/api/ipsec/key_pairs/addItem","post":true,"search":false},"keyPairsDelItem":{"mutating":true,"params":1,"path":"/api/ipsec/key_pairs/delItem","post":true,"search":false},"keyPairsGenKeyPair":{"mutating":true,"params":2,"path":"/api/ipsec/key_pairs/genKeyPair","post":false,"search":false},"keyPairsGetItem":{"mutating":false,"params":1,"path":"/api/ipsec/key_pairs/getItem","post":false,"search":false},"keyPairsSearchItem":{"mutating":false,"params":0,"path":"/api/ipsec/key_pairs/searchItem","post":false,"search":true},"keyPairsSetItem":{"mutating":true,"params":1,"path":"/api/ipsec/key_pairs/setItem","post":true,"search":false},"leasesPools":{"mutating":false,"params":0,"path":"/api/ipsec/leases/pools","post":false,"search":false},"leasesSearch":{"mutating":false,"params":0,"path":"/api/ipsec/leases/search","post":false,"search":true},"legacySubsystemApplyConfig":{"mutating":true,"params":0,"path":"/api/ipsec/legacy_subsystem/applyConfig","post":true,"search":false},"legacySubsystemStatus":{"mutating":false,"params":0,"path":"/api/ipsec/legacy_subsystem/status","post":false,"search":false},"manualSpdAdd":{"mutating":true,"params":0,"path":"/api/ipsec/manual_spd/add","post":true,"search":false},"manualSpdDel":{"mutating":true,"params":1,"path":"/api/ipsec/manual_spd/del","post":true,"search":false},"manualSpdGet":{"mutating":false,"params":1,"path":"/api/ipsec/manual_spd/get","post":false,"search":false},"manualSpdSearch":{"mutating":false,"params":0,"path":"/api/ipsec/manual_spd/search","post":false,"search":true},"manualSpdSet":{"mutating":true,"params":1,"path":"/api/ipsec/manual_spd/set","post":true,"search":false},"manualSpdToggle":{"mutating":true,"params":2,"path":"/api/ipsec/manual_spd/toggle","post":true,"search":false},"poolsAdd":{"mutating":true,"params":0,"path":"/api/ipsec/pools/add","post":true,"search":false},"poolsDel":{"mutating":true,"params":1,"path":"/api/ipsec/pools/del","post":true,"search":false},"poolsGet":{"mutating":false,"params":1,"path":"/api/ipsec/pools/get","post":false,"search":false},"poolsSearch":{"mutating":false,"params":0,"path":"/api/ipsec/pools/search","post":false,"search":true},"poolsSet":{"mutating":true,"params":1,"path":"/api/ipsec/pools/set","post":true,"search":false},"poolsToggle":{"mutating":true,"params":2,"path":"/api/ipsec/pools/toggle","post":true,"search":false},"preSharedKeysAddItem":{"mutating":true,"params":0,"path":"/api/ipsec/pre_shared_keys/addItem","post":true,"search":false},"preSharedKeysDelItem":{"mutating":true,"params":1,"path":"/api/ipsec/pre_shared_keys/delItem","post":true,"search":false},"preSharedKeysGetItem":{"mutating":false,"params":1,"path":"/api/ipsec/pre_shared_keys/getItem","post":false,"search":false},"preSharedKeysSearchItem":{"mutating":false,"params":0,"path":"/api/ipsec/pre_shared_keys/searchItem","post":false,"search":true},"preSharedKeysSetItem":{"mutating":true,"params":1,"path":"/api/ipsec/pre_shared_keys/setItem","post":true,"search":false},"sadDelete":{"mutating":true,"params":1,"path":"/api/ipsec/sad/delete","post":true,"search":false},"sadSearch":{"mutating":false,"params":0,"path":"/api/ipsec/sad/search","post":false,"search":true},"sessionsConnect":{"mutating":true,"params":1,"path":"/api/ipsec/sessions/connect","post":true,"search":false},"sessionsDisconnect":{"mutating":true,"params":1,"path":"/api/ipsec/sessions/disconnect","post":true,"search":false},"sessionsSearchPhase1":{"mutating":false,"params":0,"path":"/api/ipsec/sessions/searchPhase1","post":false,"search":true},"sessionsSearchPhase2":{"mutating":false,"params":0,"path":"/api/ipsec/sessions/searchPhase2","post":false,"search":true},"settingsGet":{"mutating":false,"params":0,"path":"/api/ipsec/settings/get","post":false,"search":false},"spdDelete":{"mutating":true,"params":1,"path":"/api/ipsec/spd/delete","post":true,"search":false},"spdSearch":{"mutating":false,"params":0,"path":"/api/ipsec/spd/search","post":false,"search":true},"tunnelDelPhase1":{"mutating":true,"params":1,"path":"/api/ipsec/tunnel/delPhase1","post":true,"search":false},"tunnelDelPhase2":{"mutating":true,"params":1,"path":"/api/ipsec/tunnel/delPhase2","post":true,"search":false},"tunnelSearchPhase1":{"mutating":false,"params":0,"path":"/api/ipsec/tunnel/searchPhase1","post":false,"search":true},"tunnelSearchPhase2":{"mutating":false,"params":0,"path":"/api/ipsec/tunnel/searchPhase2","post":false,"search":true},"tunnelToggle":{"mutating":true,"params":1,"path":"/api/ipsec/tunnel/toggle","post":true,"search":false},"tunnelTogglePhase1":{"mutating":true,"params":2,"path":"/api/ipsec/tunnel/togglePhase1","post":true,"search":false},"tunnelTogglePhase2":{"mutating":true,"params":2,"path":"/api/ipsec/tunnel/togglePhase2","post":true,"search":false},"vtiAdd":{"mutating":true,"params":0,"path":"/api/ipsec/vti/add","post":true,"search":false},"vtiDel":{"mutating":true,"params":1,"path":"/api/ipsec/vti/del","post":true,"search":false},"vtiGet":{"mutating":false,"params":1,"path":"/api/ipsec/vti/get","post":false,"search":false},"vtiSearch":{"mutating":false,"params":0,"path":"/api/ipsec/vti/search","post":false,"search":true},"vtiSet":{"mutating":true,"params":1,"path":"/api/ipsec/vti/set","post":true,"search":false},"vtiToggle":{"mutating":true,"params":2,"path":"/api/ipsec/vti/toggle","post":true,"search":false}},"kea":{"ctrlAgentGet":{"mutating":false,"params":0,"path":"/api/kea/ctrl_agent/get","post":false,"search":false},"ddnsGet":{"mutating":false,"params":0,"path":"/api/kea/ddns/get","post":false,"search":false},"dhcpv4AddOption":{"mutating":true,"params":0,"path":"/api/kea/dhcpv4/addOption","post":true,"search":false},"dhcpv4AddPeer":{"mutating":true,"params":0,"path":"/api/kea/dhcpv4/addPeer","post":true,"search":false},"dhcpv4AddReservation":{"mutating":true,"params":0,"path":"/api/kea/dhcpv4/addReservation","post":true,"search":false},"dhcpv4AddSubnet":{"mutating":true,"params":0,"path":"/api/kea/dhcpv4/addSubnet","post":true,"search":false},"dhcpv4DelOption":{"mutating":true,"params":1,"path":"/api/kea/dhcpv4/delOption","post":true,"search":false},"dhcpv4DelPeer":{"mutating":true,"params":1,"path":"/api/kea/dhcpv4/delPeer","post":true,"search":false},"dhcpv4DelReservation":{"mutating":true,"params":1,"path":"/api/kea/dhcpv4/delReservation","post":true,"search":false},"dhcpv4DelSubnet":{"mutating":true,"params":1,"path":"/api/kea/dhcpv4/delSubnet","post":true,"search":false},"dhcpv4DownloadReservations":{"mutating":false,"params":0,"path":"/api/kea/dhcpv4/downloadReservations","post":false,"search":false},"dhcpv4Get":{"mutating":false,"params":0,"path":"/api/kea/dhcpv4/get","post":false,"search":false},"dhcpv4GetOption":{"mutating":false,"params":1,"path":"/api/kea/dhcpv4/getOption","post":false,"search":false},"dhcpv4GetPeer":{"mutating":false,"params":1,"path":"/api/kea/dhcpv4/getPeer","post":false,"search":false},"dhcpv4GetReservation":{"mutating":false,"params":1,"path":"/api/kea/dhcpv4/getReservation","post":false,"search":false},"dhcpv4GetSubnet":{"mutating":false,"params":1,"path":"/api/kea/dhcpv4/getSubnet","post":false,"search":false},"dhcpv4SearchOption":{"mutating":false,"params":0,"path":"/api/kea/dhcpv4/searchOption","post":false,"search":true},"dhcpv4SearchPeer":{"mutating":false,"params":0,"path":"/api/kea/dhcpv4/searchPeer","post":false,"search":true},"dhcpv4SearchReservation":{"mutating":false,"params":0,"path":"/api/kea/dhcpv4/searchReservation","post":false,"search":true},"dhcpv4SearchSubnet":{"mutating":false,"params":0,"path":"/api/kea/dhcpv4/searchSubnet","post":false,"search":true},"dhcpv4SetOption":{"mutating":true,"params":1,"path":"/api/kea/dhcpv4/setOption","post":true,"search":false},"dhcpv4SetPeer":{"mutating":true,"params":1,"path":"/api/kea/dhcpv4/setPeer","post":true,"search":false},"dhcpv4SetReservation":{"mutating":true,"params":1,"path":"/api/kea/dhcpv4/setReservation","post":true,"search":false},"dhcpv4SetSubnet":{"mutating":true,"params":1,"path":"/api/kea/dhcpv4/setSubnet","post":true,"search":false},"dhcpv4UploadReservations":{"mutating":true,"params":0,"path":"/api/kea/dhcpv4/uploadReservations","post":true,"search":false},"dhcpv6AddOption":{"mutating":true,"params":0,"path":"/api/kea/dhcpv6/addOption","post":true,"search":false},"dhcpv6AddPdPool":{"mutating":true,"params":0,"path":"/api/kea/dhcpv6/addPdPool","post":true,"search":false},"dhcpv6AddPeer":{"mutating":true,"params":0,"path":"/api/kea/dhcpv6/addPeer","post":true,"search":false},"dhcpv6AddReservation":{"mutating":true,"params":0,"path":"/api/kea/dhcpv6/addReservation","post":true,"search":false},"dhcpv6AddSubnet":{"mutating":true,"params":0,"path":"/api/kea/dhcpv6/addSubnet","post":true,"search":false},"dhcpv6DelOption":{"mutating":true,"params":1,"path":"/api/kea/dhcpv6/delOption","post":true,"search":false},"dhcpv6DelPdPool":{"mutating":true,"params":1,"path":"/api/kea/dhcpv6/delPdPool","post":true,"search":false},"dhcpv6DelPeer":{"mutating":true,"params":1,"path":"/api/kea/dhcpv6/delPeer","post":true,"search":false},"dhcpv6DelReservation":{"mutating":true,"params":1,"path":"/api/kea/dhcpv6/delReservation","post":true,"search":false},"dhcpv6DelSubnet":{"mutating":true,"params":1,"path":"/api/kea/dhcpv6/delSubnet","post":true,"search":false},"dhcpv6DownloadReservations":{"mutating":false,"params":0,"path":"/api/kea/dhcpv6/downloadReservations","post":false,"search":false},"dhcpv6Get":{"mutating":false,"params":0,"path":"/api/kea/dhcpv6/get","post":false,"search":false},"dhcpv6GetOption":{"mutating":false,"params":1,"path":"/api/kea/dhcpv6/getOption","post":false,"search":false},"dhcpv6GetPdPool":{"mutating":false,"params":1,"path":"/api/kea/dhcpv6/getPdPool","post":false,"search":false},"dhcpv6GetPeer":{"mutating":false,"params":1,"path":"/api/kea/dhcpv6/getPeer","post":false,"search":false},"dhcpv6GetReservation":{"mutating":false,"params":1,"path":"/api/kea/dhcpv6/getReservation","post":false,"search":false},"dhcpv6GetSubnet":{"mutating":false,"params":1,"path":"/api/kea/dhcpv6/getSubnet","post":false,"search":false},"dhcpv6SearchOption":{"mutating":false,"params":0,"path":"/api/kea/dhcpv6/searchOption","post":false,"search":true},"dhcpv6SearchPdPool":{"mutating":false,"params":0,"path":"/api/kea/dhcpv6/searchPdPool","post":false,"search":true},"dhcpv6SearchPeer":{"mutating":false,"params":0,"path":"/api/kea/dhcpv6/searchPeer","post":false,"search":true},"dhcpv6SearchReservation":{"mutating":false,"params":0,"path":"/api/kea/dhcpv6/searchReservation","post":false,"search":true},"dhcpv6SearchSubnet":{"mutating":false,"params":0,"path":"/api/kea/dhcpv6/searchSubnet","post":false,"search":true},"dhcpv6SetOption":{"mutating":true,"params":1,"path":"/api/kea/dhcpv6/setOption","post":true,"search":false},"dhcpv6SetPdPool":{"mutating":true,"params":1,"path":"/api/kea/dhcpv6/setPdPool","post":true,"search":false},"dhcpv6SetPeer":{"mutating":true,"params":1,"path":"/api/kea/dhcpv6/setPeer","post":true,"search":false},"dhcpv6SetReservation":{"mutating":true,"params":1,"path":"/api/kea/dhcpv6/setReservation","post":true,"search":false},"dhcpv6SetSubnet":{"mutating":true,"params":1,"path":"/api/kea/dhcpv6/setSubnet","post":true,"search":false},"dhcpv6UploadReservations":{"mutating":true,"params":0,"path":"/api/kea/dhcpv6/uploadReservations","post":true,"search":false},"leases4DelLease":{"mutating":true,"params":1,"path":"/api/kea/leases4/delLease","post":true,"search":false},"leases4Search":{"mutating":false,"params":0,"path":"/api/kea/leases4/search","post":false,"search":true},"leases6DelLease":{"mutating":true,"params":1,"path":"/api/kea/leases6/delLease","post":true,"search":false},"leases6Search":{"mutating":false,"params":0,"path":"/api/kea/leases6/search","post":false,"search":true}},"monit":{"serviceCheck":{"mutating":true,"params":0,"path":"/api/monit/service/check","post":true,"search":false},"serviceReconfigure":{"mutating":true,"params":0,"path":"/api/monit/service/reconfigure","post":true,"search":false},"settingsAddAlert":{"mutating":true,"params":0,"path":"/api/monit/settings/addAlert","post":true,"search":false},"settingsAddService":{"mutating":true,"params":0,"path":"/api/monit/settings/addService","post":true,"search":false},"settingsAddTest":{"mutating":true,"params":0,"path":"/api/monit/settings/addTest","post":true,"search":false},"settingsDelAlert":{"mutating":true,"params":1,"path":"/api/monit/settings/delAlert","post":true,"search":false},"settingsDelService":{"mutating":true,"params":1,"path":"/api/monit/settings/delService","post":true,"search":false},"settingsDelTest":{"mutating":true,"params":1,"path":"/api/monit/settings/delTest","post":true,"search":false},"settingsGetAlert":{"mutating":false,"params":1,"path":"/api/monit/settings/getAlert","post":false,"search":false},"settingsGetGeneral":{"mutating":false,"params":0,"path":"/api/monit/settings/getGeneral","post":false,"search":false},"settingsGetService":{"mutating":false,"params":1,"path":"/api/monit/settings/getService","post":false,"search":false},"settingsGetTest":{"mutating":false,"params":1,"path":"/api/monit/settings/getTest","post":false,"search":false},"settingsSearchAlert":{"mutating":false,"params":0,"path":"/api/monit/settings/searchAlert","post":false,"search":true},"settingsSearchService":{"mutating":false,"params":0,"path":"/api/monit/settings/searchService","post":false,"search":true},"settingsSearchTest":{"mutating":false,"params":0,"path":"/api/monit/settings/searchTest","post":false,"search":true},"settingsSetAlert":{"mutating":true,"params":1,"path":"/api/monit/settings/setAlert","post":true,"search":false},"settingsSetService":{"mutating":true,"params":1,"path":"/api/monit/settings/setService","post":true,"search":false},"settingsSetTest":{"mutating":true,"params":1,"path":"/api/monit/settings/setTest","post":true,"search":false},"settingsToggleAlert":{"mutating":true,"params":2,"path":"/api/monit/settings/toggleAlert","post":true,"search":false},"settingsToggleService":{"mutating":true,"params":2,"path":"/api/monit/settings/toggleService","post":true,"search":false},"statusGet":{"mutating":false,"params":1,"path":"/api/monit/status/get","post":false,"search":false}},"ntpd":{"serviceGps":{"mutating":false,"params":0,"path":"/api/ntpd/service/gps","post":false,"search":false},"serviceMeta":{"mutating":false,"params":0,"path":"/api/ntpd/service/meta","post":false,"search":false},"serviceStatus":{"mutating":false,"params":0,"path":"/api/ntpd/service/status","post":false,"search":false}},"openvpn":{"clientOverwritesAdd":{"mutating":true,"params":0,"path":"/api/openvpn/client_overwrites/add","post":true,"search":false},"clientOverwritesDel":{"mutating":true,"params":1,"path":"/api/openvpn/client_overwrites/del","post":true,"search":false},"clientOverwritesGet":{"mutating":false,"params":1,"path":"/api/openvpn/client_overwrites/get","post":false,"search":false},"clientOverwritesSearch":{"mutating":false,"params":0,"path":"/api/openvpn/client_overwrites/search","post":false,"search":true},"clientOverwritesSet":{"mutating":true,"params":1,"path":"/api/openvpn/client_overwrites/set","post":true,"search":false},"clientOverwritesToggle":{"mutating":true,"params":2,"path":"/api/openvpn/client_overwrites/toggle","post":true,"search":false},"exportAccounts":{"mutating":false,"params":1,"path":"/api/openvpn/export/accounts","post":false,"search":false},"exportDownload":{"mutating":false,"params":2,"path":"/api/openvpn/export/download","post":true,"search":false},"exportProviders":{"mutating":false,"params":0,"path":"/api/openvpn/export/providers","post":false,"search":false},"exportStorePresets":{"mutating":false,"params":1,"path":"/api/openvpn/export/storePresets","post":true,"search":false},"exportTemplates":{"mutating":false,"params":0,"path":"/api/openvpn/export/templates","post":false,"search":false},"exportValidatePresets":{"mutating":false,"params":1,"path":"/api/openvpn/export/validatePresets","post":true,"search":false},"instancesAdd":{"mutating":true,"params":0,"path":"/api/openvpn/instances/add","post":true,"search":false},"instancesAddStaticKey":{"mutating":true,"params":0,"path":"/api/openvpn/instances/addStaticKey","post":true,"search":false},"instancesDel":{"mutating":true,"params":1,"path":"/api/openvpn/instances/del","post":true,"search":false},"instancesDelStaticKey":{"mutating":true,"params":1,"path":"/api/openvpn/instances/delStaticKey","post":true,"search":false},"instancesGenKey":{"mutating":true,"params":1,"path":"/api/openvpn/instances/genKey","post":false,"search":false},"instancesGet":{"mutating":false,"params":1,"path":"/api/openvpn/instances/get","post":false,"search":false},"instancesGetStaticKey":{"mutating":false,"params":1,"path":"/api/openvpn/instances/getStaticKey","post":false,"search":false},"instancesSearch":{"mutating":false,"params":0,"path":"/api/openvpn/instances/search","post":false,"search":true},"instancesSearchStaticKey":{"mutating":false,"params":0,"path":"/api/openvpn/instances/searchStaticKey","post":false,"search":true},"instancesSet":{"mutating":true,"params":1,"path":"/api/openvpn/instances/set","post":true,"search":false},"instancesSetStaticKey":{"mutating":true,"params":1,"path":"/api/openvpn/instances/setStaticKey","post":true,"search":false},"instancesToggle":{"mutating":true,"params":2,"path":"/api/openvpn/instances/toggle","post":true,"search":false},"serviceKillSession":{"mutating":true,"params":0,"path":"/api/openvpn/service/killSession","post":true,"search":false},"serviceReconfigure":{"mutating":true,"params":0,"path":"/api/openvpn/service/reconfigure","post":true,"search":false},"serviceRestartService":{"mutating":true,"params":1,"path":"/api/openvpn/service/restartService","post":true,"search":false},"serviceSearchRoutes":{"mutating":false,"params":0,"path":"/api/openvpn/service/searchRoutes","post":false,"search":true},"serviceSearchSessions":{"mutating":false,"params":0,"path":"/api/openvpn/service/searchSessions","post":false,"search":true},"serviceStartService":{"mutating":true,"params":1,"path":"/api/openvpn/service/startService","post":true,"search":false},"serviceStopService":{"mutating":true,"params":1,"path":"/api/openvpn/service/stopService","post":true,"search":false}},"radvd":{"serviceReconfigure":{"mutating":true,"params":0,"path":"/api/radvd/service/reconfigure","post":true,"search":false},"settingsAddEntry":{"mutating":true,"params":0,"path":"/api/radvd/settings/addEntry","post":true,"search":false},"settingsDelEntry":{"mutating":true,"params":1,"path":"/api/radvd/settings/delEntry","post":true,"search":false},"settingsGetEntry":{"mutating":false,"params":1,"path":"/api/radvd/settings/getEntry","post":false,"search":false},"settingsSearchEntry":{"mutating":false,"params":0,"path":"/api/radvd/settings/searchEntry","post":false,"search":true},"settingsSetEntry":{"mutating":true,"params":1,"path":"/api/radvd/settings/setEntry","post":true,"search":false},"settingsToggleEntry":{"mutating":true,"params":2,"path":"/api/radvd/settings/toggleEntry","post":true,"search":false}},"routes":{"gatewayStatus":{"mutating":false,"params":0,"path":"/api/routes/gateway/status","post":false,"search":false},"routesAddroute":{"mutating":true,"params":0,"path":"/api/routes/routes/addroute","post":true,"search":false},"routesDelroute":{"mutating":false,"params":1,"path":"/api/routes/routes/delroute","post":true,"search":false},"routesGetroute":{"mutating":false,"params":1,"path":"/api/routes/routes/getroute","post":false,"search":false},"routesReconfigure":{"mutating":true,"params":0,"path":"/api/routes/routes/reconfigure","post":true,"search":false},"routesSearchroute":{"mutating":false,"params":0,"path":"/api/routes/routes/searchroute","post":false,"search":true},"routesSetroute":{"mutating":false,"params":1,"path":"/api/routes/routes/setroute","post":true,"search":false},"routesToggleroute":{"mutating":false,"params":2,"path":"/api/routes/routes/toggleroute","post":true,"search":false}},"routing":{"groupSettingsAdd":{"mutating":true,"params":0,"path":"/api/routing/group_settings/add","post":true,"search":false},"groupSettingsDel":{"mutating":true,"params":1,"path":"/api/routing/group_settings/del","post":true,"search":false},"groupSettingsGet":{"mutating":false,"params":1,"path":"/api/routing/group_settings/get","post":false,"search":false},"groupSettingsReconfigure":{"mutating":true,"params":0,"path":"/api/routing/group_settings/reconfigure","post":true,"search":false},"groupSettingsSearch":{"mutating":false,"params":0,"path":"/api/routing/group_settings/search","post":false,"search":true},"groupSettingsSet":{"mutating":true,"params":1,"path":"/api/routing/group_settings/set","post":true,"search":false},"settingsAddGateway":{"mutating":true,"params":0,"path":"/api/routing/settings/addGateway","post":true,"search":false},"settingsDelGateway":{"mutating":true,"params":1,"path":"/api/routing/settings/delGateway","post":true,"search":false},"settingsGetGateway":{"mutating":false,"params":1,"path":"/api/routing/settings/getGateway","post":false,"search":false},"settingsReconfigure":{"mutating":true,"params":0,"path":"/api/routing/settings/reconfigure","post":true,"search":false},"settingsSearchGateway":{"mutating":false,"params":0,"path":"/api/routing/settings/searchGateway","post":false,"search":true},"settingsSetGateway":{"mutating":true,"params":1,"path":"/api/routing/settings/setGateway","post":true,"search":false},"settingsToggleGateway":{"mutating":true,"params":2,"path":"/api/routing/settings/toggleGateway","post":true,"search":false}},"syslog":{"serviceReset":{"mutating":true,"params":0,"path":"/api/syslog/service/reset","post":true,"search":false},"serviceStats":{"mutating":false,"params":0,"path":"/api/syslog/service/stats","post":false,"search":false},"settingsAddDestination":{"mutating":true,"params":0,"path":"/api/syslog/settings/addDestination","post":true,"search":false},"settingsDelDestination":{"mutating":true,"params":1,"path":"/api/syslog/settings/delDestination","post":true,"search":false},"settingsGetDestination":{"mutating":false,"params":1,"path":"/api/syslog/settings/getDestination","post":false,"search":false},"settingsSearchDestinations":{"mutating":false,"params":0,"path":"/api/syslog/settings/searchDestinations","post":false,"search":true},"settingsSetDestination":{"mutating":true,"params":1,"path":"/api/syslog/settings/setDestination","post":true,"search":false},"settingsToggleDestination":{"mutating":true,"params":2,"path":"/api/syslog/settings/toggleDestination","post":true,"search":false}},"telegraf":{"generalGet":{"mutating":false,"params":0,"path":"/api/telegraf/general/get","post":false,"search":false},"generalSet":{"mutating":true,"params":0,"path":"/api/telegraf/general/set","post":true,"search":false},"inputGet":{"mutating":false,"params":0,"path":"/api/telegraf/input/get","post":false,"search":false},"inputSet":{"mutating":true,"params":0,"path":"/api/telegraf/input/set","post":true,"search":false},"keyAddKey":{"mutating":true,"params":0,"path":"/api/telegraf/key/addKey","post":true,"search":false},"keyDelKey":{"mutating":true,"params":1,"path":"/api/telegraf/key/delKey","post":true,"search":false},"keyGetKey":{"mutating":false,"params":1,"path":"/api/telegraf/key/getKey","post":false,"search":false},"keySearchKey":{"mutating":false,"params":0,"path":"/api/telegraf/key/searchKey","post":false,"search":true},"keySetKey":{"mutating":true,"params":1,"path":"/api/telegraf/key/setKey","post":true,"search":false},"keyToggleKey":{"mutating":true,"params":1,"path":"/api/telegraf/key/toggleKey","post":true,"search":false},"outputGet":{"mutating":false,"params":0,"path":"/api/telegraf/output/get","post":false,"search":false},"outputSet":{"mutating":true,"params":0,"path":"/api/telegraf/output/set","post":true,"search":false},"serviceReconfigure":{"mutating":true,"params":0,"path":"/api/telegraf/service/reconfigure","post":true,"search":false},"serviceRestart":{"mutating":true,"params":0,"path":"/api/telegraf/service/restart","post":true,"search":false},"serviceStart":{"mutating":true,"params":0,"path":"/api/telegraf/service/start","post":true,"search":false},"serviceStatus":{"mutating":false,"params":0,"path":"/api/telegraf/service/status","post":false,"search":false},"serviceStop":{"mutating":true,"params":0,"path":"/api/telegraf/service/stop","post":true,"search":false}},"trafficshaper":{"serviceFlushreload":{"mutating":true,"params":0,"path":"/api/trafficshaper/service/flushreload","post":true,"search":false},"serviceReconfigure":{"mutating":true,"params":0,"path":"/api/trafficshaper/service/reconfigure","post":true,"search":false},"serviceStatistics":{"mutating":false,"params":0,"path":"/api/trafficshaper/service/statistics","post":false,"search":false},"settingsAddPipe":{"mutating":true,"params":0,"path":"/api/trafficshaper/settings/addPipe","post":true,"search":false},"settingsAddQueue":{"mutating":true,"params":0,"path":"/api/trafficshaper/settings/addQueue","post":true,"search":false},"settingsAddRule":{"mutating":true,"params":0,"path":"/api/trafficshaper/settings/addRule","post":true,"search":false},"settingsDelPipe":{"mutating":true,"params":1,"path":"/api/trafficshaper/settings/delPipe","post":true,"search":false},"settingsDelQueue":{"mutating":true,"params":1,"path":"/api/trafficshaper/settings/delQueue","post":true,"search":false},"settingsDelRule":{"mutating":true,"params":1,"path":"/api/trafficshaper/settings/delRule","post":true,"search":false},"settingsDownloadPipes":{"mutating":false,"params":0,"path":"/api/trafficshaper/settings/downloadPipes","post":false,"search":false},"settingsDownloadQueues":{"mutating":false,"params":0,"path":"/api/trafficshaper/settings/downloadQueues","post":false,"search":false},"settingsGetPipe":{"mutating":false,"params":1,"path":"/api/trafficshaper/settings/getPipe","post":false,"search":false},"settingsGetQueue":{"mutating":false,"params":1,"path":"/api/trafficshaper/settings/getQueue","post":false,"search":false},"settingsGetRule":{"mutating":false,"params":1,"path":"/api/trafficshaper/settings/getRule","post":false,"search":false},"settingsSearchPipes":{"mutating":false,"params":0,"path":"/api/trafficshaper/settings/searchPipes","post":false,"search":true},"settingsSearchQueues":{"mutating":false,"params":0,"path":"/api/trafficshaper/settings/searchQueues","post":false,"search":true},"settingsSearchRules":{"mutating":false,"params":0,"path":"/api/trafficshaper/settings/searchRules","post":false,"search":true},"settingsSetPipe":{"mutating":true,"params":1,"path":"/api/trafficshaper/settings/setPipe","post":true,"search":false},"settingsSetQueue":{"mutating":true,"params":1,"path":"/api/trafficshaper/settings/setQueue","post":true,"search":false},"settingsSetRule":{"mutating":true,"params":1,"path":"/api/trafficshaper/settings/setRule","post":true,"search":false},"settingsTogglePipe":{"mutating":true,"params":2,"path":"/api/trafficshaper/settings/togglePipe","post":true,"search":false},"settingsToggleQueue":{"mutating":true,"params":2,"path":"/api/trafficshaper/settings/toggleQueue","post":true,"search":false},"settingsToggleRule":{"mutating":true,"params":2,"path":"/api/trafficshaper/settings/toggleRule","post":true,"search":false},"settingsUploadPipes":{"mutating":true,"params":0,"path":"/api/trafficshaper/settings/uploadPipes","post":true,"search":false},"settingsUploadQueues":{"mutating":true,"params":0,"path":"/api/trafficshaper/settings/uploadQueues","post":true,"search":false}},"trust":{"caAdd":{"mutating":true,"params":0,"path":"/api/trust/ca/add","post":true,"search":false},"caCaInfo":{"mutating":false,"params":1,"path":"/api/trust/ca/caInfo","post":false,"search":false},"caCaList":{"mutating":false,"params":0,"path":"/api/trust/ca/caList","post":false,"search":false},"caDel":{"mutating":true,"params":1,"path":"/api/trust/ca/del","post":true,"search":false},"caGenerateFile":{"mutating":true,"params":2,"path":"/api/trust/ca/generateFile","post":true,"search":false},"caGet":{"mutating":false,"params":1,"path":"/api/trust/ca/get","post":false,"search":false},"caRawDump":{"mutating":false,"params":1,"path":"/api/trust/ca/rawDump","post":false,"search":false},"caSearch":{"mutating":false,"params":0,"path":"/api/trust/ca/search","post":false,"search":true},"caSet":{"mutating":true,"params":1,"path":"/api/trust/ca/set","post":true,"search":false},"certAdd":{"mutating":true,"params":0,"path":"/api/trust/cert/add","post":true,"search":false},"certCaInfo":{"mutating":false,"params":1,"path":"/api/trust/cert/caInfo","post":false,"search":false},"certCaList":{"mutating":false,"params":0,"path":"/api/trust/cert/caList","post":false,"search":false},"certDel":{"mutating":true,"params":1,"path":"/api/trust/cert/del","post":true,"search":false},"certGenerateFile":{"mutating":true,"params":2,"path":"/api/trust/cert/generateFile","post":true,"search":false},"certGet":{"mutating":false,"params":1,"path":"/api/trust/cert/get","post":false,"search":false},"certRawDump":{"mutating":false,"params":1,"path":"/api/trust/cert/rawDump","post":false,"search":false},"certSearch":{"mutating":false,"params":0,"path":"/api/trust/cert/search","post":false,"search":true},"certSet":{"mutating":true,"params":1,"path":"/api/trust/cert/set","post":true,"search":false},"certUserList":{"mutating":false,"params":0,"path":"/api/trust/cert/userList","post":false,"search":false},"crlDel":{"mutating":true,"params":1,"path":"/api/trust/crl/del","post":true,"search":false},"crlGet":{"mutating":false,"params":1,"path":"/api/trust/crl/get","post":false,"search":false},"crlGetOcspInfoData":{"mutating":false,"params":1,"path":"/api/trust/crl/getOcspInfoData","post":false,"search":false},"crlRawDump":{"mutating":false,"params":1,"path":"/api/trust/crl/rawDump","post":false,"search":false},"crlSearch":{"mutating":false,"params":0,"path":"/api/trust/crl/search","post":false,"search":true},"crlSet":{"mutating":true,"params":1,"path":"/api/trust/crl/set","post":true,"search":false},"settingsReconfigure":{"mutating":true,"params":0,"path":"/api/trust/settings/reconfigure","post":true,"search":false}},"unbound":{"diagnosticsDumpcache":{"mutating":false,"params":0,"path":"/api/unbound/diagnostics/dumpcache","post":false,"search":false},"diagnosticsDumpinfra":{"mutating":true,"params":0,"path":"/api/unbound/diagnostics/dumpinfra","post":true,"search":false},"diagnosticsListinsecure":{"mutating":false,"params":0,"path":"/api/unbound/diagnostics/listinsecure","post":false,"search":false},"diagnosticsListlocaldata":{"mutating":false,"params":0,"path":"/api/unbound/diagnostics/listlocaldata","post":false,"search":false},"diagnosticsListlocalzones":{"mutating":false,"params":0,"path":"/api/unbound/diagnostics/listlocalzones","post":false,"search":false},"diagnosticsStats":{"mutating":false,"params":0,"path":"/api/unbound/diagnostics/stats","post":false,"search":false},"diagnosticsTestBlocklist":{"mutating":true,"params":0,"path":"/api/unbound/diagnostics/testBlocklist","post":true,"search":false},"overviewGetPolicies":{"mutating":false,"params":0,"path":"/api/unbound/overview/getPolicies","post":false,"search":false},"overviewIsBlockListEnabled":{"mutating":false,"params":0,"path":"/api/unbound/overview/isBlockListEnabled","post":false,"search":false},"overviewIsEnabled":{"mutating":false,"params":0,"path":"/api/unbound/overview/isEnabled","post":false,"search":false},"overviewReset":{"mutating":true,"params":0,"path":"/api/unbound/overview/reset","post":true,"search":false},"overviewRolling":{"mutating":false,"params":2,"path":"/api/unbound/overview/Rolling","post":false,"search":false},"overviewSearchQueries":{"mutating":false,"params":0,"path":"/api/unbound/overview/searchQueries","post":false,"search":true},"overviewTotals":{"mutating":false,"params":1,"path":"/api/unbound/overview/totals","post":false,"search":false},"serviceDnsbl":{"mutating":true,"params":0,"path":"/api/unbound/service/dnsbl","post":true,"search":false},"serviceReconfigureGeneral":{"mutating":true,"params":0,"path":"/api/unbound/service/reconfigureGeneral","post":true,"search":false},"settingsAddAcl":{"mutating":true,"params":0,"path":"/api/unbound/settings/addAcl","post":true,"search":false},"settingsAddDnsbl":{"mutating":true,"params":0,"path":"/api/unbound/settings/addDnsbl","post":true,"search":false},"settingsAddForward":{"mutating":true,"params":0,"path":"/api/unbound/settings/addForward","post":true,"search":false},"settingsAddHostAlias":{"mutating":true,"params":0,"path":"/api/unbound/settings/addHostAlias","post":true,"search":false},"settingsAddHostOverride":{"mutating":true,"params":0,"path":"/api/unbound/settings/addHostOverride","post":true,"search":false},"settingsDelAcl":{"mutating":true,"params":1,"path":"/api/unbound/settings/delAcl","post":true,"search":false},"settingsDelDnsbl":{"mutating":true,"params":1,"path":"/api/unbound/settings/delDnsbl","post":true,"search":false},"settingsDelForward":{"mutating":true,"params":1,"path":"/api/unbound/settings/delForward","post":true,"search":false},"settingsDelHostAlias":{"mutating":true,"params":1,"path":"/api/unbound/settings/delHostAlias","post":true,"search":false},"settingsDelHostOverride":{"mutating":true,"params":1,"path":"/api/unbound/settings/delHostOverride","post":true,"search":false},"settingsGetAcl":{"mutating":false,"params":1,"path":"/api/unbound/settings/getAcl","post":false,"search":false},"settingsGetDnsbl":{"mutating":false,"params":1,"path":"/api/unbound/settings/getDnsbl","post":false,"search":false},"settingsGetForward":{"mutating":false,"params":1,"path":"/api/unbound/settings/getForward","post":false,"search":false},"settingsGetHostAlias":{"mutating":false,"params":1,"path":"/api/unbound/settings/getHostAlias","post":false,"search":false},"settingsGetHostOverride":{"mutating":false,"params":1,"path":"/api/unbound/settings/getHostOverride","post":false,"search":false},"settingsGetNameservers":{"mutating":false,"params":0,"path":"/api/unbound/settings/getNameservers","post":false,"search":false},"settingsSearchAcl":{"mutating":false,"params":0,"path":"/api/unbound/settings/searchAcl","post":false,"search":true},"settingsSearchDnsbl":{"mutating":false,"params":0,"path":"/api/unbound/settings/searchDnsbl","post":false,"search":true},"settingsSearchForward":{"mutating":false,"params":0,"path":"/api/unbound/settings/searchForward","post":false,"search":true},"settingsSearchHostAlias":{"mutating":false,"params":0,"path":"/api/unbound/settings/searchHostAlias","post":false,"search":true},"settingsSearchHostOverride":{"mutating":false,"params":0,"path":"/api/unbound/settings/searchHostOverride","post":false,"search":true},"settingsSetAcl":{"mutating":true,"params":1,"path":"/api/unbound/settings/setAcl","post":true,"search":false},"settingsSetDnsbl":{"mutating":true,"params":1,"path":"/api/unbound/settings/setDnsbl","post":true,"search":false},"settingsSetForward":{"mutating":true,"params":1,"path":"/api/unbound/settings/setForward","post":true,"search":false},"settingsSetHostAlias":{"mutating":true,"params":1,"path":"/api/unbound/settings/setHostAlias","post":true,"search":false},"settingsSetHostOverride":{"mutating":true,"params":1,"path":"/api/unbound/settings/setHostOverride","post":true,"search":false},"settingsToggleAcl":{"mutating":true,"params":2,"path":"/api/unbound/settings/toggleAcl","post":true,"search":false},"settingsToggleDnsbl":{"mutating":true,"params":2,"path":"/api/unbound/settings/toggleDnsbl","post":true,"search":false},"settingsToggleForward":{"mutating":true,"params":2,"path":"/api/unbound/settings/toggleForward","post":true,"search":false},"settingsToggleHostAlias":{"mutating":true,"params":2,"path":"/api/unbound/settings/toggleHostAlias","post":true,"search":false},"settingsToggleHostOverride":{"mutating":true,"params":2,"path":"/api/unbound/settings/toggleHostOverride","post":true,"search":false},"settingsUpdateBlocklist":{"mutating":true,"params":0,"path":"/api/unbound/settings/updateBlocklist","post":true,"search":false}},"wireguard":{"clientAddClient":{"mutating":true,"params":0,"path":"/api/wireguard/client/addClient","post":true,"search":false},"clientAddClientBuilder":{"mutating":true,"params":0,"path":"/api/wireguard/client/addClientBuilder","post":true,"search":false},"clientDelClient":{"mutating":true,"params":1,"path":"/api/wireguard/client/delClient","post":true,"search":false},"clientGetClient":{"mutating":false,"params":1,"path":"/api/wireguard/client/getClient","post":false,"search":false},"clientGetClientBuilder":{"mutating":false,"params":0,"path":"/api/wireguard/client/getClientBuilder","post":false,"search":false},"clientGetServerInfo":{"mutating":false,"params":1,"path":"/api/wireguard/client/getServerInfo","post":false,"search":false},"clientListServers":{"mutating":false,"params":0,"path":"/api/wireguard/client/listServers","post":false,"search":false},"clientPsk":{"mutating":false,"params":0,"path":"/api/wireguard/client/psk","post":false,"search":false},"clientSearchClient":{"mutating":false,"params":0,"path":"/api/wireguard/client/searchClient","post":false,"search":true},"clientSetClient":{"mutating":true,"params":1,"path":"/api/wireguard/client/setClient","post":true,"search":false},"clientToggleClient":{"mutating":true,"params":1,"path":"/api/wireguard/client/toggleClient","post":true,"search":false},"serverAddServer":{"mutating":true,"params":1,"path":"/api/wireguard/server/addServer","post":true,"search":false},"serverDelServer":{"mutating":true,"params":1,"path":"/api/wireguard/server/delServer","post":true,"search":false},"serverGetServer":{"mutating":false,"params":1,"path":"/api/wireguard/server/getServer","post":false,"search":false},"serverKeyPair":{"mutating":false,"params":0,"path":"/api/wireguard/server/keyPair","post":false,"search":false},"serverSearchServer":{"mutating":false,"params":0,"path":"/api/wireguard/server/searchServer","post":false,"search":true},"serverSetServer":{"mutating":true,"params":1,"path":"/api/wireguard/server/setServer","post":true,"search":false},"serverToggleServer":{"mutating":true,"params":1,"path":"/api/wireguard/server/toggleServer","post":true,"search":false},"serviceReconfigure":{"mutating":true,"params":0,"path":"/api/wireguard/service/reconfigure","post":true,"search":false},"serviceShow":{"mutating":false,"params":0,"path":"/api/wireguard/service/show","post":false,"search":false}}};
+const PLUGIN_MODULES = ["telegraf","dmidecode","hwprobe"];
+
+// One caller for every discovered route. The dispatcher hands methods
+// (uuid, body) or (body), so: leading primitives fill the path parameters the
+// controller action declares, and the first object is the body. Two-parameter
+// actions (toggleRuleLog(uuid, log), toggleroute(uuid, enabled)) take both
+// segments. Anything more exotic goes through params.args.
+function makeRoute(mod, r) {
+  const seg = (v) => v !== undefined && v !== null && typeof v !== 'object';
+  return function (a, b) {
+    let url = r.path;
+    let body;
+    if (r.params > 0 && seg(a)) {
+      url += '/' + a;
+      if (r.params > 1 && seg(b)) {
+        url += '/' + b;
+      } else {
+        body = b;
+      }
+    } else {
+      body = typeof a === 'object' && a !== null ? a : b;
+    }
+    if (!r.post) {
+      return mod.http.get(url, undefined);
+    }
+    return mod.http.post(url, body || (r.search ? { current: 1, rowCount: 5000 } : {}), undefined);
+  };
+}
+
 class OPNsenseMCPServer {
   constructor(config) {
     this.config = config;
@@ -11727,6 +12362,45 @@ class OPNsenseMCPServer {
         apiSecret: this.config.apiSecret,
         verifySsl: this.config.verifySsl ?? true,
       });
+
+      // Attach every discovered route. These OVERWRITE the client's own methods
+      // on purpose — the routes come from a live box, the client's spec does
+      // not — and they create the modules the client omits entirely (backup,
+      // hostdiscovery, ntpd, radvd). The hand-written fork fixes below run
+      // afterwards and still win where they exist.
+      for (const [mod, routes] of Object.entries(API_ROUTES)) {
+        const parent = PLUGIN_MODULES.includes(mod) ? this.client.plugins : this.client;
+        if (!parent[mod]) parent[mod] = {};
+        const target = parent[mod];
+        if (!target.http) target.http = this.client.http;
+        for (const [name, r] of Object.entries(routes)) {
+          target[name] = makeRoute(target, r);
+        }
+      }
+
+      // OPNsense 26.7 moved the captive-portal template actions off
+      // ServiceController onto a TemplateController. The fleet straddles the
+      // change (26.1.11 and 26.7 both in production), so keep the pre-26.7
+      // method names working on both: new route first, old route on 404.
+      const __cp = this.client.captiveportal;
+      if (__cp && __cp.http) {
+        for (const verb of ['getTemplate', 'saveTemplate', 'delTemplate', 'searchTemplates']) {
+          const name = 'service' + verb[0].toUpperCase() + verb.slice(1);
+          const post = verb !== 'getTemplate';
+          __cp[name] = async (a, b) => {
+            const call = (base) => post
+              ? __cp.http.post('/api/captiveportal/' + base + '/' + verb, (typeof a === 'object' ? a : b) || {})
+              : __cp.http.get('/api/captiveportal/' + base + '/' + verb + (a ? '/' + a : ''));
+            try {
+              return await call('template');
+            } catch (e) {
+              if (e && e.response && e.response.status === 404) return await call('service');
+              throw e;
+            }
+          };
+        }
+      }
+
       // FORK FIX (filter_base 404): @richard-stovall/opnsense-typescript-client
       // 0.5.3 maps 8 firewall model-base methods to /api/firewall/filter_base/*,
       // which 404 on OPNsense. The real route is /api/firewall/filter/* (verified
@@ -12069,9 +12743,9 @@ class OPNsenseMCPServer {
     const transport = new StdioServerTransport();
     await this.server.connect(transport);
     console.error('OPNsense MCP server v0.6.0 (modular) started');
-    console.error(`Core tools: 24 modules`);
+    console.error(`Core tools: 28 modules`);
     console.error(`Plugin tools: 64 modules (${this.config.includePlugins ? 'enabled' : 'disabled'})`);
-    console.error(`Total available: ${this.config.includePlugins ? '88' : '24'} modules`);
+    console.error(`Total available: ${this.config.includePlugins ? '92' : '28'} modules`);
   }
 }
 
@@ -12141,10 +12815,10 @@ Environment Variables:
   INCLUDE_PLUGINS           Set to 'true' to include plugin tools
 
 Examples:
-  # Basic usage (24 core modules)
+  # Basic usage (28 core modules)
   opnsense-mcp-server --url https://192.168.1.1 --api-key mykey --api-secret mysecret
 
-  # With plugins enabled (88 total modules)
+  # With plugins enabled (92 total modules)
   opnsense-mcp-server --url https://192.168.1.1 --api-key mykey --api-secret mysecret --plugins
 
 Tool Usage:
