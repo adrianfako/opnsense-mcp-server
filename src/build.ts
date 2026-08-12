@@ -41,6 +41,13 @@ for (const [key, routes] of Object.entries(apiRoutes)) {
   }
   tool.methods = [...new Set([...tool.methods, ...names])].sort();
   tool.inputSchema.properties.method.enum = tool.methods;
+  // Only the leading count is refreshed. The rest of the description is
+  // hand-written per tool (firewall_manage carries the write-body cheat sheet)
+  // and must survive the merge intact.
+  tool.description = tool.description.replace(
+    /\b\d+ available methods\b/,
+    `${tool.methods.length} available methods`
+  );
 }
 toolsData.coreTools = toolsData.tools.filter((t: any) => t.module !== 'plugins').length;
 toolsData.pluginTools = toolsData.tools.filter((t: any) => t.module === 'plugins').length;

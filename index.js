@@ -13,7 +13,7 @@ import { OPNsenseClient } from '@richard-stovall/opnsense-typescript-client';
 const TOOLS = [
   {
     "name": "core_manage",
-    "description": "Core system management - 46 available methods including: backupBackups, backupDeleteBackup, backupDiff, backupDownload, backupProviders...",
+    "description": "Core system management - 53 available methods including: backupBackups, backupDeleteBackup, backupDiff, backupDownload, backupProviders...",
     "module": "core",
     "methods": [
       "backupBackups",
@@ -176,7 +176,7 @@ const TOOLS = [
   },
   {
     "name": "firewall_manage",
-    "description": "Firewall management - 89 available methods. WRITE-BODY SCHEMA (live-validated on OPNsense 26.x, 2026-06-11): add/set bodies MUST be the family's nested editable model — the shape its *GetRule/*GetItem returns (call with no uuid for an empty template). NEVER send the flat dotted keys that *SearchRule/*SearchItem return: OPNsense answers HTTP 200 'saved' but silently drops mis-shaped fields (e.g. a d_nat rule built from search-shaped keys saves with an EMPTY destination and matches everything). Wrappers: params.item = {rule:{...}} for dNat/filter/sourceNat/oneToOne/npt, {alias:{...}}, {group:{...}}, {category:{...}}. Field dialects: dNat is the outlier — NESTED source/destination objects {network,address,port,not}, flag 'disabled', text 'descr', lowercase protocol keys (tcp, udp, tcp/udp); filter/sourceNat/oneToOne/npt use FLAT source_net/source_not/source_port + destination_net/destination_not/destination_port, flag 'enabled', text 'description', UPPERCASE protocol (TCP, UDP, TCP/UDP). Family extras: sourceNat target/target_port/staticnatport/nonat; oneToOne external + type (binat|nat); npt trackif; filter action (pass|block|reject)/quick/direction (in|out|any)/gateway/statetype; alias name/type (host|network|port|url|urltable|geoip|networkgroup|mac|asn|...)/content (newline-separated entries)/proto; group ifname/members (comma-separated interfaces; uuid IS the ifname)/nogroup; category name/auto/color (hex, no #). 'categories' everywhere = comma-separated category UUIDs. Writes only STAGE config — follow with the family apply (dNatApply/sourceNatApply/oneToOneApply/nptApply/filterBaseApply) or aliasReconfigure/groupReconfigure. Worked dNat example: {item:{rule:{interface:'wan',ipprotocol:'inet',protocol:'tcp',source:{network:'',address:'',port:'',not:'0'},destination:{network:'wanip',address:'',port:'29998',not:'0'},target:'10.1.2.249','local-port':'22',descr:'x',nordr:'0',disabled:'0'}}}",
+    "description": "Firewall management - 135 available methods. WRITE-BODY SCHEMA (live-validated on OPNsense 26.x, 2026-06-11): add/set bodies MUST be the family's nested editable model — the shape its *GetRule/*GetItem returns (call with no uuid for an empty template). NEVER send the flat dotted keys that *SearchRule/*SearchItem return: OPNsense answers HTTP 200 'saved' but silently drops mis-shaped fields (e.g. a d_nat rule built from search-shaped keys saves with an EMPTY destination and matches everything). Wrappers: params.item = {rule:{...}} for dNat/filter/sourceNat/oneToOne/npt, {alias:{...}}, {group:{...}}, {category:{...}}. Field dialects: dNat is the outlier — NESTED source/destination objects {network,address,port,not}, flag 'disabled', text 'descr', lowercase protocol keys (tcp, udp, tcp/udp); filter/sourceNat/oneToOne/npt use FLAT source_net/source_not/source_port + destination_net/destination_not/destination_port, flag 'enabled', text 'description', UPPERCASE protocol (TCP, UDP, TCP/UDP). Family extras: sourceNat target/target_port/staticnatport/nonat; oneToOne external + type (binat|nat); npt trackif; filter action (pass|block|reject)/quick/direction (in|out|any)/gateway/statetype; alias name/type (host|network|port|url|urltable|geoip|networkgroup|mac|asn|...)/content (newline-separated entries)/proto; group ifname/members (comma-separated interfaces; uuid IS the ifname)/nogroup; category name/auto/color (hex, no #). 'categories' everywhere = comma-separated category UUIDs. Writes only STAGE config — follow with the family apply (dNatApply/sourceNatApply/oneToOneApply/nptApply/filterBaseApply) or aliasReconfigure/groupReconfigure. Worked dNat example: {item:{rule:{interface:'wan',ipprotocol:'inet',protocol:'tcp',source:{network:'',address:'',port:'',not:'0'},destination:{network:'wanip',address:'',port:'29998',not:'0'},target:'10.1.2.249','local-port':'22',descr:'x',nordr:'0',disabled:'0'}}}",
     "module": "firewall",
     "methods": [
       "aliasAddItem",
@@ -503,7 +503,7 @@ const TOOLS = [
   },
   {
     "name": "auth_manage",
-    "description": "Authentication management - 19 available methods including: groupAdd, groupDel, groupGet, groupSet, privGet...",
+    "description": "Authentication management - 21 available methods including: groupAdd, groupDel, groupGet, groupSet, privGet...",
     "module": "auth",
     "methods": [
       "groupAdd",
@@ -602,7 +602,7 @@ const TOOLS = [
   },
   {
     "name": "interfaces_manage",
-    "description": "Network interfaces management - 63 available methods including: gifSettingsAddItem, gifSettingsDelItem, gifSettingsGet, gifSettingsGetIfOptions, gifSettingsGetItem...",
+    "description": "Network interfaces management - 85 available methods including: gifSettingsAddItem, gifSettingsDelItem, gifSettingsGet, gifSettingsGetIfOptions, gifSettingsGetItem...",
     "module": "interfaces",
     "methods": [
       "assignmentAddItem",
@@ -829,7 +829,7 @@ const TOOLS = [
   },
   {
     "name": "captiveportal_manage",
-    "description": "Captiveportal management - 27 available methods including: accessApi, accessLogoff, accessLogon, serviceDelTemplate, serviceGetTemplate...",
+    "description": "Captiveportal management - 33 available methods including: accessApi, accessLogoff, accessLogon, serviceDelTemplate, serviceGetTemplate...",
     "module": "captiveportal",
     "methods": [
       "accessApi",
@@ -952,7 +952,7 @@ const TOOLS = [
   },
   {
     "name": "cron_manage",
-    "description": "Cron management - 8 available methods including: serviceReconfigure, settingsAddJob, settingsDelJob, settingsGet, settingsGetJob...",
+    "description": "Cron management - 9 available methods including: serviceReconfigure, settingsAddJob, settingsDelJob, settingsGet, settingsGetJob...",
     "module": "cron",
     "methods": [
       "serviceReconfigure",
@@ -1171,7 +1171,7 @@ const TOOLS = [
   },
   {
     "name": "dhcrelay_manage",
-    "description": "Dhcrelay management - 12 available methods including: serviceReconfigure, settingsAddDest, settingsAddRelay, settingsDelDest, settingsDelRelay...",
+    "description": "Dhcrelay management - 14 available methods including: serviceReconfigure, settingsAddDest, settingsAddRelay, settingsDelDest, settingsDelRelay...",
     "module": "dhcrelay",
     "methods": [
       "serviceReconfigure",
@@ -1256,7 +1256,7 @@ const TOOLS = [
   },
   {
     "name": "diagnostics_manage",
-    "description": "Diagnostics management - 90 available methods including: activityGetActivity, cpuUsageGetCPUType, cpuUsageStream, dnsReverseLookup, dnsDiagnosticsGet...",
+    "description": "Diagnostics management - 95 available methods including: activityGetActivity, cpuUsageGetCPUType, cpuUsageStream, dnsReverseLookup, dnsDiagnosticsGet...",
     "module": "diagnostics",
     "methods": [
       "activityGetActivity",
@@ -1503,7 +1503,7 @@ const TOOLS = [
   },
   {
     "name": "dnsmasq_manage",
-    "description": "Dnsmasq management - 35 available methods including: leasesSearch, serviceReconfigure, serviceRestart, serviceStart, serviceStatus...",
+    "description": "Dnsmasq management - 41 available methods including: leasesSearch, serviceReconfigure, serviceRestart, serviceStart, serviceStatus...",
     "module": "dnsmasq",
     "methods": [
       "leasesSearch",
@@ -1642,7 +1642,7 @@ const TOOLS = [
   },
   {
     "name": "firmware_manage",
-    "description": "Firmware management - 26 available methods including: firmwareAudit, firmwareChangelog, firmwareCheck, firmwareConnection, firmwareGet...",
+    "description": "Firmware management - 27 available methods including: firmwareAudit, firmwareChangelog, firmwareCheck, firmwareConnection, firmwareGet...",
     "module": "firmware",
     "methods": [
       "firmwareAudit",
@@ -1753,7 +1753,7 @@ const TOOLS = [
   },
   {
     "name": "ids_manage",
-    "description": "Ids management - 40 available methods including: serviceDropAlertLog, serviceGetAlertInfo, serviceGetAlertLogs, serviceQueryAlerts, serviceReconfigure...",
+    "description": "Ids management - 43 available methods including: serviceDropAlertLog, serviceGetAlertInfo, serviceGetAlertLogs, serviceQueryAlerts, serviceReconfigure...",
     "module": "ids",
     "methods": [
       "serviceDropAlertLog",
@@ -1896,7 +1896,7 @@ const TOOLS = [
   },
   {
     "name": "ipsec_manage",
-    "description": "Ipsec management - 80 available methods including: connectionsAddChild, connectionsAddConnection, connectionsAddLocal, connectionsAddRemote, connectionsConnectionExists...",
+    "description": "Ipsec management - 89 available methods including: connectionsAddChild, connectionsAddConnection, connectionsAddLocal, connectionsAddRemote, connectionsConnectionExists...",
     "module": "ipsec",
     "methods": [
       "connectionsAddChild",
@@ -2131,7 +2131,7 @@ const TOOLS = [
   },
   {
     "name": "kea_manage",
-    "description": "Kea management - 24 available methods including: ctrlAgentGet, ctrlAgentSet, dhcpv4AddPeer, dhcpv4AddReservation, dhcpv4AddSubnet...",
+    "description": "Kea management - 64 available methods including: ctrlAgentGet, ctrlAgentSet, dhcpv4AddPeer, dhcpv4AddReservation, dhcpv4AddSubnet...",
     "module": "kea",
     "methods": [
       "ctrlAgentGet",
@@ -2316,7 +2316,7 @@ const TOOLS = [
   },
   {
     "name": "monit_manage",
-    "description": "Monit management - 25 available methods including: serviceCheck, serviceReconfigure, serviceRestart, serviceStart, serviceStatus...",
+    "description": "Monit management - 28 available methods including: serviceCheck, serviceReconfigure, serviceRestart, serviceStart, serviceStatus...",
     "module": "monit",
     "methods": [
       "serviceCheck",
@@ -2429,7 +2429,7 @@ const TOOLS = [
   },
   {
     "name": "openvpn_manage",
-    "description": "Openvpn management - 28 available methods including: clientOverwritesAdd, clientOverwritesDel, clientOverwritesGet, clientOverwritesSet, clientOverwritesToggle...",
+    "description": "Openvpn management - 31 available methods including: clientOverwritesAdd, clientOverwritesDel, clientOverwritesGet, clientOverwritesSet, clientOverwritesToggle...",
     "module": "openvpn",
     "methods": [
       "clientOverwritesAdd",
@@ -2548,7 +2548,7 @@ const TOOLS = [
   },
   {
     "name": "routes_manage",
-    "description": "Routes management - 9 available methods including: gatewayStatus, routesAddroute, routesDelroute, routesGet, routesGetroute...",
+    "description": "Routes management - 10 available methods including: gatewayStatus, routesAddroute, routesDelroute, routesGet, routesGetroute...",
     "module": "routes",
     "methods": [
       "gatewayStatus",
@@ -2625,7 +2625,7 @@ const TOOLS = [
   },
   {
     "name": "routing_manage",
-    "description": "Routing management - 9 available methods including: settingsAddGateway, settingsDelGateway, settingsGet, settingsGetGateway, settingsReconfigure...",
+    "description": "Routing management - 15 available methods including: settingsAddGateway, settingsDelGateway, settingsGet, settingsGetGateway, settingsReconfigure...",
     "module": "routing",
     "methods": [
       "groupSettingsAdd",
@@ -2712,7 +2712,7 @@ const TOOLS = [
   },
   {
     "name": "syslog_manage",
-    "description": "Syslog management - 14 available methods including: serviceReconfigure, serviceReset, serviceRestart, serviceStart, serviceStats...",
+    "description": "Syslog management - 15 available methods including: serviceReconfigure, serviceReset, serviceRestart, serviceStart, serviceStats...",
     "module": "syslog",
     "methods": [
       "serviceReconfigure",
@@ -2799,7 +2799,7 @@ const TOOLS = [
   },
   {
     "name": "trafficshaper_manage",
-    "description": "Trafficshaper management - 20 available methods including: serviceFlushreload, serviceReconfigure, serviceStatistics, settingsAddPipe, settingsAddQueue...",
+    "description": "Trafficshaper management - 27 available methods including: serviceFlushreload, serviceReconfigure, serviceStatistics, settingsAddPipe, settingsAddQueue...",
     "module": "trafficshaper",
     "methods": [
       "serviceFlushreload",
@@ -2910,7 +2910,7 @@ const TOOLS = [
   },
   {
     "name": "trust_manage",
-    "description": "Trust management - 25 available methods including: caCaInfo, caCaList, caDel, caGenerateFile, caGet...",
+    "description": "Trust management - 28 available methods including: caCaInfo, caCaList, caDel, caGenerateFile, caGet...",
     "module": "trust",
     "methods": [
       "caAdd",
@@ -3023,7 +3023,7 @@ const TOOLS = [
   },
   {
     "name": "unbound_manage",
-    "description": "Unbound management - 42 available methods including: diagnosticsDumpcache, diagnosticsDumpinfra, diagnosticsListinsecure, diagnosticsListlocaldata, diagnosticsListlocalzones...",
+    "description": "Unbound management - 55 available methods including: diagnosticsDumpcache, diagnosticsDumpinfra, diagnosticsListinsecure, diagnosticsListlocaldata, diagnosticsListlocalzones...",
     "module": "unbound",
     "methods": [
       "diagnosticsDumpcache",
@@ -8525,7 +8525,7 @@ const TOOLS = [
   },
   {
     "name": "plugin_telegraf_manage",
-    "description": "Plugin telegraf management - 18 available methods including: generalGet, generalSet, inputGet, inputSet, keyAddKey...",
+    "description": "Plugin telegraf management - 19 available methods including: generalGet, generalSet, inputGet, inputSet, keyAddKey...",
     "module": "plugins",
     "submodule": "telegraf",
     "methods": [

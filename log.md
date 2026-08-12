@@ -28,6 +28,10 @@ Completed work lands here (TODO.md keeps open items only). Newest first.
   rather than deleted.
 - **`tools/smoke.mjs`** drives the built server over stdio and calls one method
   per fork mechanism. 16/16 pass on eu-2, eu-6, eu-8 and homelab.
+- **Tool descriptions now report the real method count.** The merge refreshes
+  only the leading `N available methods`, so the hand-written remainder — the
+  firewall_manage write-body cheat sheet — survives. firewall_manage read 89
+  while its enum held 135.
 - **v0.7.0.** Additive release: 88 tools to 92, no method removed. The bundled
   `@richard-stovall/opnsense-typescript-client` stays pinned at 0.5.3 on
   purpose — the route table overrides its stale spec at startup.
