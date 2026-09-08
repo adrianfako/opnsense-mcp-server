@@ -25,11 +25,11 @@ example. The generic `{method, params}` fallback still works.
 | dNat | **nested** `source{network,address,port,not}` | `disabled` | `descr` | lowercase `tcp` | `target`, `local-port`, `nordr` |
 | filter | flat `source_net/_not/_port` | `enabled` | `description` | UPPERCASE `TCP` | `action`, `quick`, `direction`, `gateway` |
 | source_nat | flat | `enabled` | `description` | UPPERCASE | `target`, `target_port`, `staticnatport`, `nonat` |
-| one_to_one | flat | `enabled` | `description` | — | `external`, `type` (binat\|nat) |
-| npt | flat | `enabled` | `description` | — | `trackif` |
-| alias | — | `enabled` | `description` | — | `name`, `type`, `content` (newline-sep) |
-| group | — | — | `descr` | — | `ifname` (= uuid), `members` (comma-sep) |
-| category | — | — | — | — | `name`, `auto`, `color` (hex no #) |
+| one_to_one | flat | `enabled` | `description` | - | `external`, `type` (binat\|nat) |
+| npt | flat | `enabled` | `description` | - | `trackif` |
+| alias | - | `enabled` | `description` | - | `name`, `type`, `content` (newline-sep) |
+| group | - | - | `descr` | - | `ifname` (= uuid), `members` (comma-sep) |
+| category | - | - | - | - | `name`, `auto`, `color` (hex no #) |
 
 ## Rules
 

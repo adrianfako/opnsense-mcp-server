@@ -55,7 +55,7 @@ yarn build && node tools/smoke.mjs <mcp-server-name>
 
 The probe only ever issues GETs, and only to actions whose names do not imply a
 mutation. That is safe because OPNsense guards every mutating action with
-`isPost()` and answers a GET with a bare `{"status":"failed"}` — which is
+`isPost()` and answers a GET with a bare `{"status":"failed"}` - which is
 exactly the signal used to mark an action POST-only.
 
 ## Install

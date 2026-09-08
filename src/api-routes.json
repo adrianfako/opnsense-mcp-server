@@ -517,6 +517,13 @@
    "post": false,
    "search": true
   },
+  "menuSetFavorite": {
+   "mutating": true,
+   "params": 0,
+   "path": "/api/core/menu/setFavorite",
+   "post": true,
+   "search": false
+  },
   "menuTree": {
    "mutating": false,
    "params": 0,

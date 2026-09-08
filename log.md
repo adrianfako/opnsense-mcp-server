@@ -2,6 +2,21 @@
 
 Completed work lands here (TODO.md keeps open items only). Newest first.
 
+## 2026-09-08
+
+- **Fleet on 26.7.3_11, route table re-discovered.** All four firewalls
+  (eu-2, eu-6, eu-8, homelab) upgraded 26.7.1_1 to 26.7.3_11 over MCP
+  (`firmwareUpdate`, then `firmwareReboot`: the update leaves status=reboot
+  and does not reboot on its own). `src/api-routes.json` regenerated from the
+  fw-leon controllers and re-probed live: 851 actions, one added
+  (`core.menuSetFavorite`), none removed, no path or verb changes against the
+  26.7.1_1 table. The probe flags `firmware.upgradestatus` NEEDS_POST when no
+  upgrade is running (it answers `status:error` with an empty log); that is a
+  false positive and the entry stays GET. Smoke 16/16 on all four boxes.
+- **Upstream is gone.** `richard-stovall/opnsense-mcp-server` is a 404; the
+  fork parent is `Pixelworlds/opnsense-mcp-server`, last pushed 2025-07-06,
+  with no commits this fork lacks. package.json repository fields repointed.
+
 ## 2026-08-12
 
 - **Full API surface discovered off a live box and attached at runtime.**
@@ -13,7 +28,7 @@ Completed work lands here (TODO.md keeps open items only). Newest first.
   (`migrationCountRules` / `downloadRules` / `flush` and the outbound trio),
   `source_nat` `get`/`set`, `d_nat`/`filter`/`npt`/`one_to_one`
   `moveRuleBefore` / `toggleRuleLog` / `upload`+`downloadRules`, 96 diagnostics
-  methods, 44 Kea methods, and 4 modules the client omits entirely — `backup`,
+  methods, 44 Kea methods, and 4 modules the client omits entirely - `backup`,
   `hostdiscovery`, `ntpd`, `radvd` (now 92 tools, 28 core).
 - **GET-vs-POST settled empirically, not guessed.** `tools/probe_verbs.py` GETs
   every read-shaped route and folds the answers back into the table: 260 routes
@@ -29,12 +44,12 @@ Completed work lands here (TODO.md keeps open items only). Newest first.
 - **`tools/smoke.mjs`** drives the built server over stdio and calls one method
   per fork mechanism. 16/16 pass on eu-2, eu-6, eu-8 and homelab.
 - **Tool descriptions now report the real method count.** The merge refreshes
-  only the leading `N available methods`, so the hand-written remainder — the
-  firewall_manage write-body cheat sheet — survives. firewall_manage read 89
+  only the leading `N available methods`, so the hand-written remainder - the
+  firewall_manage write-body cheat sheet - survives. firewall_manage read 89
   while its enum held 135.
 - **v0.7.0.** Additive release: 88 tools to 92, no method removed. The bundled
   `@richard-stovall/opnsense-typescript-client` stays pinned at 0.5.3 on
-  purpose — the route table overrides its stale spec at startup.
+  purpose - the route table overrides its stale spec at startup.
 
 ## 2026-07-17
 
