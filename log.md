@@ -2,6 +2,44 @@
 
 Completed work lands here (TODO.md keeps open items only). Newest first.
 
+## 2026-09-22
+
+- **Option maps pruned out of every response (about 90% fewer tokens, and the
+  reply is now a write-ready body).** OPNsense `*Get*` actions return the whole
+  `<select>` menu, not the chosen value: one d_nat rule shipped ~150 protocol
+  entries at `"selected": 0`. Measured live on eu-8, 7,546 bytes of which 773
+  carried information. `pruneOptions()` in `src/build.ts` collapses any
+  `{key:{value,selected}}` map to the selected key and runs over every tool
+  result. Verified end to end through JSON-RPC against the built server: 7,546
+  to 1,590 bytes, `protocol: "tcp"`, `interface: "wan"`, nested
+  `source`/`destination` intact. Search results are byte-identical (they carry
+  no option maps), alias `content` cut 76.9%. The collapsed shape is exactly
+  what the matching `*Set*` wants, so the model no longer hand-collapses option
+  maps, which is where the silent empty-destination trap bites. Several
+  selections return an array, not a joined string: the separator is per-family
+  (alias content newline, categories comma) and guessing one would corrupt
+  writes.
+- **`params.uuid` documented as what it really is, the first path segment.**
+  400 routes take a path parameter and 281 are not uuid-shaped (an IP for
+  `leases4DelLease`, a name, a filename). The schema said "Item UUID", so a
+  caller passing `{data:{ip}}` got `Missing lease IP parameter` and had to fall
+  back to `params.args`. Same dispatcher path either way; only the wording was
+  wrong.
+- **Dropped `filterBaseSavepoint` / `filterBaseRevert` /
+  `filterBaseCancelRollback` from the advertised enum.** 26.7 removed them:
+  probed live, 404 on both `/api/firewall/filter/*` and `/filter_base/*`. They
+  stayed callable through the upstream client prototype, so a caller could
+  build an apply flow around a rollback that cannot exist. `filterBaseApply` is
+  unaffected, it forks onto `/filter/apply` and answers 200.
+- **Search page default 5,000 to 200 rows** (11 sites). A bare search on a big
+  table overran the context window: `dNatSearchRule` on leon hit the limit at
+  260KB with rowCount 200 already.
+- Route table re-verified: all four boxes report 26.7.3_11, matching the
+  `src/api-routes.json` snapshot. No re-discovery needed.
+- Note: `npx jest` fails on a missing `ts-jest/presets/default-esm` preset.
+  Pre-existing (devDependencies are not installed), confirmed on clean HEAD,
+  untouched here. `tsc --noEmit` is clean and `node index.js --help` exits 0.
+
 ## 2026-09-08
 
 - **Fleet on 26.7.3_11, route table re-discovered.** All four firewalls

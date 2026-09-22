@@ -1,7 +1,7 @@
 ---
 type: "Backlog"
 title: "TODO - opnsense-mcp-server"
-timestamp: "2026-09-08"
+timestamp: "2026-09-22"
 ---
 
 # TODO - opnsense-mcp-server
@@ -20,9 +20,14 @@ picked up by **restarting Claude Code** - no npx cache to clear.
 - `src/api-routes.json` is a snapshot of OPNsense 26.7.3_11. Re-run the
   discovery + probe pass (recipe in [README.md](README.md)) after a fleet
   upgrade, or new actions stay invisible and removed ones linger.
+  Verified current 2026-09-22: all four boxes report 26.7.3_11.
 - Only `firewall_manage` carries embedded write-body schemas. The 315 methods
   added on 2026-08-12 are documented by route and verb only; the model has to
   fetch the editable-model template (`*Get*` with no uuid) to learn a body.
+  Less painful since 2026-09-22: responses are pruned to the selected values,
+  so a template fetch costs about a tenth of what it did and comes back in the
+  shape the matching `*Set*` expects. Embedded per-family schemas would still
+  beat a round trip.
 
 ## References
 

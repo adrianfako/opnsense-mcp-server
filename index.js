@@ -140,7 +140,7 @@ const TOOLS = [
           "properties": {
             "uuid": {
               "type": "string",
-              "description": "Item UUID (for get/set/del operations)"
+              "description": "First path segment of the action. Usually an item UUID, but many routes take some other scalar there instead: an IP (kea leases4DelLease), a name, a filename. Pass that scalar here - do NOT wrap it in data/item, which sends it as a body and the route then reports the path parameter missing."
             },
             "data": {
               "type": "object",
@@ -161,8 +161,8 @@ const TOOLS = [
             },
             "rowCount": {
               "type": "integer",
-              "description": "Rows per page (for search operations)",
-              "default": 20
+              "description": "Rows per page (for search operations). Omitted, a search returns 200 rows; raise it deliberately, a large table can overrun the context window.",
+              "default": 200
             },
             "args": {
               "type": "array",
@@ -178,7 +178,7 @@ const TOOLS = [
   },
   {
     "name": "firewall_manage",
-    "description": "Firewall management - 135 available methods. WRITE-BODY SCHEMA (live-validated on OPNsense 26.x, 2026-06-11): add/set bodies MUST be the family's nested editable model — the shape its *GetRule/*GetItem returns (call with no uuid for an empty template). NEVER send the flat dotted keys that *SearchRule/*SearchItem return: OPNsense answers HTTP 200 'saved' but silently drops mis-shaped fields (e.g. a d_nat rule built from search-shaped keys saves with an EMPTY destination and matches everything). Wrappers: params.item = {rule:{...}} for dNat/filter/sourceNat/oneToOne/npt, {alias:{...}}, {group:{...}}, {category:{...}}. Field dialects: dNat is the outlier — NESTED source/destination objects {network,address,port,not}, flag 'disabled', text 'descr', lowercase protocol keys (tcp, udp, tcp/udp); filter/sourceNat/oneToOne/npt use FLAT source_net/source_not/source_port + destination_net/destination_not/destination_port, flag 'enabled', text 'description', UPPERCASE protocol (TCP, UDP, TCP/UDP). Family extras: sourceNat target/target_port/staticnatport/nonat; oneToOne external + type (binat|nat); npt trackif; filter action (pass|block|reject)/quick/direction (in|out|any)/gateway/statetype; alias name/type (host|network|port|url|urltable|geoip|networkgroup|mac|asn|...)/content (newline-separated entries)/proto; group ifname/members (comma-separated interfaces; uuid IS the ifname)/nogroup; category name/auto/color (hex, no #). 'categories' everywhere = comma-separated category UUIDs. Writes only STAGE config — follow with the family apply (dNatApply/sourceNatApply/oneToOneApply/nptApply/filterBaseApply) or aliasReconfigure/groupReconfigure. Worked dNat example: {item:{rule:{interface:'wan',ipprotocol:'inet',protocol:'tcp',source:{network:'',address:'',port:'',not:'0'},destination:{network:'wanip',address:'',port:'29998',not:'0'},target:'10.1.2.249','local-port':'22',descr:'x',nordr:'0',disabled:'0'}}}",
+    "description": "Firewall management - 129 available methods including: aliasAddItem, aliasDelItem, aliasGet, aliasGetAliasUUID, aliasGetGeoIP...",
     "module": "firewall",
     "methods": [
       "aliasAddItem",
@@ -220,14 +220,12 @@ const TOOLS = [
       "dNatApply",
       "dNatDelRule",
       "dNatDownloadRules",
-      "dNatGet",
       "dNatGetRule",
       "dNatListCategories",
       "dNatListNetworkSelectOptions",
       "dNatListPortSelectOptions",
       "dNatMoveRuleBefore",
       "dNatSearchRule",
-      "dNatSet",
       "dNatSetRule",
       "dNatToggleRule",
       "dNatToggleRuleLog",
@@ -235,13 +233,9 @@ const TOOLS = [
       "filterAddRule",
       "filterApply",
       "filterBaseApply",
-      "filterBaseCancelRollback",
       "filterBaseGet",
       "filterBaseListCategories",
       "filterBaseListNetworkSelectOptions",
-      "filterBaseListPortSelectOptions",
-      "filterBaseRevert",
-      "filterBaseSavepoint",
       "filterBaseSet",
       "filterDelRule",
       "filterDownloadRules",
@@ -363,14 +357,12 @@ const TOOLS = [
             "dNatApply",
             "dNatDelRule",
             "dNatDownloadRules",
-            "dNatGet",
             "dNatGetRule",
             "dNatListCategories",
             "dNatListNetworkSelectOptions",
             "dNatListPortSelectOptions",
             "dNatMoveRuleBefore",
             "dNatSearchRule",
-            "dNatSet",
             "dNatSetRule",
             "dNatToggleRule",
             "dNatToggleRuleLog",
@@ -378,13 +370,9 @@ const TOOLS = [
             "filterAddRule",
             "filterApply",
             "filterBaseApply",
-            "filterBaseCancelRollback",
             "filterBaseGet",
             "filterBaseListCategories",
             "filterBaseListNetworkSelectOptions",
-            "filterBaseListPortSelectOptions",
-            "filterBaseRevert",
-            "filterBaseSavepoint",
             "filterBaseSet",
             "filterDelRule",
             "filterDownloadRules",
@@ -467,7 +455,7 @@ const TOOLS = [
           "properties": {
             "uuid": {
               "type": "string",
-              "description": "Item UUID (for get/set/del operations)"
+              "description": "First path segment of the action. Usually an item UUID, but many routes take some other scalar there instead: an IP (kea leases4DelLease), a name, a filename. Pass that scalar here - do NOT wrap it in data/item, which sends it as a body and the route then reports the path parameter missing."
             },
             "data": {
               "type": "object",
@@ -488,8 +476,8 @@ const TOOLS = [
             },
             "rowCount": {
               "type": "integer",
-              "description": "Rows per page (for search operations)",
-              "default": 20
+              "description": "Rows per page (for search operations). Omitted, a search returns 200 rows; raise it deliberately, a large table can overrun the context window.",
+              "default": 200
             },
             "args": {
               "type": "array",
@@ -566,7 +554,7 @@ const TOOLS = [
           "properties": {
             "uuid": {
               "type": "string",
-              "description": "Item UUID (for get/set/del operations)"
+              "description": "First path segment of the action. Usually an item UUID, but many routes take some other scalar there instead: an IP (kea leases4DelLease), a name, a filename. Pass that scalar here - do NOT wrap it in data/item, which sends it as a body and the route then reports the path parameter missing."
             },
             "data": {
               "type": "object",
@@ -587,8 +575,8 @@ const TOOLS = [
             },
             "rowCount": {
               "type": "integer",
-              "description": "Rows per page (for search operations)",
-              "default": 20
+              "description": "Rows per page (for search operations). Omitted, a search returns 200 rows; raise it deliberately, a large table can overrun the context window.",
+              "default": 200
             },
             "args": {
               "type": "array",
@@ -793,7 +781,7 @@ const TOOLS = [
           "properties": {
             "uuid": {
               "type": "string",
-              "description": "Item UUID (for get/set/del operations)"
+              "description": "First path segment of the action. Usually an item UUID, but many routes take some other scalar there instead: an IP (kea leases4DelLease), a name, a filename. Pass that scalar here - do NOT wrap it in data/item, which sends it as a body and the route then reports the path parameter missing."
             },
             "data": {
               "type": "object",
@@ -814,8 +802,8 @@ const TOOLS = [
             },
             "rowCount": {
               "type": "integer",
-              "description": "Rows per page (for search operations)",
-              "default": 20
+              "description": "Rows per page (for search operations). Omitted, a search returns 200 rows; raise it deliberately, a large table can overrun the context window.",
+              "default": 200
             },
             "args": {
               "type": "array",
@@ -916,7 +904,7 @@ const TOOLS = [
           "properties": {
             "uuid": {
               "type": "string",
-              "description": "Item UUID (for get/set/del operations)"
+              "description": "First path segment of the action. Usually an item UUID, but many routes take some other scalar there instead: an IP (kea leases4DelLease), a name, a filename. Pass that scalar here - do NOT wrap it in data/item, which sends it as a body and the route then reports the path parameter missing."
             },
             "data": {
               "type": "object",
@@ -937,8 +925,8 @@ const TOOLS = [
             },
             "rowCount": {
               "type": "integer",
-              "description": "Rows per page (for search operations)",
-              "default": 20
+              "description": "Rows per page (for search operations). Omitted, a search returns 200 rows; raise it deliberately, a large table can overrun the context window.",
+              "default": 200
             },
             "args": {
               "type": "array",
@@ -991,7 +979,7 @@ const TOOLS = [
           "properties": {
             "uuid": {
               "type": "string",
-              "description": "Item UUID (for get/set/del operations)"
+              "description": "First path segment of the action. Usually an item UUID, but many routes take some other scalar there instead: an IP (kea leases4DelLease), a name, a filename. Pass that scalar here - do NOT wrap it in data/item, which sends it as a body and the route then reports the path parameter missing."
             },
             "data": {
               "type": "object",
@@ -1012,8 +1000,8 @@ const TOOLS = [
             },
             "rowCount": {
               "type": "integer",
-              "description": "Rows per page (for search operations)",
-              "default": 20
+              "description": "Rows per page (for search operations). Omitted, a search returns 200 rows; raise it deliberately, a large table can overrun the context window.",
+              "default": 200
             },
             "args": {
               "type": "array",
@@ -1062,7 +1050,7 @@ const TOOLS = [
           "properties": {
             "uuid": {
               "type": "string",
-              "description": "Item UUID (for get/set/del operations)"
+              "description": "First path segment of the action. Usually an item UUID, but many routes take some other scalar there instead: an IP (kea leases4DelLease), a name, a filename. Pass that scalar here - do NOT wrap it in data/item, which sends it as a body and the route then reports the path parameter missing."
             },
             "data": {
               "type": "object",
@@ -1083,8 +1071,8 @@ const TOOLS = [
             },
             "rowCount": {
               "type": "integer",
-              "description": "Rows per page (for search operations)",
-              "default": 20
+              "description": "Rows per page (for search operations). Omitted, a search returns 200 rows; raise it deliberately, a large table can overrun the context window.",
+              "default": 200
             },
             "args": {
               "type": "array",
@@ -1135,7 +1123,7 @@ const TOOLS = [
           "properties": {
             "uuid": {
               "type": "string",
-              "description": "Item UUID (for get/set/del operations)"
+              "description": "First path segment of the action. Usually an item UUID, but many routes take some other scalar there instead: an IP (kea leases4DelLease), a name, a filename. Pass that scalar here - do NOT wrap it in data/item, which sends it as a body and the route then reports the path parameter missing."
             },
             "data": {
               "type": "object",
@@ -1156,8 +1144,8 @@ const TOOLS = [
             },
             "rowCount": {
               "type": "integer",
-              "description": "Rows per page (for search operations)",
-              "default": 20
+              "description": "Rows per page (for search operations). Omitted, a search returns 200 rows; raise it deliberately, a large table can overrun the context window.",
+              "default": 200
             },
             "args": {
               "type": "array",
@@ -1220,7 +1208,7 @@ const TOOLS = [
           "properties": {
             "uuid": {
               "type": "string",
-              "description": "Item UUID (for get/set/del operations)"
+              "description": "First path segment of the action. Usually an item UUID, but many routes take some other scalar there instead: an IP (kea leases4DelLease), a name, a filename. Pass that scalar here - do NOT wrap it in data/item, which sends it as a body and the route then reports the path parameter missing."
             },
             "data": {
               "type": "object",
@@ -1241,8 +1229,8 @@ const TOOLS = [
             },
             "rowCount": {
               "type": "integer",
-              "description": "Rows per page (for search operations)",
-              "default": 20
+              "description": "Rows per page (for search operations). Omitted, a search returns 200 rows; raise it deliberately, a large table can overrun the context window.",
+              "default": 200
             },
             "args": {
               "type": "array",
@@ -1467,7 +1455,7 @@ const TOOLS = [
           "properties": {
             "uuid": {
               "type": "string",
-              "description": "Item UUID (for get/set/del operations)"
+              "description": "First path segment of the action. Usually an item UUID, but many routes take some other scalar there instead: an IP (kea leases4DelLease), a name, a filename. Pass that scalar here - do NOT wrap it in data/item, which sends it as a body and the route then reports the path parameter missing."
             },
             "data": {
               "type": "object",
@@ -1488,8 +1476,8 @@ const TOOLS = [
             },
             "rowCount": {
               "type": "integer",
-              "description": "Rows per page (for search operations)",
-              "default": 20
+              "description": "Rows per page (for search operations). Omitted, a search returns 200 rows; raise it deliberately, a large table can overrun the context window.",
+              "default": 200
             },
             "args": {
               "type": "array",
@@ -1606,7 +1594,7 @@ const TOOLS = [
           "properties": {
             "uuid": {
               "type": "string",
-              "description": "Item UUID (for get/set/del operations)"
+              "description": "First path segment of the action. Usually an item UUID, but many routes take some other scalar there instead: an IP (kea leases4DelLease), a name, a filename. Pass that scalar here - do NOT wrap it in data/item, which sends it as a body and the route then reports the path parameter missing."
             },
             "data": {
               "type": "object",
@@ -1627,8 +1615,8 @@ const TOOLS = [
             },
             "rowCount": {
               "type": "integer",
-              "description": "Rows per page (for search operations)",
-              "default": 20
+              "description": "Rows per page (for search operations). Omitted, a search returns 200 rows; raise it deliberately, a large table can overrun the context window.",
+              "default": 200
             },
             "args": {
               "type": "array",
@@ -1717,7 +1705,7 @@ const TOOLS = [
           "properties": {
             "uuid": {
               "type": "string",
-              "description": "Item UUID (for get/set/del operations)"
+              "description": "First path segment of the action. Usually an item UUID, but many routes take some other scalar there instead: an IP (kea leases4DelLease), a name, a filename. Pass that scalar here - do NOT wrap it in data/item, which sends it as a body and the route then reports the path parameter missing."
             },
             "data": {
               "type": "object",
@@ -1738,8 +1726,8 @@ const TOOLS = [
             },
             "rowCount": {
               "type": "integer",
-              "description": "Rows per page (for search operations)",
-              "default": 20
+              "description": "Rows per page (for search operations). Omitted, a search returns 200 rows; raise it deliberately, a large table can overrun the context window.",
+              "default": 200
             },
             "args": {
               "type": "array",
@@ -1860,7 +1848,7 @@ const TOOLS = [
           "properties": {
             "uuid": {
               "type": "string",
-              "description": "Item UUID (for get/set/del operations)"
+              "description": "First path segment of the action. Usually an item UUID, but many routes take some other scalar there instead: an IP (kea leases4DelLease), a name, a filename. Pass that scalar here - do NOT wrap it in data/item, which sends it as a body and the route then reports the path parameter missing."
             },
             "data": {
               "type": "object",
@@ -1881,8 +1869,8 @@ const TOOLS = [
             },
             "rowCount": {
               "type": "integer",
-              "description": "Rows per page (for search operations)",
-              "default": 20
+              "description": "Rows per page (for search operations). Omitted, a search returns 200 rows; raise it deliberately, a large table can overrun the context window.",
+              "default": 200
             },
             "args": {
               "type": "array",
@@ -2095,7 +2083,7 @@ const TOOLS = [
           "properties": {
             "uuid": {
               "type": "string",
-              "description": "Item UUID (for get/set/del operations)"
+              "description": "First path segment of the action. Usually an item UUID, but many routes take some other scalar there instead: an IP (kea leases4DelLease), a name, a filename. Pass that scalar here - do NOT wrap it in data/item, which sends it as a body and the route then reports the path parameter missing."
             },
             "data": {
               "type": "object",
@@ -2116,8 +2104,8 @@ const TOOLS = [
             },
             "rowCount": {
               "type": "integer",
-              "description": "Rows per page (for search operations)",
-              "default": 20
+              "description": "Rows per page (for search operations). Omitted, a search returns 200 rows; raise it deliberately, a large table can overrun the context window.",
+              "default": 200
             },
             "args": {
               "type": "array",
@@ -2280,7 +2268,7 @@ const TOOLS = [
           "properties": {
             "uuid": {
               "type": "string",
-              "description": "Item UUID (for get/set/del operations)"
+              "description": "First path segment of the action. Usually an item UUID, but many routes take some other scalar there instead: an IP (kea leases4DelLease), a name, a filename. Pass that scalar here - do NOT wrap it in data/item, which sends it as a body and the route then reports the path parameter missing."
             },
             "data": {
               "type": "object",
@@ -2301,8 +2289,8 @@ const TOOLS = [
             },
             "rowCount": {
               "type": "integer",
-              "description": "Rows per page (for search operations)",
-              "default": 20
+              "description": "Rows per page (for search operations). Omitted, a search returns 200 rows; raise it deliberately, a large table can overrun the context window.",
+              "default": 200
             },
             "args": {
               "type": "array",
@@ -2393,7 +2381,7 @@ const TOOLS = [
           "properties": {
             "uuid": {
               "type": "string",
-              "description": "Item UUID (for get/set/del operations)"
+              "description": "First path segment of the action. Usually an item UUID, but many routes take some other scalar there instead: an IP (kea leases4DelLease), a name, a filename. Pass that scalar here - do NOT wrap it in data/item, which sends it as a body and the route then reports the path parameter missing."
             },
             "data": {
               "type": "object",
@@ -2414,8 +2402,8 @@ const TOOLS = [
             },
             "rowCount": {
               "type": "integer",
-              "description": "Rows per page (for search operations)",
-              "default": 20
+              "description": "Rows per page (for search operations). Omitted, a search returns 200 rows; raise it deliberately, a large table can overrun the context window.",
+              "default": 200
             },
             "args": {
               "type": "array",
@@ -2512,7 +2500,7 @@ const TOOLS = [
           "properties": {
             "uuid": {
               "type": "string",
-              "description": "Item UUID (for get/set/del operations)"
+              "description": "First path segment of the action. Usually an item UUID, but many routes take some other scalar there instead: an IP (kea leases4DelLease), a name, a filename. Pass that scalar here - do NOT wrap it in data/item, which sends it as a body and the route then reports the path parameter missing."
             },
             "data": {
               "type": "object",
@@ -2533,8 +2521,8 @@ const TOOLS = [
             },
             "rowCount": {
               "type": "integer",
-              "description": "Rows per page (for search operations)",
-              "default": 20
+              "description": "Rows per page (for search operations). Omitted, a search returns 200 rows; raise it deliberately, a large table can overrun the context window.",
+              "default": 200
             },
             "args": {
               "type": "array",
@@ -2589,7 +2577,7 @@ const TOOLS = [
           "properties": {
             "uuid": {
               "type": "string",
-              "description": "Item UUID (for get/set/del operations)"
+              "description": "First path segment of the action. Usually an item UUID, but many routes take some other scalar there instead: an IP (kea leases4DelLease), a name, a filename. Pass that scalar here - do NOT wrap it in data/item, which sends it as a body and the route then reports the path parameter missing."
             },
             "data": {
               "type": "object",
@@ -2610,8 +2598,8 @@ const TOOLS = [
             },
             "rowCount": {
               "type": "integer",
-              "description": "Rows per page (for search operations)",
-              "default": 20
+              "description": "Rows per page (for search operations). Omitted, a search returns 200 rows; raise it deliberately, a large table can overrun the context window.",
+              "default": 200
             },
             "args": {
               "type": "array",
@@ -2676,7 +2664,7 @@ const TOOLS = [
           "properties": {
             "uuid": {
               "type": "string",
-              "description": "Item UUID (for get/set/del operations)"
+              "description": "First path segment of the action. Usually an item UUID, but many routes take some other scalar there instead: an IP (kea leases4DelLease), a name, a filename. Pass that scalar here - do NOT wrap it in data/item, which sends it as a body and the route then reports the path parameter missing."
             },
             "data": {
               "type": "object",
@@ -2697,8 +2685,8 @@ const TOOLS = [
             },
             "rowCount": {
               "type": "integer",
-              "description": "Rows per page (for search operations)",
-              "default": 20
+              "description": "Rows per page (for search operations). Omitted, a search returns 200 rows; raise it deliberately, a large table can overrun the context window.",
+              "default": 200
             },
             "args": {
               "type": "array",
@@ -2763,7 +2751,7 @@ const TOOLS = [
           "properties": {
             "uuid": {
               "type": "string",
-              "description": "Item UUID (for get/set/del operations)"
+              "description": "First path segment of the action. Usually an item UUID, but many routes take some other scalar there instead: an IP (kea leases4DelLease), a name, a filename. Pass that scalar here - do NOT wrap it in data/item, which sends it as a body and the route then reports the path parameter missing."
             },
             "data": {
               "type": "object",
@@ -2784,8 +2772,8 @@ const TOOLS = [
             },
             "rowCount": {
               "type": "integer",
-              "description": "Rows per page (for search operations)",
-              "default": 20
+              "description": "Rows per page (for search operations). Omitted, a search returns 200 rows; raise it deliberately, a large table can overrun the context window.",
+              "default": 200
             },
             "args": {
               "type": "array",
@@ -2874,7 +2862,7 @@ const TOOLS = [
           "properties": {
             "uuid": {
               "type": "string",
-              "description": "Item UUID (for get/set/del operations)"
+              "description": "First path segment of the action. Usually an item UUID, but many routes take some other scalar there instead: an IP (kea leases4DelLease), a name, a filename. Pass that scalar here - do NOT wrap it in data/item, which sends it as a body and the route then reports the path parameter missing."
             },
             "data": {
               "type": "object",
@@ -2895,8 +2883,8 @@ const TOOLS = [
             },
             "rowCount": {
               "type": "integer",
-              "description": "Rows per page (for search operations)",
-              "default": 20
+              "description": "Rows per page (for search operations). Omitted, a search returns 200 rows; raise it deliberately, a large table can overrun the context window.",
+              "default": 200
             },
             "args": {
               "type": "array",
@@ -2987,7 +2975,7 @@ const TOOLS = [
           "properties": {
             "uuid": {
               "type": "string",
-              "description": "Item UUID (for get/set/del operations)"
+              "description": "First path segment of the action. Usually an item UUID, but many routes take some other scalar there instead: an IP (kea leases4DelLease), a name, a filename. Pass that scalar here - do NOT wrap it in data/item, which sends it as a body and the route then reports the path parameter missing."
             },
             "data": {
               "type": "object",
@@ -3008,8 +2996,8 @@ const TOOLS = [
             },
             "rowCount": {
               "type": "integer",
-              "description": "Rows per page (for search operations)",
-              "default": 20
+              "description": "Rows per page (for search operations). Omitted, a search returns 200 rows; raise it deliberately, a large table can overrun the context window.",
+              "default": 200
             },
             "args": {
               "type": "array",
@@ -3154,7 +3142,7 @@ const TOOLS = [
           "properties": {
             "uuid": {
               "type": "string",
-              "description": "Item UUID (for get/set/del operations)"
+              "description": "First path segment of the action. Usually an item UUID, but many routes take some other scalar there instead: an IP (kea leases4DelLease), a name, a filename. Pass that scalar here - do NOT wrap it in data/item, which sends it as a body and the route then reports the path parameter missing."
             },
             "data": {
               "type": "object",
@@ -3175,8 +3163,8 @@ const TOOLS = [
             },
             "rowCount": {
               "type": "integer",
-              "description": "Rows per page (for search operations)",
-              "default": 20
+              "description": "Rows per page (for search operations). Omitted, a search returns 200 rows; raise it deliberately, a large table can overrun the context window.",
+              "default": 200
             },
             "args": {
               "type": "array",
@@ -3192,7 +3180,7 @@ const TOOLS = [
   },
   {
     "name": "wireguard_manage",
-    "description": "Wireguard management - 28 methods. WRITE-BODY SCHEMA (live-validated eu-2/homelab 2026-06-15): client add/set bodies MUST wrap params.item = {client:{...}}; server add/set MUST wrap params.item = {server:{...}}. Sending the fields FLAT (item.{...}, unwrapped) returns {result:failed} as a silent no-op — the single most common WG write mistake. Multi-value fields (tunneladdress, servers, peers, dns) are comma-separated STRINGS in the write body (the GET echoes them back as selected-maps); 'servers' on a client = the server UUID(s), 'peers' on a server = client UUID(s). psk:'' is safe to send on a no-PSK peer (no wipe). Client fields: enabled, name, pubkey, psk, tunneladdress, serveraddress, serverport, endpoint, keepalive, servers. Server fields: enabled, name, instance, pubkey, privkey, port, mtu, dns, tunneladdress, disableroutes, gateway, peers. Fetch the empty editable template via clientGetClient / serverGetServer with NO uuid (fork makes uuid optional). Writes only STAGE config — apply with serviceReconfigure (runs wg syncconf: non-disruptive delta, won't bounce live peers). Worked example: clientAddClient params.item={client:{enabled:'1',name:'peer1',pubkey:'<b64>',psk:'',tunneladdress:'10.10.10.5/32',serveraddress:'',serverport:'',keepalive:'25',servers:'<server-uuid>'}}.",
+    "description": "Wireguard management - 30 available methods including: clientAddClient, clientAddClientBuilder, clientDelClient, clientGet, clientGetClient...",
     "module": "wireguard",
     "methods": [
       "clientAddClient",
@@ -3271,7 +3259,7 @@ const TOOLS = [
           "properties": {
             "uuid": {
               "type": "string",
-              "description": "Item UUID (for get/set/del operations)"
+              "description": "First path segment of the action. Usually an item UUID, but many routes take some other scalar there instead: an IP (kea leases4DelLease), a name, a filename. Pass that scalar here - do NOT wrap it in data/item, which sends it as a body and the route then reports the path parameter missing."
             },
             "data": {
               "type": "object",
@@ -3292,8 +3280,8 @@ const TOOLS = [
             },
             "rowCount": {
               "type": "integer",
-              "description": "Rows per page (for search operations)",
-              "default": 20
+              "description": "Rows per page (for search operations). Omitted, a search returns 200 rows; raise it deliberately, a large table can overrun the context window.",
+              "default": 200
             },
             "args": {
               "type": "array",
@@ -3425,7 +3413,7 @@ const TOOLS = [
           "properties": {
             "uuid": {
               "type": "string",
-              "description": "Item UUID (for get/set/del operations)"
+              "description": "First path segment of the action. Usually an item UUID, but many routes take some other scalar there instead: an IP (kea leases4DelLease), a name, a filename. Pass that scalar here - do NOT wrap it in data/item, which sends it as a body and the route then reports the path parameter missing."
             },
             "data": {
               "type": "object",
@@ -3446,8 +3434,8 @@ const TOOLS = [
             },
             "rowCount": {
               "type": "integer",
-              "description": "Rows per page (for search operations)",
-              "default": 20
+              "description": "Rows per page (for search operations). Omitted, a search returns 200 rows; raise it deliberately, a large table can overrun the context window.",
+              "default": 200
             },
             "args": {
               "type": "array",
@@ -3499,7 +3487,7 @@ const TOOLS = [
           "properties": {
             "uuid": {
               "type": "string",
-              "description": "Item UUID (for get/set/del operations)"
+              "description": "First path segment of the action. Usually an item UUID, but many routes take some other scalar there instead: an IP (kea leases4DelLease), a name, a filename. Pass that scalar here - do NOT wrap it in data/item, which sends it as a body and the route then reports the path parameter missing."
             },
             "data": {
               "type": "object",
@@ -3520,8 +3508,8 @@ const TOOLS = [
             },
             "rowCount": {
               "type": "integer",
-              "description": "Rows per page (for search operations)",
-              "default": 20
+              "description": "Rows per page (for search operations). Omitted, a search returns 200 rows; raise it deliberately, a large table can overrun the context window.",
+              "default": 200
             },
             "args": {
               "type": "array",
@@ -3629,7 +3617,7 @@ const TOOLS = [
           "properties": {
             "uuid": {
               "type": "string",
-              "description": "Item UUID (for get/set/del operations)"
+              "description": "First path segment of the action. Usually an item UUID, but many routes take some other scalar there instead: an IP (kea leases4DelLease), a name, a filename. Pass that scalar here - do NOT wrap it in data/item, which sends it as a body and the route then reports the path parameter missing."
             },
             "data": {
               "type": "object",
@@ -3650,8 +3638,8 @@ const TOOLS = [
             },
             "rowCount": {
               "type": "integer",
-              "description": "Rows per page (for search operations)",
-              "default": 20
+              "description": "Rows per page (for search operations). Omitted, a search returns 200 rows; raise it deliberately, a large table can overrun the context window.",
+              "default": 200
             },
             "args": {
               "type": "array",
@@ -3791,7 +3779,7 @@ const TOOLS = [
           "properties": {
             "uuid": {
               "type": "string",
-              "description": "Item UUID (for get/set/del operations)"
+              "description": "First path segment of the action. Usually an item UUID, but many routes take some other scalar there instead: an IP (kea leases4DelLease), a name, a filename. Pass that scalar here - do NOT wrap it in data/item, which sends it as a body and the route then reports the path parameter missing."
             },
             "data": {
               "type": "object",
@@ -3812,8 +3800,8 @@ const TOOLS = [
             },
             "rowCount": {
               "type": "integer",
-              "description": "Rows per page (for search operations)",
-              "default": 20
+              "description": "Rows per page (for search operations). Omitted, a search returns 200 rows; raise it deliberately, a large table can overrun the context window.",
+              "default": 200
             },
             "args": {
               "type": "array",
@@ -3871,7 +3859,7 @@ const TOOLS = [
           "properties": {
             "uuid": {
               "type": "string",
-              "description": "Item UUID (for get/set/del operations)"
+              "description": "First path segment of the action. Usually an item UUID, but many routes take some other scalar there instead: an IP (kea leases4DelLease), a name, a filename. Pass that scalar here - do NOT wrap it in data/item, which sends it as a body and the route then reports the path parameter missing."
             },
             "data": {
               "type": "object",
@@ -3892,8 +3880,8 @@ const TOOLS = [
             },
             "rowCount": {
               "type": "integer",
-              "description": "Rows per page (for search operations)",
-              "default": 20
+              "description": "Rows per page (for search operations). Omitted, a search returns 200 rows; raise it deliberately, a large table can overrun the context window.",
+              "default": 200
             },
             "args": {
               "type": "array",
@@ -3949,7 +3937,7 @@ const TOOLS = [
           "properties": {
             "uuid": {
               "type": "string",
-              "description": "Item UUID (for get/set/del operations)"
+              "description": "First path segment of the action. Usually an item UUID, but many routes take some other scalar there instead: an IP (kea leases4DelLease), a name, a filename. Pass that scalar here - do NOT wrap it in data/item, which sends it as a body and the route then reports the path parameter missing."
             },
             "data": {
               "type": "object",
@@ -3970,8 +3958,8 @@ const TOOLS = [
             },
             "rowCount": {
               "type": "integer",
-              "description": "Rows per page (for search operations)",
-              "default": 20
+              "description": "Rows per page (for search operations). Omitted, a search returns 200 rows; raise it deliberately, a large table can overrun the context window.",
+              "default": 200
             },
             "args": {
               "type": "array",
@@ -4039,7 +4027,7 @@ const TOOLS = [
           "properties": {
             "uuid": {
               "type": "string",
-              "description": "Item UUID (for get/set/del operations)"
+              "description": "First path segment of the action. Usually an item UUID, but many routes take some other scalar there instead: an IP (kea leases4DelLease), a name, a filename. Pass that scalar here - do NOT wrap it in data/item, which sends it as a body and the route then reports the path parameter missing."
             },
             "data": {
               "type": "object",
@@ -4060,8 +4048,8 @@ const TOOLS = [
             },
             "rowCount": {
               "type": "integer",
-              "description": "Rows per page (for search operations)",
-              "default": 20
+              "description": "Rows per page (for search operations). Omitted, a search returns 200 rows; raise it deliberately, a large table can overrun the context window.",
+              "default": 200
             },
             "args": {
               "type": "array",
@@ -4111,7 +4099,7 @@ const TOOLS = [
           "properties": {
             "uuid": {
               "type": "string",
-              "description": "Item UUID (for get/set/del operations)"
+              "description": "First path segment of the action. Usually an item UUID, but many routes take some other scalar there instead: an IP (kea leases4DelLease), a name, a filename. Pass that scalar here - do NOT wrap it in data/item, which sends it as a body and the route then reports the path parameter missing."
             },
             "data": {
               "type": "object",
@@ -4132,8 +4120,8 @@ const TOOLS = [
             },
             "rowCount": {
               "type": "integer",
-              "description": "Rows per page (for search operations)",
-              "default": 20
+              "description": "Rows per page (for search operations). Omitted, a search returns 200 rows; raise it deliberately, a large table can overrun the context window.",
+              "default": 200
             },
             "args": {
               "type": "array",
@@ -4193,7 +4181,7 @@ const TOOLS = [
           "properties": {
             "uuid": {
               "type": "string",
-              "description": "Item UUID (for get/set/del operations)"
+              "description": "First path segment of the action. Usually an item UUID, but many routes take some other scalar there instead: an IP (kea leases4DelLease), a name, a filename. Pass that scalar here - do NOT wrap it in data/item, which sends it as a body and the route then reports the path parameter missing."
             },
             "data": {
               "type": "object",
@@ -4214,8 +4202,8 @@ const TOOLS = [
             },
             "rowCount": {
               "type": "integer",
-              "description": "Rows per page (for search operations)",
-              "default": 20
+              "description": "Rows per page (for search operations). Omitted, a search returns 200 rows; raise it deliberately, a large table can overrun the context window.",
+              "default": 200
             },
             "args": {
               "type": "array",
@@ -4253,7 +4241,7 @@ const TOOLS = [
           "properties": {
             "uuid": {
               "type": "string",
-              "description": "Item UUID (for get/set/del operations)"
+              "description": "First path segment of the action. Usually an item UUID, but many routes take some other scalar there instead: an IP (kea leases4DelLease), a name, a filename. Pass that scalar here - do NOT wrap it in data/item, which sends it as a body and the route then reports the path parameter missing."
             },
             "data": {
               "type": "object",
@@ -4274,8 +4262,8 @@ const TOOLS = [
             },
             "rowCount": {
               "type": "integer",
-              "description": "Rows per page (for search operations)",
-              "default": 20
+              "description": "Rows per page (for search operations). Omitted, a search returns 200 rows; raise it deliberately, a large table can overrun the context window.",
+              "default": 200
             },
             "args": {
               "type": "array",
@@ -4313,7 +4301,7 @@ const TOOLS = [
           "properties": {
             "uuid": {
               "type": "string",
-              "description": "Item UUID (for get/set/del operations)"
+              "description": "First path segment of the action. Usually an item UUID, but many routes take some other scalar there instead: an IP (kea leases4DelLease), a name, a filename. Pass that scalar here - do NOT wrap it in data/item, which sends it as a body and the route then reports the path parameter missing."
             },
             "data": {
               "type": "object",
@@ -4334,8 +4322,8 @@ const TOOLS = [
             },
             "rowCount": {
               "type": "integer",
-              "description": "Rows per page (for search operations)",
-              "default": 20
+              "description": "Rows per page (for search operations). Omitted, a search returns 200 rows; raise it deliberately, a large table can overrun the context window.",
+              "default": 200
             },
             "args": {
               "type": "array",
@@ -4373,7 +4361,7 @@ const TOOLS = [
           "properties": {
             "uuid": {
               "type": "string",
-              "description": "Item UUID (for get/set/del operations)"
+              "description": "First path segment of the action. Usually an item UUID, but many routes take some other scalar there instead: an IP (kea leases4DelLease), a name, a filename. Pass that scalar here - do NOT wrap it in data/item, which sends it as a body and the route then reports the path parameter missing."
             },
             "data": {
               "type": "object",
@@ -4394,8 +4382,8 @@ const TOOLS = [
             },
             "rowCount": {
               "type": "integer",
-              "description": "Rows per page (for search operations)",
-              "default": 20
+              "description": "Rows per page (for search operations). Omitted, a search returns 200 rows; raise it deliberately, a large table can overrun the context window.",
+              "default": 200
             },
             "args": {
               "type": "array",
@@ -4507,7 +4495,7 @@ const TOOLS = [
           "properties": {
             "uuid": {
               "type": "string",
-              "description": "Item UUID (for get/set/del operations)"
+              "description": "First path segment of the action. Usually an item UUID, but many routes take some other scalar there instead: an IP (kea leases4DelLease), a name, a filename. Pass that scalar here - do NOT wrap it in data/item, which sends it as a body and the route then reports the path parameter missing."
             },
             "data": {
               "type": "object",
@@ -4528,8 +4516,8 @@ const TOOLS = [
             },
             "rowCount": {
               "type": "integer",
-              "description": "Rows per page (for search operations)",
-              "default": 20
+              "description": "Rows per page (for search operations). Omitted, a search returns 200 rows; raise it deliberately, a large table can overrun the context window.",
+              "default": 200
             },
             "args": {
               "type": "array",
@@ -4593,7 +4581,7 @@ const TOOLS = [
           "properties": {
             "uuid": {
               "type": "string",
-              "description": "Item UUID (for get/set/del operations)"
+              "description": "First path segment of the action. Usually an item UUID, but many routes take some other scalar there instead: an IP (kea leases4DelLease), a name, a filename. Pass that scalar here - do NOT wrap it in data/item, which sends it as a body and the route then reports the path parameter missing."
             },
             "data": {
               "type": "object",
@@ -4614,8 +4602,8 @@ const TOOLS = [
             },
             "rowCount": {
               "type": "integer",
-              "description": "Rows per page (for search operations)",
-              "default": 20
+              "description": "Rows per page (for search operations). Omitted, a search returns 200 rows; raise it deliberately, a large table can overrun the context window.",
+              "default": 200
             },
             "args": {
               "type": "array",
@@ -4787,7 +4775,7 @@ const TOOLS = [
           "properties": {
             "uuid": {
               "type": "string",
-              "description": "Item UUID (for get/set/del operations)"
+              "description": "First path segment of the action. Usually an item UUID, but many routes take some other scalar there instead: an IP (kea leases4DelLease), a name, a filename. Pass that scalar here - do NOT wrap it in data/item, which sends it as a body and the route then reports the path parameter missing."
             },
             "data": {
               "type": "object",
@@ -4808,8 +4796,8 @@ const TOOLS = [
             },
             "rowCount": {
               "type": "integer",
-              "description": "Rows per page (for search operations)",
-              "default": 20
+              "description": "Rows per page (for search operations). Omitted, a search returns 200 rows; raise it deliberately, a large table can overrun the context window.",
+              "default": 200
             },
             "args": {
               "type": "array",
@@ -4869,7 +4857,7 @@ const TOOLS = [
           "properties": {
             "uuid": {
               "type": "string",
-              "description": "Item UUID (for get/set/del operations)"
+              "description": "First path segment of the action. Usually an item UUID, but many routes take some other scalar there instead: an IP (kea leases4DelLease), a name, a filename. Pass that scalar here - do NOT wrap it in data/item, which sends it as a body and the route then reports the path parameter missing."
             },
             "data": {
               "type": "object",
@@ -4890,8 +4878,8 @@ const TOOLS = [
             },
             "rowCount": {
               "type": "integer",
-              "description": "Rows per page (for search operations)",
-              "default": 20
+              "description": "Rows per page (for search operations). Omitted, a search returns 200 rows; raise it deliberately, a large table can overrun the context window.",
+              "default": 200
             },
             "args": {
               "type": "array",
@@ -4941,7 +4929,7 @@ const TOOLS = [
           "properties": {
             "uuid": {
               "type": "string",
-              "description": "Item UUID (for get/set/del operations)"
+              "description": "First path segment of the action. Usually an item UUID, but many routes take some other scalar there instead: an IP (kea leases4DelLease), a name, a filename. Pass that scalar here - do NOT wrap it in data/item, which sends it as a body and the route then reports the path parameter missing."
             },
             "data": {
               "type": "object",
@@ -4962,8 +4950,8 @@ const TOOLS = [
             },
             "rowCount": {
               "type": "integer",
-              "description": "Rows per page (for search operations)",
-              "default": 20
+              "description": "Rows per page (for search operations). Omitted, a search returns 200 rows; raise it deliberately, a large table can overrun the context window.",
+              "default": 200
             },
             "args": {
               "type": "array",
@@ -5191,7 +5179,7 @@ const TOOLS = [
           "properties": {
             "uuid": {
               "type": "string",
-              "description": "Item UUID (for get/set/del operations)"
+              "description": "First path segment of the action. Usually an item UUID, but many routes take some other scalar there instead: an IP (kea leases4DelLease), a name, a filename. Pass that scalar here - do NOT wrap it in data/item, which sends it as a body and the route then reports the path parameter missing."
             },
             "data": {
               "type": "object",
@@ -5212,8 +5200,8 @@ const TOOLS = [
             },
             "rowCount": {
               "type": "integer",
-              "description": "Rows per page (for search operations)",
-              "default": 20
+              "description": "Rows per page (for search operations). Omitted, a search returns 200 rows; raise it deliberately, a large table can overrun the context window.",
+              "default": 200
             },
             "args": {
               "type": "array",
@@ -5257,7 +5245,7 @@ const TOOLS = [
           "properties": {
             "uuid": {
               "type": "string",
-              "description": "Item UUID (for get/set/del operations)"
+              "description": "First path segment of the action. Usually an item UUID, but many routes take some other scalar there instead: an IP (kea leases4DelLease), a name, a filename. Pass that scalar here - do NOT wrap it in data/item, which sends it as a body and the route then reports the path parameter missing."
             },
             "data": {
               "type": "object",
@@ -5278,8 +5266,8 @@ const TOOLS = [
             },
             "rowCount": {
               "type": "integer",
-              "description": "Rows per page (for search operations)",
-              "default": 20
+              "description": "Rows per page (for search operations). Omitted, a search returns 200 rows; raise it deliberately, a large table can overrun the context window.",
+              "default": 200
             },
             "args": {
               "type": "array",
@@ -5331,7 +5319,7 @@ const TOOLS = [
           "properties": {
             "uuid": {
               "type": "string",
-              "description": "Item UUID (for get/set/del operations)"
+              "description": "First path segment of the action. Usually an item UUID, but many routes take some other scalar there instead: an IP (kea leases4DelLease), a name, a filename. Pass that scalar here - do NOT wrap it in data/item, which sends it as a body and the route then reports the path parameter missing."
             },
             "data": {
               "type": "object",
@@ -5352,8 +5340,8 @@ const TOOLS = [
             },
             "rowCount": {
               "type": "integer",
-              "description": "Rows per page (for search operations)",
-              "default": 20
+              "description": "Rows per page (for search operations). Omitted, a search returns 200 rows; raise it deliberately, a large table can overrun the context window.",
+              "default": 200
             },
             "args": {
               "type": "array",
@@ -5403,7 +5391,7 @@ const TOOLS = [
           "properties": {
             "uuid": {
               "type": "string",
-              "description": "Item UUID (for get/set/del operations)"
+              "description": "First path segment of the action. Usually an item UUID, but many routes take some other scalar there instead: an IP (kea leases4DelLease), a name, a filename. Pass that scalar here - do NOT wrap it in data/item, which sends it as a body and the route then reports the path parameter missing."
             },
             "data": {
               "type": "object",
@@ -5424,8 +5412,8 @@ const TOOLS = [
             },
             "rowCount": {
               "type": "integer",
-              "description": "Rows per page (for search operations)",
-              "default": 20
+              "description": "Rows per page (for search operations). Omitted, a search returns 200 rows; raise it deliberately, a large table can overrun the context window.",
+              "default": 200
             },
             "args": {
               "type": "array",
@@ -5477,7 +5465,7 @@ const TOOLS = [
           "properties": {
             "uuid": {
               "type": "string",
-              "description": "Item UUID (for get/set/del operations)"
+              "description": "First path segment of the action. Usually an item UUID, but many routes take some other scalar there instead: an IP (kea leases4DelLease), a name, a filename. Pass that scalar here - do NOT wrap it in data/item, which sends it as a body and the route then reports the path parameter missing."
             },
             "data": {
               "type": "object",
@@ -5498,8 +5486,8 @@ const TOOLS = [
             },
             "rowCount": {
               "type": "integer",
-              "description": "Rows per page (for search operations)",
-              "default": 20
+              "description": "Rows per page (for search operations). Omitted, a search returns 200 rows; raise it deliberately, a large table can overrun the context window.",
+              "default": 200
             },
             "args": {
               "type": "array",
@@ -5567,7 +5555,7 @@ const TOOLS = [
           "properties": {
             "uuid": {
               "type": "string",
-              "description": "Item UUID (for get/set/del operations)"
+              "description": "First path segment of the action. Usually an item UUID, but many routes take some other scalar there instead: an IP (kea leases4DelLease), a name, a filename. Pass that scalar here - do NOT wrap it in data/item, which sends it as a body and the route then reports the path parameter missing."
             },
             "data": {
               "type": "object",
@@ -5588,8 +5576,8 @@ const TOOLS = [
             },
             "rowCount": {
               "type": "integer",
-              "description": "Rows per page (for search operations)",
-              "default": 20
+              "description": "Rows per page (for search operations). Omitted, a search returns 200 rows; raise it deliberately, a large table can overrun the context window.",
+              "default": 200
             },
             "args": {
               "type": "array",
@@ -5639,7 +5627,7 @@ const TOOLS = [
           "properties": {
             "uuid": {
               "type": "string",
-              "description": "Item UUID (for get/set/del operations)"
+              "description": "First path segment of the action. Usually an item UUID, but many routes take some other scalar there instead: an IP (kea leases4DelLease), a name, a filename. Pass that scalar here - do NOT wrap it in data/item, which sends it as a body and the route then reports the path parameter missing."
             },
             "data": {
               "type": "object",
@@ -5660,8 +5648,8 @@ const TOOLS = [
             },
             "rowCount": {
               "type": "integer",
-              "description": "Rows per page (for search operations)",
-              "default": 20
+              "description": "Rows per page (for search operations). Omitted, a search returns 200 rows; raise it deliberately, a large table can overrun the context window.",
+              "default": 200
             },
             "args": {
               "type": "array",
@@ -5711,7 +5699,7 @@ const TOOLS = [
           "properties": {
             "uuid": {
               "type": "string",
-              "description": "Item UUID (for get/set/del operations)"
+              "description": "First path segment of the action. Usually an item UUID, but many routes take some other scalar there instead: an IP (kea leases4DelLease), a name, a filename. Pass that scalar here - do NOT wrap it in data/item, which sends it as a body and the route then reports the path parameter missing."
             },
             "data": {
               "type": "object",
@@ -5732,8 +5720,8 @@ const TOOLS = [
             },
             "rowCount": {
               "type": "integer",
-              "description": "Rows per page (for search operations)",
-              "default": 20
+              "description": "Rows per page (for search operations). Omitted, a search returns 200 rows; raise it deliberately, a large table can overrun the context window.",
+              "default": 200
             },
             "args": {
               "type": "array",
@@ -5783,7 +5771,7 @@ const TOOLS = [
           "properties": {
             "uuid": {
               "type": "string",
-              "description": "Item UUID (for get/set/del operations)"
+              "description": "First path segment of the action. Usually an item UUID, but many routes take some other scalar there instead: an IP (kea leases4DelLease), a name, a filename. Pass that scalar here - do NOT wrap it in data/item, which sends it as a body and the route then reports the path parameter missing."
             },
             "data": {
               "type": "object",
@@ -5804,8 +5792,8 @@ const TOOLS = [
             },
             "rowCount": {
               "type": "integer",
-              "description": "Rows per page (for search operations)",
-              "default": 20
+              "description": "Rows per page (for search operations). Omitted, a search returns 200 rows; raise it deliberately, a large table can overrun the context window.",
+              "default": 200
             },
             "args": {
               "type": "array",
@@ -5855,7 +5843,7 @@ const TOOLS = [
           "properties": {
             "uuid": {
               "type": "string",
-              "description": "Item UUID (for get/set/del operations)"
+              "description": "First path segment of the action. Usually an item UUID, but many routes take some other scalar there instead: an IP (kea leases4DelLease), a name, a filename. Pass that scalar here - do NOT wrap it in data/item, which sends it as a body and the route then reports the path parameter missing."
             },
             "data": {
               "type": "object",
@@ -5876,8 +5864,8 @@ const TOOLS = [
             },
             "rowCount": {
               "type": "integer",
-              "description": "Rows per page (for search operations)",
-              "default": 20
+              "description": "Rows per page (for search operations). Omitted, a search returns 200 rows; raise it deliberately, a large table can overrun the context window.",
+              "default": 200
             },
             "args": {
               "type": "array",
@@ -5941,7 +5929,7 @@ const TOOLS = [
           "properties": {
             "uuid": {
               "type": "string",
-              "description": "Item UUID (for get/set/del operations)"
+              "description": "First path segment of the action. Usually an item UUID, but many routes take some other scalar there instead: an IP (kea leases4DelLease), a name, a filename. Pass that scalar here - do NOT wrap it in data/item, which sends it as a body and the route then reports the path parameter missing."
             },
             "data": {
               "type": "object",
@@ -5962,8 +5950,8 @@ const TOOLS = [
             },
             "rowCount": {
               "type": "integer",
-              "description": "Rows per page (for search operations)",
-              "default": 20
+              "description": "Rows per page (for search operations). Omitted, a search returns 200 rows; raise it deliberately, a large table can overrun the context window.",
+              "default": 200
             },
             "args": {
               "type": "array",
@@ -6197,7 +6185,7 @@ const TOOLS = [
           "properties": {
             "uuid": {
               "type": "string",
-              "description": "Item UUID (for get/set/del operations)"
+              "description": "First path segment of the action. Usually an item UUID, but many routes take some other scalar there instead: an IP (kea leases4DelLease), a name, a filename. Pass that scalar here - do NOT wrap it in data/item, which sends it as a body and the route then reports the path parameter missing."
             },
             "data": {
               "type": "object",
@@ -6218,8 +6206,8 @@ const TOOLS = [
             },
             "rowCount": {
               "type": "integer",
-              "description": "Rows per page (for search operations)",
-              "default": 20
+              "description": "Rows per page (for search operations). Omitted, a search returns 200 rows; raise it deliberately, a large table can overrun the context window.",
+              "default": 200
             },
             "args": {
               "type": "array",
@@ -6269,7 +6257,7 @@ const TOOLS = [
           "properties": {
             "uuid": {
               "type": "string",
-              "description": "Item UUID (for get/set/del operations)"
+              "description": "First path segment of the action. Usually an item UUID, but many routes take some other scalar there instead: an IP (kea leases4DelLease), a name, a filename. Pass that scalar here - do NOT wrap it in data/item, which sends it as a body and the route then reports the path parameter missing."
             },
             "data": {
               "type": "object",
@@ -6290,8 +6278,8 @@ const TOOLS = [
             },
             "rowCount": {
               "type": "integer",
-              "description": "Rows per page (for search operations)",
-              "default": 20
+              "description": "Rows per page (for search operations). Omitted, a search returns 200 rows; raise it deliberately, a large table can overrun the context window.",
+              "default": 200
             },
             "args": {
               "type": "array",
@@ -6355,7 +6343,7 @@ const TOOLS = [
           "properties": {
             "uuid": {
               "type": "string",
-              "description": "Item UUID (for get/set/del operations)"
+              "description": "First path segment of the action. Usually an item UUID, but many routes take some other scalar there instead: an IP (kea leases4DelLease), a name, a filename. Pass that scalar here - do NOT wrap it in data/item, which sends it as a body and the route then reports the path parameter missing."
             },
             "data": {
               "type": "object",
@@ -6376,8 +6364,8 @@ const TOOLS = [
             },
             "rowCount": {
               "type": "integer",
-              "description": "Rows per page (for search operations)",
-              "default": 20
+              "description": "Rows per page (for search operations). Omitted, a search returns 200 rows; raise it deliberately, a large table can overrun the context window.",
+              "default": 200
             },
             "args": {
               "type": "array",
@@ -6429,7 +6417,7 @@ const TOOLS = [
           "properties": {
             "uuid": {
               "type": "string",
-              "description": "Item UUID (for get/set/del operations)"
+              "description": "First path segment of the action. Usually an item UUID, but many routes take some other scalar there instead: an IP (kea leases4DelLease), a name, a filename. Pass that scalar here - do NOT wrap it in data/item, which sends it as a body and the route then reports the path parameter missing."
             },
             "data": {
               "type": "object",
@@ -6450,8 +6438,8 @@ const TOOLS = [
             },
             "rowCount": {
               "type": "integer",
-              "description": "Rows per page (for search operations)",
-              "default": 20
+              "description": "Rows per page (for search operations). Omitted, a search returns 200 rows; raise it deliberately, a large table can overrun the context window.",
+              "default": 200
             },
             "args": {
               "type": "array",
@@ -6503,7 +6491,7 @@ const TOOLS = [
           "properties": {
             "uuid": {
               "type": "string",
-              "description": "Item UUID (for get/set/del operations)"
+              "description": "First path segment of the action. Usually an item UUID, but many routes take some other scalar there instead: an IP (kea leases4DelLease), a name, a filename. Pass that scalar here - do NOT wrap it in data/item, which sends it as a body and the route then reports the path parameter missing."
             },
             "data": {
               "type": "object",
@@ -6524,8 +6512,8 @@ const TOOLS = [
             },
             "rowCount": {
               "type": "integer",
-              "description": "Rows per page (for search operations)",
-              "default": 20
+              "description": "Rows per page (for search operations). Omitted, a search returns 200 rows; raise it deliberately, a large table can overrun the context window.",
+              "default": 200
             },
             "args": {
               "type": "array",
@@ -6575,7 +6563,7 @@ const TOOLS = [
           "properties": {
             "uuid": {
               "type": "string",
-              "description": "Item UUID (for get/set/del operations)"
+              "description": "First path segment of the action. Usually an item UUID, but many routes take some other scalar there instead: an IP (kea leases4DelLease), a name, a filename. Pass that scalar here - do NOT wrap it in data/item, which sends it as a body and the route then reports the path parameter missing."
             },
             "data": {
               "type": "object",
@@ -6596,8 +6584,8 @@ const TOOLS = [
             },
             "rowCount": {
               "type": "integer",
-              "description": "Rows per page (for search operations)",
-              "default": 20
+              "description": "Rows per page (for search operations). Omitted, a search returns 200 rows; raise it deliberately, a large table can overrun the context window.",
+              "default": 200
             },
             "args": {
               "type": "array",
@@ -6765,7 +6753,7 @@ const TOOLS = [
           "properties": {
             "uuid": {
               "type": "string",
-              "description": "Item UUID (for get/set/del operations)"
+              "description": "First path segment of the action. Usually an item UUID, but many routes take some other scalar there instead: an IP (kea leases4DelLease), a name, a filename. Pass that scalar here - do NOT wrap it in data/item, which sends it as a body and the route then reports the path parameter missing."
             },
             "data": {
               "type": "object",
@@ -6786,8 +6774,8 @@ const TOOLS = [
             },
             "rowCount": {
               "type": "integer",
-              "description": "Rows per page (for search operations)",
-              "default": 20
+              "description": "Rows per page (for search operations). Omitted, a search returns 200 rows; raise it deliberately, a large table can overrun the context window.",
+              "default": 200
             },
             "args": {
               "type": "array",
@@ -6919,7 +6907,7 @@ const TOOLS = [
           "properties": {
             "uuid": {
               "type": "string",
-              "description": "Item UUID (for get/set/del operations)"
+              "description": "First path segment of the action. Usually an item UUID, but many routes take some other scalar there instead: an IP (kea leases4DelLease), a name, a filename. Pass that scalar here - do NOT wrap it in data/item, which sends it as a body and the route then reports the path parameter missing."
             },
             "data": {
               "type": "object",
@@ -6940,8 +6928,8 @@ const TOOLS = [
             },
             "rowCount": {
               "type": "integer",
-              "description": "Rows per page (for search operations)",
-              "default": 20
+              "description": "Rows per page (for search operations). Omitted, a search returns 200 rows; raise it deliberately, a large table can overrun the context window.",
+              "default": 200
             },
             "args": {
               "type": "array",
@@ -6991,7 +6979,7 @@ const TOOLS = [
           "properties": {
             "uuid": {
               "type": "string",
-              "description": "Item UUID (for get/set/del operations)"
+              "description": "First path segment of the action. Usually an item UUID, but many routes take some other scalar there instead: an IP (kea leases4DelLease), a name, a filename. Pass that scalar here - do NOT wrap it in data/item, which sends it as a body and the route then reports the path parameter missing."
             },
             "data": {
               "type": "object",
@@ -7012,8 +7000,8 @@ const TOOLS = [
             },
             "rowCount": {
               "type": "integer",
-              "description": "Rows per page (for search operations)",
-              "default": 20
+              "description": "Rows per page (for search operations). Omitted, a search returns 200 rows; raise it deliberately, a large table can overrun the context window.",
+              "default": 200
             },
             "args": {
               "type": "array",
@@ -7063,7 +7051,7 @@ const TOOLS = [
           "properties": {
             "uuid": {
               "type": "string",
-              "description": "Item UUID (for get/set/del operations)"
+              "description": "First path segment of the action. Usually an item UUID, but many routes take some other scalar there instead: an IP (kea leases4DelLease), a name, a filename. Pass that scalar here - do NOT wrap it in data/item, which sends it as a body and the route then reports the path parameter missing."
             },
             "data": {
               "type": "object",
@@ -7084,8 +7072,8 @@ const TOOLS = [
             },
             "rowCount": {
               "type": "integer",
-              "description": "Rows per page (for search operations)",
-              "default": 20
+              "description": "Rows per page (for search operations). Omitted, a search returns 200 rows; raise it deliberately, a large table can overrun the context window.",
+              "default": 200
             },
             "args": {
               "type": "array",
@@ -7135,7 +7123,7 @@ const TOOLS = [
           "properties": {
             "uuid": {
               "type": "string",
-              "description": "Item UUID (for get/set/del operations)"
+              "description": "First path segment of the action. Usually an item UUID, but many routes take some other scalar there instead: an IP (kea leases4DelLease), a name, a filename. Pass that scalar here - do NOT wrap it in data/item, which sends it as a body and the route then reports the path parameter missing."
             },
             "data": {
               "type": "object",
@@ -7156,8 +7144,8 @@ const TOOLS = [
             },
             "rowCount": {
               "type": "integer",
-              "description": "Rows per page (for search operations)",
-              "default": 20
+              "description": "Rows per page (for search operations). Omitted, a search returns 200 rows; raise it deliberately, a large table can overrun the context window.",
+              "default": 200
             },
             "args": {
               "type": "array",
@@ -7459,7 +7447,7 @@ const TOOLS = [
           "properties": {
             "uuid": {
               "type": "string",
-              "description": "Item UUID (for get/set/del operations)"
+              "description": "First path segment of the action. Usually an item UUID, but many routes take some other scalar there instead: an IP (kea leases4DelLease), a name, a filename. Pass that scalar here - do NOT wrap it in data/item, which sends it as a body and the route then reports the path parameter missing."
             },
             "data": {
               "type": "object",
@@ -7480,8 +7468,8 @@ const TOOLS = [
             },
             "rowCount": {
               "type": "integer",
-              "description": "Rows per page (for search operations)",
-              "default": 20
+              "description": "Rows per page (for search operations). Omitted, a search returns 200 rows; raise it deliberately, a large table can overrun the context window.",
+              "default": 200
             },
             "args": {
               "type": "array",
@@ -7601,7 +7589,7 @@ const TOOLS = [
           "properties": {
             "uuid": {
               "type": "string",
-              "description": "Item UUID (for get/set/del operations)"
+              "description": "First path segment of the action. Usually an item UUID, but many routes take some other scalar there instead: an IP (kea leases4DelLease), a name, a filename. Pass that scalar here - do NOT wrap it in data/item, which sends it as a body and the route then reports the path parameter missing."
             },
             "data": {
               "type": "object",
@@ -7622,8 +7610,8 @@ const TOOLS = [
             },
             "rowCount": {
               "type": "integer",
-              "description": "Rows per page (for search operations)",
-              "default": 20
+              "description": "Rows per page (for search operations). Omitted, a search returns 200 rows; raise it deliberately, a large table can overrun the context window.",
+              "default": 200
             },
             "args": {
               "type": "array",
@@ -7675,7 +7663,7 @@ const TOOLS = [
           "properties": {
             "uuid": {
               "type": "string",
-              "description": "Item UUID (for get/set/del operations)"
+              "description": "First path segment of the action. Usually an item UUID, but many routes take some other scalar there instead: an IP (kea leases4DelLease), a name, a filename. Pass that scalar here - do NOT wrap it in data/item, which sends it as a body and the route then reports the path parameter missing."
             },
             "data": {
               "type": "object",
@@ -7696,8 +7684,8 @@ const TOOLS = [
             },
             "rowCount": {
               "type": "integer",
-              "description": "Rows per page (for search operations)",
-              "default": 20
+              "description": "Rows per page (for search operations). Omitted, a search returns 200 rows; raise it deliberately, a large table can overrun the context window.",
+              "default": 200
             },
             "args": {
               "type": "array",
@@ -7761,7 +7749,7 @@ const TOOLS = [
           "properties": {
             "uuid": {
               "type": "string",
-              "description": "Item UUID (for get/set/del operations)"
+              "description": "First path segment of the action. Usually an item UUID, but many routes take some other scalar there instead: an IP (kea leases4DelLease), a name, a filename. Pass that scalar here - do NOT wrap it in data/item, which sends it as a body and the route then reports the path parameter missing."
             },
             "data": {
               "type": "object",
@@ -7782,8 +7770,8 @@ const TOOLS = [
             },
             "rowCount": {
               "type": "integer",
-              "description": "Rows per page (for search operations)",
-              "default": 20
+              "description": "Rows per page (for search operations). Omitted, a search returns 200 rows; raise it deliberately, a large table can overrun the context window.",
+              "default": 200
             },
             "args": {
               "type": "array",
@@ -7833,7 +7821,7 @@ const TOOLS = [
           "properties": {
             "uuid": {
               "type": "string",
-              "description": "Item UUID (for get/set/del operations)"
+              "description": "First path segment of the action. Usually an item UUID, but many routes take some other scalar there instead: an IP (kea leases4DelLease), a name, a filename. Pass that scalar here - do NOT wrap it in data/item, which sends it as a body and the route then reports the path parameter missing."
             },
             "data": {
               "type": "object",
@@ -7854,8 +7842,8 @@ const TOOLS = [
             },
             "rowCount": {
               "type": "integer",
-              "description": "Rows per page (for search operations)",
-              "default": 20
+              "description": "Rows per page (for search operations). Omitted, a search returns 200 rows; raise it deliberately, a large table can overrun the context window.",
+              "default": 200
             },
             "args": {
               "type": "array",
@@ -7919,7 +7907,7 @@ const TOOLS = [
           "properties": {
             "uuid": {
               "type": "string",
-              "description": "Item UUID (for get/set/del operations)"
+              "description": "First path segment of the action. Usually an item UUID, but many routes take some other scalar there instead: an IP (kea leases4DelLease), a name, a filename. Pass that scalar here - do NOT wrap it in data/item, which sends it as a body and the route then reports the path parameter missing."
             },
             "data": {
               "type": "object",
@@ -7940,8 +7928,8 @@ const TOOLS = [
             },
             "rowCount": {
               "type": "integer",
-              "description": "Rows per page (for search operations)",
-              "default": 20
+              "description": "Rows per page (for search operations). Omitted, a search returns 200 rows; raise it deliberately, a large table can overrun the context window.",
+              "default": 200
             },
             "args": {
               "type": "array",
@@ -8025,7 +8013,7 @@ const TOOLS = [
           "properties": {
             "uuid": {
               "type": "string",
-              "description": "Item UUID (for get/set/del operations)"
+              "description": "First path segment of the action. Usually an item UUID, but many routes take some other scalar there instead: an IP (kea leases4DelLease), a name, a filename. Pass that scalar here - do NOT wrap it in data/item, which sends it as a body and the route then reports the path parameter missing."
             },
             "data": {
               "type": "object",
@@ -8046,8 +8034,8 @@ const TOOLS = [
             },
             "rowCount": {
               "type": "integer",
-              "description": "Rows per page (for search operations)",
-              "default": 20
+              "description": "Rows per page (for search operations). Omitted, a search returns 200 rows; raise it deliberately, a large table can overrun the context window.",
+              "default": 200
             },
             "args": {
               "type": "array",
@@ -8093,7 +8081,7 @@ const TOOLS = [
           "properties": {
             "uuid": {
               "type": "string",
-              "description": "Item UUID (for get/set/del operations)"
+              "description": "First path segment of the action. Usually an item UUID, but many routes take some other scalar there instead: an IP (kea leases4DelLease), a name, a filename. Pass that scalar here - do NOT wrap it in data/item, which sends it as a body and the route then reports the path parameter missing."
             },
             "data": {
               "type": "object",
@@ -8114,8 +8102,8 @@ const TOOLS = [
             },
             "rowCount": {
               "type": "integer",
-              "description": "Rows per page (for search operations)",
-              "default": 20
+              "description": "Rows per page (for search operations). Omitted, a search returns 200 rows; raise it deliberately, a large table can overrun the context window.",
+              "default": 200
             },
             "args": {
               "type": "array",
@@ -8165,7 +8153,7 @@ const TOOLS = [
           "properties": {
             "uuid": {
               "type": "string",
-              "description": "Item UUID (for get/set/del operations)"
+              "description": "First path segment of the action. Usually an item UUID, but many routes take some other scalar there instead: an IP (kea leases4DelLease), a name, a filename. Pass that scalar here - do NOT wrap it in data/item, which sends it as a body and the route then reports the path parameter missing."
             },
             "data": {
               "type": "object",
@@ -8186,8 +8174,8 @@ const TOOLS = [
             },
             "rowCount": {
               "type": "integer",
-              "description": "Rows per page (for search operations)",
-              "default": 20
+              "description": "Rows per page (for search operations). Omitted, a search returns 200 rows; raise it deliberately, a large table can overrun the context window.",
+              "default": 200
             },
             "args": {
               "type": "array",
@@ -8239,7 +8227,7 @@ const TOOLS = [
           "properties": {
             "uuid": {
               "type": "string",
-              "description": "Item UUID (for get/set/del operations)"
+              "description": "First path segment of the action. Usually an item UUID, but many routes take some other scalar there instead: an IP (kea leases4DelLease), a name, a filename. Pass that scalar here - do NOT wrap it in data/item, which sends it as a body and the route then reports the path parameter missing."
             },
             "data": {
               "type": "object",
@@ -8260,8 +8248,8 @@ const TOOLS = [
             },
             "rowCount": {
               "type": "integer",
-              "description": "Rows per page (for search operations)",
-              "default": 20
+              "description": "Rows per page (for search operations). Omitted, a search returns 200 rows; raise it deliberately, a large table can overrun the context window.",
+              "default": 200
             },
             "args": {
               "type": "array",
@@ -8321,7 +8309,7 @@ const TOOLS = [
           "properties": {
             "uuid": {
               "type": "string",
-              "description": "Item UUID (for get/set/del operations)"
+              "description": "First path segment of the action. Usually an item UUID, but many routes take some other scalar there instead: an IP (kea leases4DelLease), a name, a filename. Pass that scalar here - do NOT wrap it in data/item, which sends it as a body and the route then reports the path parameter missing."
             },
             "data": {
               "type": "object",
@@ -8342,8 +8330,8 @@ const TOOLS = [
             },
             "rowCount": {
               "type": "integer",
-              "description": "Rows per page (for search operations)",
-              "default": 20
+              "description": "Rows per page (for search operations). Omitted, a search returns 200 rows; raise it deliberately, a large table can overrun the context window.",
+              "default": 200
             },
             "args": {
               "type": "array",
@@ -8417,7 +8405,7 @@ const TOOLS = [
           "properties": {
             "uuid": {
               "type": "string",
-              "description": "Item UUID (for get/set/del operations)"
+              "description": "First path segment of the action. Usually an item UUID, but many routes take some other scalar there instead: an IP (kea leases4DelLease), a name, a filename. Pass that scalar here - do NOT wrap it in data/item, which sends it as a body and the route then reports the path parameter missing."
             },
             "data": {
               "type": "object",
@@ -8438,8 +8426,8 @@ const TOOLS = [
             },
             "rowCount": {
               "type": "integer",
-              "description": "Rows per page (for search operations)",
-              "default": 20
+              "description": "Rows per page (for search operations). Omitted, a search returns 200 rows; raise it deliberately, a large table can overrun the context window.",
+              "default": 200
             },
             "args": {
               "type": "array",
@@ -8489,7 +8477,7 @@ const TOOLS = [
           "properties": {
             "uuid": {
               "type": "string",
-              "description": "Item UUID (for get/set/del operations)"
+              "description": "First path segment of the action. Usually an item UUID, but many routes take some other scalar there instead: an IP (kea leases4DelLease), a name, a filename. Pass that scalar here - do NOT wrap it in data/item, which sends it as a body and the route then reports the path parameter missing."
             },
             "data": {
               "type": "object",
@@ -8510,8 +8498,8 @@ const TOOLS = [
             },
             "rowCount": {
               "type": "integer",
-              "description": "Rows per page (for search operations)",
-              "default": 20
+              "description": "Rows per page (for search operations). Omitted, a search returns 200 rows; raise it deliberately, a large table can overrun the context window.",
+              "default": 200
             },
             "args": {
               "type": "array",
@@ -8585,7 +8573,7 @@ const TOOLS = [
           "properties": {
             "uuid": {
               "type": "string",
-              "description": "Item UUID (for get/set/del operations)"
+              "description": "First path segment of the action. Usually an item UUID, but many routes take some other scalar there instead: an IP (kea leases4DelLease), a name, a filename. Pass that scalar here - do NOT wrap it in data/item, which sends it as a body and the route then reports the path parameter missing."
             },
             "data": {
               "type": "object",
@@ -8606,8 +8594,8 @@ const TOOLS = [
             },
             "rowCount": {
               "type": "integer",
-              "description": "Rows per page (for search operations)",
-              "default": 20
+              "description": "Rows per page (for search operations). Omitted, a search returns 200 rows; raise it deliberately, a large table can overrun the context window.",
+              "default": 200
             },
             "args": {
               "type": "array",
@@ -8657,7 +8645,7 @@ const TOOLS = [
           "properties": {
             "uuid": {
               "type": "string",
-              "description": "Item UUID (for get/set/del operations)"
+              "description": "First path segment of the action. Usually an item UUID, but many routes take some other scalar there instead: an IP (kea leases4DelLease), a name, a filename. Pass that scalar here - do NOT wrap it in data/item, which sends it as a body and the route then reports the path parameter missing."
             },
             "data": {
               "type": "object",
@@ -8678,8 +8666,8 @@ const TOOLS = [
             },
             "rowCount": {
               "type": "integer",
-              "description": "Rows per page (for search operations)",
-              "default": 20
+              "description": "Rows per page (for search operations). Omitted, a search returns 200 rows; raise it deliberately, a large table can overrun the context window.",
+              "default": 200
             },
             "args": {
               "type": "array",
@@ -8747,7 +8735,7 @@ const TOOLS = [
           "properties": {
             "uuid": {
               "type": "string",
-              "description": "Item UUID (for get/set/del operations)"
+              "description": "First path segment of the action. Usually an item UUID, but many routes take some other scalar there instead: an IP (kea leases4DelLease), a name, a filename. Pass that scalar here - do NOT wrap it in data/item, which sends it as a body and the route then reports the path parameter missing."
             },
             "data": {
               "type": "object",
@@ -8768,8 +8756,8 @@ const TOOLS = [
             },
             "rowCount": {
               "type": "integer",
-              "description": "Rows per page (for search operations)",
-              "default": 20
+              "description": "Rows per page (for search operations). Omitted, a search returns 200 rows; raise it deliberately, a large table can overrun the context window.",
+              "default": 200
             },
             "args": {
               "type": "array",
@@ -8895,7 +8883,7 @@ const TOOLS = [
           "properties": {
             "uuid": {
               "type": "string",
-              "description": "Item UUID (for get/set/del operations)"
+              "description": "First path segment of the action. Usually an item UUID, but many routes take some other scalar there instead: an IP (kea leases4DelLease), a name, a filename. Pass that scalar here - do NOT wrap it in data/item, which sends it as a body and the route then reports the path parameter missing."
             },
             "data": {
               "type": "object",
@@ -8916,8 +8904,8 @@ const TOOLS = [
             },
             "rowCount": {
               "type": "integer",
-              "description": "Rows per page (for search operations)",
-              "default": 20
+              "description": "Rows per page (for search operations). Omitted, a search returns 200 rows; raise it deliberately, a large table can overrun the context window.",
+              "default": 200
             },
             "args": {
               "type": "array",
@@ -8967,7 +8955,7 @@ const TOOLS = [
           "properties": {
             "uuid": {
               "type": "string",
-              "description": "Item UUID (for get/set/del operations)"
+              "description": "First path segment of the action. Usually an item UUID, but many routes take some other scalar there instead: an IP (kea leases4DelLease), a name, a filename. Pass that scalar here - do NOT wrap it in data/item, which sends it as a body and the route then reports the path parameter missing."
             },
             "data": {
               "type": "object",
@@ -8988,8 +8976,8 @@ const TOOLS = [
             },
             "rowCount": {
               "type": "integer",
-              "description": "Rows per page (for search operations)",
-              "default": 20
+              "description": "Rows per page (for search operations). Omitted, a search returns 200 rows; raise it deliberately, a large table can overrun the context window.",
+              "default": 200
             },
             "args": {
               "type": "array",
@@ -9057,7 +9045,7 @@ const TOOLS = [
           "properties": {
             "uuid": {
               "type": "string",
-              "description": "Item UUID (for get/set/del operations)"
+              "description": "First path segment of the action. Usually an item UUID, but many routes take some other scalar there instead: an IP (kea leases4DelLease), a name, a filename. Pass that scalar here - do NOT wrap it in data/item, which sends it as a body and the route then reports the path parameter missing."
             },
             "data": {
               "type": "object",
@@ -9078,8 +9066,8 @@ const TOOLS = [
             },
             "rowCount": {
               "type": "integer",
-              "description": "Rows per page (for search operations)",
-              "default": 20
+              "description": "Rows per page (for search operations). Omitted, a search returns 200 rows; raise it deliberately, a large table can overrun the context window.",
+              "default": 200
             },
             "args": {
               "type": "array",
@@ -9139,7 +9127,7 @@ const TOOLS = [
           "properties": {
             "uuid": {
               "type": "string",
-              "description": "Item UUID (for get/set/del operations)"
+              "description": "First path segment of the action. Usually an item UUID, but many routes take some other scalar there instead: an IP (kea leases4DelLease), a name, a filename. Pass that scalar here - do NOT wrap it in data/item, which sends it as a body and the route then reports the path parameter missing."
             },
             "data": {
               "type": "object",
@@ -9160,8 +9148,8 @@ const TOOLS = [
             },
             "rowCount": {
               "type": "integer",
-              "description": "Rows per page (for search operations)",
-              "default": 20
+              "description": "Rows per page (for search operations). Omitted, a search returns 200 rows; raise it deliberately, a large table can overrun the context window.",
+              "default": 200
             },
             "args": {
               "type": "array",
@@ -9211,7 +9199,7 @@ const TOOLS = [
           "properties": {
             "uuid": {
               "type": "string",
-              "description": "Item UUID (for get/set/del operations)"
+              "description": "First path segment of the action. Usually an item UUID, but many routes take some other scalar there instead: an IP (kea leases4DelLease), a name, a filename. Pass that scalar here - do NOT wrap it in data/item, which sends it as a body and the route then reports the path parameter missing."
             },
             "data": {
               "type": "object",
@@ -9232,8 +9220,8 @@ const TOOLS = [
             },
             "rowCount": {
               "type": "integer",
-              "description": "Rows per page (for search operations)",
-              "default": 20
+              "description": "Rows per page (for search operations). Omitted, a search returns 200 rows; raise it deliberately, a large table can overrun the context window.",
+              "default": 200
             },
             "args": {
               "type": "array",
@@ -9285,7 +9273,7 @@ const TOOLS = [
           "properties": {
             "uuid": {
               "type": "string",
-              "description": "Item UUID (for get/set/del operations)"
+              "description": "First path segment of the action. Usually an item UUID, but many routes take some other scalar there instead: an IP (kea leases4DelLease), a name, a filename. Pass that scalar here - do NOT wrap it in data/item, which sends it as a body and the route then reports the path parameter missing."
             },
             "data": {
               "type": "object",
@@ -9306,8 +9294,8 @@ const TOOLS = [
             },
             "rowCount": {
               "type": "integer",
-              "description": "Rows per page (for search operations)",
-              "default": 20
+              "description": "Rows per page (for search operations). Omitted, a search returns 200 rows; raise it deliberately, a large table can overrun the context window.",
+              "default": 200
             },
             "args": {
               "type": "array",
@@ -9377,7 +9365,7 @@ const TOOLS = [
           "properties": {
             "uuid": {
               "type": "string",
-              "description": "Item UUID (for get/set/del operations)"
+              "description": "First path segment of the action. Usually an item UUID, but many routes take some other scalar there instead: an IP (kea leases4DelLease), a name, a filename. Pass that scalar here - do NOT wrap it in data/item, which sends it as a body and the route then reports the path parameter missing."
             },
             "data": {
               "type": "object",
@@ -9398,8 +9386,8 @@ const TOOLS = [
             },
             "rowCount": {
               "type": "integer",
-              "description": "Rows per page (for search operations)",
-              "default": 20
+              "description": "Rows per page (for search operations). Omitted, a search returns 200 rows; raise it deliberately, a large table can overrun the context window.",
+              "default": 200
             },
             "args": {
               "type": "array",
@@ -9449,7 +9437,7 @@ const TOOLS = [
           "properties": {
             "uuid": {
               "type": "string",
-              "description": "Item UUID (for get/set/del operations)"
+              "description": "First path segment of the action. Usually an item UUID, but many routes take some other scalar there instead: an IP (kea leases4DelLease), a name, a filename. Pass that scalar here - do NOT wrap it in data/item, which sends it as a body and the route then reports the path parameter missing."
             },
             "data": {
               "type": "object",
@@ -9470,8 +9458,8 @@ const TOOLS = [
             },
             "rowCount": {
               "type": "integer",
-              "description": "Rows per page (for search operations)",
-              "default": 20
+              "description": "Rows per page (for search operations). Omitted, a search returns 200 rows; raise it deliberately, a large table can overrun the context window.",
+              "default": 200
             },
             "args": {
               "type": "array",
@@ -9527,7 +9515,7 @@ const TOOLS = [
           "properties": {
             "uuid": {
               "type": "string",
-              "description": "Item UUID (for get/set/del operations)"
+              "description": "First path segment of the action. Usually an item UUID, but many routes take some other scalar there instead: an IP (kea leases4DelLease), a name, a filename. Pass that scalar here - do NOT wrap it in data/item, which sends it as a body and the route then reports the path parameter missing."
             },
             "data": {
               "type": "object",
@@ -9548,8 +9536,8 @@ const TOOLS = [
             },
             "rowCount": {
               "type": "integer",
-              "description": "Rows per page (for search operations)",
-              "default": 20
+              "description": "Rows per page (for search operations). Omitted, a search returns 200 rows; raise it deliberately, a large table can overrun the context window.",
+              "default": 200
             },
             "args": {
               "type": "array",
@@ -9583,7 +9571,7 @@ const TOOLS = [
           "properties": {
             "uuid": {
               "type": "string",
-              "description": "Item UUID (for get/set/del operations)"
+              "description": "First path segment of the action. Usually an item UUID, but many routes take some other scalar there instead: an IP (kea leases4DelLease), a name, a filename. Pass that scalar here - do NOT wrap it in data/item, which sends it as a body and the route then reports the path parameter missing."
             },
             "data": {
               "type": "object",
@@ -9604,8 +9592,8 @@ const TOOLS = [
             },
             "rowCount": {
               "type": "integer",
-              "description": "Rows per page (for search operations)",
-              "default": 20
+              "description": "Rows per page (for search operations). Omitted, a search returns 200 rows; raise it deliberately, a large table can overrun the context window.",
+              "default": 200
             },
             "args": {
               "type": "array",
@@ -9642,7 +9630,7 @@ const TOOLS = [
           "properties": {
             "uuid": {
               "type": "string",
-              "description": "Item UUID (for get/set/del operations)"
+              "description": "First path segment of the action. Usually an item UUID, but many routes take some other scalar there instead: an IP (kea leases4DelLease), a name, a filename. Pass that scalar here - do NOT wrap it in data/item, which sends it as a body and the route then reports the path parameter missing."
             },
             "data": {
               "type": "object",
@@ -9663,8 +9651,8 @@ const TOOLS = [
             },
             "rowCount": {
               "type": "integer",
-              "description": "Rows per page (for search operations)",
-              "default": 20
+              "description": "Rows per page (for search operations). Omitted, a search returns 200 rows; raise it deliberately, a large table can overrun the context window.",
+              "default": 200
             },
             "args": {
               "type": "array",
@@ -9703,7 +9691,7 @@ const TOOLS = [
           "properties": {
             "uuid": {
               "type": "string",
-              "description": "Item UUID (for get/set/del operations)"
+              "description": "First path segment of the action. Usually an item UUID, but many routes take some other scalar there instead: an IP (kea leases4DelLease), a name, a filename. Pass that scalar here - do NOT wrap it in data/item, which sends it as a body and the route then reports the path parameter missing."
             },
             "data": {
               "type": "object",
@@ -9724,8 +9712,8 @@ const TOOLS = [
             },
             "rowCount": {
               "type": "integer",
-              "description": "Rows per page (for search operations)",
-              "default": 20
+              "description": "Rows per page (for search operations). Omitted, a search returns 200 rows; raise it deliberately, a large table can overrun the context window.",
+              "default": 200
             },
             "args": {
               "type": "array",
@@ -9770,7 +9758,7 @@ const TOOLS = [
           "properties": {
             "uuid": {
               "type": "string",
-              "description": "Item UUID (for get/set/del operations)"
+              "description": "First path segment of the action. Usually an item UUID, but many routes take some other scalar there instead: an IP (kea leases4DelLease), a name, a filename. Pass that scalar here - do NOT wrap it in data/item, which sends it as a body and the route then reports the path parameter missing."
             },
             "data": {
               "type": "object",
@@ -9791,8 +9779,8 @@ const TOOLS = [
             },
             "rowCount": {
               "type": "integer",
-              "description": "Rows per page (for search operations)",
-              "default": 20
+              "description": "Rows per page (for search operations). Omitted, a search returns 200 rows; raise it deliberately, a large table can overrun the context window.",
+              "default": 200
             },
             "args": {
               "type": "array",
@@ -9886,7 +9874,6 @@ const METHOD_DOCS = {
       "aliasListNetworkAliases",
       "aliasListUserGroups",
       "aliasReconfigure",
-      "aliasSearchItem",
       "aliasSet",
       "aliasSetItem",
       "aliasToggleItem",
@@ -9901,65 +9888,41 @@ const METHOD_DOCS = {
       "categoryDelItem",
       "categoryGet",
       "categoryGetItem",
-      "categorySearchItem",
       "categorySet",
       "categorySetItem",
-      "dNatAddRule",
-      "dNatApply",
-      "dNatDelRule",
-      "dNatGet",
-      "dNatGetRule",
-      "dNatSearchRule",
-      "dNatSet",
-      "dNatSetRule",
-      "dNatToggleRule",
-      "filterAddRule",
       "filterBaseApply",
-      "filterBaseCancelRollback",
       "filterBaseGet",
       "filterBaseListCategories",
       "filterBaseListNetworkSelectOptions",
-      "filterBaseListPortSelectOptions",
-      "filterBaseRevert",
-      "filterBaseSavepoint",
       "filterBaseSet",
+      "filterAddRule",
       "filterDelRule",
-      "filterFlushInspectCache",
       "filterGetInterfaceList",
       "filterGetRule",
       "filterMoveRuleBefore",
-      "filterSearchRule",
       "filterSetRule",
       "filterToggleRule",
-      "filterToggleRuleLog",
       "filterUtilRuleStats",
       "groupAddItem",
       "groupDelItem",
       "groupGet",
       "groupGetItem",
       "groupReconfigure",
-      "groupSearchItem",
       "groupSet",
       "groupSetItem",
       "nptAddRule",
-      "nptApply",
       "nptDelRule",
       "nptGetRule",
-      "nptSearchRule",
       "nptSetRule",
       "nptToggleRule",
       "oneToOneAddRule",
-      "oneToOneApply",
       "oneToOneDelRule",
       "oneToOneGetRule",
-      "oneToOneSearchRule",
       "oneToOneSetRule",
       "oneToOneToggleRule",
       "sourceNatAddRule",
-      "sourceNatApply",
       "sourceNatDelRule",
       "sourceNatGetRule",
-      "sourceNatSearchRule",
       "sourceNatSetRule",
       "sourceNatToggleRule"
     ]
@@ -12315,6 +12278,35 @@ const PLUGIN_MODULES = ["telegraf","dmidecode","hwprobe"];
 // controller action declares, and the first object is the body. Two-parameter
 // actions (toggleRuleLog(uuid, log), toggleroute(uuid, enabled)) take both
 // segments. Anything more exotic goes through params.args.
+// OPNsense *Get* actions return every <select> option, not just the chosen one:
+// a d_nat rule ships ~150 protocol entries at "selected": 0. Measured on a live
+// 26.7 box that is 7,546 bytes where 773 carry information (89.8% waste), and
+// what is left is exactly the collapsed body the matching *Set* expects, so the
+// model no longer hand-collapses option maps (the empty-destination trap).
+// One selected -> the bare key (write-ready). Several -> an array, because the
+// separator is per-family (alias content = newline, categories = comma) and
+// guessing one here would corrupt writes. None -> "".
+function pruneOptions(node) {
+  if (Array.isArray(node)) return node.map(pruneOptions);
+  if (node === null || typeof node !== 'object') return node;
+  const vals = Object.values(node);
+  const isOptionMap =
+    vals.length > 0 &&
+    vals.every(
+      (v) => v !== null && typeof v === 'object' && !Array.isArray(v) && 'selected' in v
+    );
+  if (isOptionMap) {
+    const chosen = Object.keys(node).filter((k) => {
+      const s = node[k].selected;
+      return s === 1 || s === '1' || s === true;
+    });
+    return chosen.length === 1 ? chosen[0] : chosen.length === 0 ? '' : chosen;
+  }
+  const out = {};
+  for (const [k, v] of Object.entries(node)) out[k] = pruneOptions(v);
+  return out;
+}
+
 function makeRoute(mod, r) {
   const seg = (v) => v !== undefined && v !== null && typeof v !== 'object';
   return function (a, b) {
@@ -12333,7 +12325,7 @@ function makeRoute(mod, r) {
     if (!r.post) {
       return mod.http.get(url, undefined);
     }
-    return mod.http.post(url, body || (r.search ? { current: 1, rowCount: 5000 } : {}), undefined);
+    return mod.http.post(url, body || (r.search ? { current: 1, rowCount: 200 } : {}), undefined);
   };
 }
 
@@ -12414,6 +12406,9 @@ class OPNsenseMCPServer {
       if (__fw && __fw.http) {
         __fw.filterBaseGet = (config) => __fw.http.get('/api/firewall/filter/get', config);
         __fw.filterBaseSet = (data, config) => __fw.http.post('/api/firewall/filter/set', data, config);
+        // 26.7 removed savepoint/revert/cancel_rollback (404 on /filter/* and
+        // /filter_base/*, probed 2026-09-22); they are filtered out of the method
+        // enum in generate-tools.ts so nothing builds a rollback that cannot exist.
         __fw.filterBaseApply = (rev, data, config) => __fw.http.post('/api/firewall/filter/apply' + (rev ? '/' + rev : ''), data, config);
         // REMOVED UPSTREAM in OPNsense 26.7: savepoint / revert / cancel_rollback
         // are gone from FilterBaseController and 404 on every 26.7 box (whole
@@ -12421,9 +12416,6 @@ class OPNsenseMCPServer {
         // rollback-revision argument. Kept for boxes on 26.1.x and so names stay
         // resolvable; the rollback-before-apply pattern now needs a config.xml
         // snapshot instead (see infrastructure/tools/firewall/reconcile_firewall.py).
-        __fw.filterBaseSavepoint = (data, config) => __fw.http.post('/api/firewall/filter/savepoint', data, config);
-        __fw.filterBaseRevert = (rev, data, config) => __fw.http.post('/api/firewall/filter/revert' + (rev ? '/' + rev : ''), data, config);
-        __fw.filterBaseCancelRollback = (rev, data, config) => __fw.http.post('/api/firewall/filter/cancel_rollback' + (rev ? '/' + rev : ''), data, config);
         __fw.filterBaseListCategories = (config) => __fw.http.get('/api/firewall/filter/list_categories', config);
         __fw.filterBaseListNetworkSelectOptions = (config) => __fw.http.get('/api/firewall/filter/list_network_select_options', config);
         // FORK ADD (d_nat / port-forward): OPNsense 26.x added a Destination NAT
@@ -12447,10 +12439,10 @@ class OPNsenseMCPServer {
         // OPNsense controllers 2026-06-10. No-arg call POSTs an empty body -> all rows.
         // searchRule/searchItem 400 on an empty POST body, so default to a wide page
         // (caller can still pass {current,rowCount,searchPhrase,sort} to override).
-        __fw.filterSearchRule = (data, config) => __fw.http.post('/api/firewall/filter/searchRule', data || { current: 1, rowCount: 5000 }, config);
-        __fw.aliasSearchItem = (data, config) => __fw.http.post('/api/firewall/alias/searchItem', data || { current: 1, rowCount: 5000 }, config);
-        __fw.groupSearchItem = (data, config) => __fw.http.post('/api/firewall/group/searchItem', data || { current: 1, rowCount: 5000 }, config);
-        __fw.categorySearchItem = (data, config) => __fw.http.post('/api/firewall/category/searchItem', data || { current: 1, rowCount: 5000 }, config);
+        __fw.filterSearchRule = (data, config) => __fw.http.post('/api/firewall/filter/searchRule', data || { current: 1, rowCount: 200 }, config);
+        __fw.aliasSearchItem = (data, config) => __fw.http.post('/api/firewall/alias/searchItem', data || { current: 1, rowCount: 200 }, config);
+        __fw.groupSearchItem = (data, config) => __fw.http.post('/api/firewall/group/searchItem', data || { current: 1, rowCount: 200 }, config);
+        __fw.categorySearchItem = (data, config) => __fw.http.post('/api/firewall/category/searchItem', data || { current: 1, rowCount: 200 }, config);
         __fw.filterBaseListPortSelectOptions = (config) => __fw.http.get('/api/firewall/filter/list_port_select_options', config);
         __fw.filterToggleRuleLog = (uuid, data, config) => __fw.http.post('/api/firewall/filter/toggleRuleLog/' + (uuid || ''), data, config);
         __fw.filterFlushInspectCache = (data, config) => __fw.http.post('/api/firewall/filter/flushInspectCache', data, config);
@@ -12459,11 +12451,11 @@ class OPNsenseMCPServer {
         // be written but never ENUMERATED or APPLIED via the MCP (writes only
         // stage config). Routes verified live 2026-06-11 (homelab OPNsense:
         // searchRule 200 for all three).
-        __fw.sourceNatSearchRule = (data, config) => __fw.http.post('/api/firewall/source_nat/searchRule', data || { current: 1, rowCount: 5000 }, config);
+        __fw.sourceNatSearchRule = (data, config) => __fw.http.post('/api/firewall/source_nat/searchRule', data || { current: 1, rowCount: 200 }, config);
         __fw.sourceNatApply = (data, config) => __fw.http.post('/api/firewall/source_nat/apply', data || {}, config);
-        __fw.oneToOneSearchRule = (data, config) => __fw.http.post('/api/firewall/one_to_one/searchRule', data || { current: 1, rowCount: 5000 }, config);
+        __fw.oneToOneSearchRule = (data, config) => __fw.http.post('/api/firewall/one_to_one/searchRule', data || { current: 1, rowCount: 200 }, config);
         __fw.oneToOneApply = (data, config) => __fw.http.post('/api/firewall/one_to_one/apply', data || {}, config);
-        __fw.nptSearchRule = (data, config) => __fw.http.post('/api/firewall/npt/searchRule', data || { current: 1, rowCount: 5000 }, config);
+        __fw.nptSearchRule = (data, config) => __fw.http.post('/api/firewall/npt/searchRule', data || { current: 1, rowCount: 200 }, config);
         __fw.nptApply = (data, config) => __fw.http.post('/api/firewall/npt/apply', data || {}, config);
         // FORK FIX (no-uuid template fetch): the upstream GetRule/GetItem
         // methods URL-format an undefined uuid (/getRule/undefined), which
@@ -12485,7 +12477,7 @@ class OPNsenseMCPServer {
       // = 17 rows on eu-6). Same stale-spec gap as the firewall searchRule.
       const __if = this.client.interfaces;
       if (__if && __if.http) {
-        const S = (p) => (data, config) => __if.http.post('/api/interfaces/' + p + '/searchItem', data || { current: 1, rowCount: 5000 }, config);
+        const S = (p) => (data, config) => __if.http.post('/api/interfaces/' + p + '/searchItem', data || { current: 1, rowCount: 200 }, config);
         __if.vlanSettingsSearchItem = S('vlan_settings');
         __if.vxlanSettingsSearchItem = S('vxlan_settings');
         __if.laggSettingsSearchItem = S('lagg_settings');
@@ -12495,7 +12487,7 @@ class OPNsenseMCPServer {
         __if.greSettingsSearchItem = S('gre_settings');
         __if.vipSettingsSearchItem = S('vip_settings');
         const B = '/api/interfaces/bridge_settings/';
-        __if.bridgeSettingsSearchItem = (data, config) => __if.http.post(B + 'searchItem', data || { current: 1, rowCount: 5000 }, config);
+        __if.bridgeSettingsSearchItem = (data, config) => __if.http.post(B + 'searchItem', data || { current: 1, rowCount: 200 }, config);
         __if.bridgeSettingsGetItem = (uuid, config) => __if.http.get(B + 'getItem/' + (uuid || ''), config);
         __if.bridgeSettingsAddItem = (data, config) => __if.http.post(B + 'addItem', data, config);
         __if.bridgeSettingsSetItem = (uuid, data, config) => __if.http.post(B + 'setItem/' + uuid, data, config);
@@ -12603,7 +12595,7 @@ class OPNsenseMCPServer {
         __kea.dhcpv4GetReservation = (a, config) => {
           if (typeof a === 'string' && a) return __kea.http.get(KR + 'getReservation/' + a, config);
           const body = (a && typeof a === 'object') ? a : {};
-          return __kea.http.post(KR + 'searchReservation', { current: 1, rowCount: 5000, ...body }, config);
+          return __kea.http.post(KR + 'searchReservation', { current: 1, rowCount: 200, ...body }, config);
         };
         __kea.dhcpv4AddReservation = (data, config) => __kea.http.post(KR + 'addReservation', data, config);
         __kea.dhcpv4SetReservation = (uuid, data, config) => __kea.http.post(KR + 'setReservation/' + uuid, data, config);
@@ -12634,7 +12626,7 @@ class OPNsenseMCPServer {
       try {
         const result = await this.callModularTool(tool, args);
         return {
-          content: [{ type: 'text', text: JSON.stringify(result, null, 2) }],
+          content: [{ type: 'text', text: JSON.stringify(pruneOptions(result), null, 2) }],
         };
       } catch (error) {
         console.error('Tool call error:', {

@@ -18,6 +18,14 @@ interface ModularToolDefinition {
   inputSchema: any;
 }
 
+// Removed from OPNsense in 26.7 - the routes 404 on every spelling, so keep them
+// out of the advertised enum rather than let a caller build a rollback on them.
+const DEAD_METHODS = new Set([
+  'filterBaseSavepoint',
+  'filterBaseRevert',
+  'filterBaseCancelRollback',
+]);
+
 // Get all methods from a module
 function getModuleMethods(obj: any): string[] {
   if (!obj || typeof obj !== 'object') return [];
@@ -26,7 +34,7 @@ function getModuleMethods(obj: any): string[] {
   if (!proto) return [];
   
   return Object.getOwnPropertyNames(proto).filter(
-    key => typeof proto[key] === 'function' && key !== 'constructor'
+    key => typeof proto[key] === 'function' && key !== 'constructor' && !DEAD_METHODS.has(key)
   );
 }
 
@@ -47,7 +55,7 @@ function generateModularSchema(methods: string[]): any {
           // Common parameters that many methods use
           uuid: {
             type: 'string',
-            description: 'Item UUID (for get/set/del operations)'
+            description: 'First path segment of the action. Usually an item UUID, but many routes take some other scalar there instead: an IP (kea leases4DelLease), a name, a filename. Pass that scalar here - do NOT wrap it in data/item, which sends it as a body and the route then reports the path parameter missing.'
           },
           data: {
             type: 'object',
@@ -68,8 +76,8 @@ function generateModularSchema(methods: string[]): any {
           },
           rowCount: {
             type: 'integer',
-            description: 'Rows per page (for search operations)',
-            default: 20
+            description: 'Rows per page (for search operations). Omitted, a search returns 200 rows; raise it deliberately, a large table can overrun the context window.',
+            default: 200
           },
           args: {
             type: 'array',
