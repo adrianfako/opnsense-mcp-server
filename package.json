@@ -13,9 +13,7 @@
   "bugs": {
     "url": "https://github.com/Pixelworlds/opnsense-mcp-server/issues"
   },
-  "bin": {
-    "opnsense-mcp-server": "index.js"
-  },
+  "bin": "index.js",
   "scripts": {
     "start": "node index.js",
     "help": "node index.js --help",
