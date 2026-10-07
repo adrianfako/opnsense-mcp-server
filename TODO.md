@@ -12,7 +12,8 @@ DONE 2026-06-11, incl. the proven per-family schema cheat-sheet).
 ## Remaining (operator step)
 
 The four fleet MCP servers (`opnsense-eu-2` / `-eu-6` / `-eu-8` / `-homelab`)
-launch `C:/CODE/tools/opnsense-mcp-server/index.js` directly, so a rebuild is
+launch `<CODE>/tools/opnsense-mcp-server/index.js` directly (`C:/CODE` on the
+laptop, `~/code` on the agents VM), so a rebuild is
 picked up by **restarting Claude Code** - no npx cache to clear.
 
 ## Open

@@ -45,3 +45,6 @@ __pycache__/
 *.pyc
 .pytest_cache/
 .hypothesis/
+
+# npm lockfile; this repo uses yarn (yarn.lock)
+package-lock.json
