@@ -926,15 +926,15 @@
    "mutating": false,
    "params": 0,
    "path": "/api/diagnostics/firewall/queryPfTop",
-   "post": false,
-   "search": false
+   "post": true,
+   "search": true
   },
   "firewallQueryStates": {
    "mutating": false,
    "params": 0,
    "path": "/api/diagnostics/firewall/queryStates",
-   "post": false,
-   "search": false
+   "post": true,
+   "search": true
   },
   "firewallStats": {
    "mutating": false,
@@ -2739,8 +2739,8 @@
    "mutating": false,
    "params": 0,
    "path": "/api/ids/service/queryAlerts",
-   "post": false,
-   "search": false
+   "post": true,
+   "search": true
   },
   "serviceReconfigure": {
    "mutating": true,

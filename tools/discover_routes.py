@@ -9,7 +9,8 @@ Verb rule, derived from source rather than guessed: an action that calls
 `$this->request->isPost()` refuses anything else, so it is POST. Everything
 else is GET, which is the safe direction — a GET cannot fall into the mutating
 branch of an action that switches on the method. `search*` is forced to POST
-because the grid parameters travel in the body.
+because the grid parameters travel in the body; so is `query*`
+(queryStates, queryPfTop, queryAlerts): a GET returns an empty grid.
 """
 import json
 import re
@@ -146,10 +147,10 @@ def main():
                 # An action that references isPost() either requires POST or
                 # merely does something extra on POST; the live probe below
                 # demotes the second kind back to GET.
-                "post": meta["post"] or action.startswith("search")
+                "post": meta["post"] or action.startswith(("search", "query"))
                 or f"{key}.{name}" in POST_CORRECTIONS,
                 "params": meta["nparams"],
-                "search": action.startswith("search"),
+                "search": action.startswith(("search", "query")),
                 # Probe guard only: never GET-probe something whose name says it
                 # changes state, even though OPNsense guards those with isPost().
                 "mutating": bool(first and first.group(0) in MUTATING)
