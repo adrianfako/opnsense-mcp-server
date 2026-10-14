@@ -7,10 +7,7 @@ timestamp: "2026-07-17"
 
 # Firewall write-schema cheat-sheet
 
-Per-family write bodies for `firewall_manage` add/set methods. Proven, not
-theory: all 8 families round-trip tested live on the homelab OPNsense on
-2026-06-11 (add inert rule, `getRule` assert every sent field persisted,
-del, apply, zero residue). Parent: [README.md](../README.md); provenance:
+Per-family write bodies for `firewall_manage` add/set methods. Parent: [README.md](../README.md); provenance:
 [log.md](../log.md) 2026-06-11.
 
 The same schemas are embedded in the `firewall_manage` tool description
@@ -46,4 +43,3 @@ example. The generic `{method, params}` fallback still works.
 Upstream client 0.5.3 omits these; this fork adds them (routes verified
 live): `sourceNatSearchRule`/`sourceNatApply`,
 `oneToOneSearchRule`/`oneToOneApply`, `nptSearchRule`/`nptApply`.
-`methodDocs.firewall` synced from 73 to 89 methods.

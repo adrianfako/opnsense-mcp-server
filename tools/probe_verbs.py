@@ -20,7 +20,7 @@ from pathlib import Path
 
 SCRATCH = Path(__file__).parent
 TABLE = SCRATCH / sys.argv[1]
-SERVER = sys.argv[2]                      # e.g. opnsense-eu-2
+SERVER = sys.argv[2]
 OUT = SCRATCH / sys.argv[3]
 
 cfg = json.loads(Path("C:/Users/Administrator/.claude.json").read_text(encoding="utf-8"))

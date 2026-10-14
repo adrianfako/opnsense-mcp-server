@@ -10,7 +10,6 @@ Rules enforced:
      (it should have been absorbed into `timestamp:`).
 
 Exit 0 = conformant, 1 = violations (listed). Run from the handbook root.
-Used by .github/workflows/okf-validate.yml and runnable as a pre-commit hook.
 """
 from __future__ import annotations
 import os
@@ -41,7 +40,6 @@ def load_allowlist():
 
 
 def fm_tags(text):
-    """Collect block-list tags from a file's leading frontmatter."""
     lines = text.split("\n")
     if not lines or lines[0].strip() != "---":
         return []
@@ -96,7 +94,7 @@ def main():
             fm = frontmatter(text)
             is_root_index = rel == "index.md"
             is_sub_index = fn == "index.md" and not is_root_index
-            is_reserved_log = fn == "log.md"  # OKF lowercase reserved
+            is_reserved_log = fn == "log.md"
             is_skill = fn == "SKILL.md"       # Claude Code skill: name/description schema, not OKF type
 
             if fm == "UNCLOSED":
@@ -107,20 +105,18 @@ def main():
                 if not fm or not fm.get("okf_version"):
                     errors.append(f"{rel}: root index must declare okf_version")
             elif is_sub_index or is_reserved_log or is_skill:
-                pass  # reserved; no type required (SKILL.md carries name/description, not type)
+                pass
             else:
                 if not fm:
                     errors.append(f"{rel}: missing YAML frontmatter (need type:)")
                 elif not fm.get("type"):
                     errors.append(f"{rel}: empty or missing type:")
 
-            # tags (if present) must be drawn from the controlled allowlist
             if allow:
                 for t in fm_tags(text):
                     if t not in allow:
                         errors.append(f"{rel}: off-allowlist tag '{t}' (add to bin/okf-tags.yaml or fix)")
 
-            # stray save-header = an un-absorbed header at the TOP of the body.
             # Only the leading position counts; `<!-- saved -->` examples inside
             # code blocks / prose deeper in a doc are legitimate content.
             if fm and isinstance(fm, dict):
@@ -130,7 +126,7 @@ def main():
                         continue
                     if SAVED_RE.match(ln.strip()):
                         errors.append(f"{rel}: stray <!-- saved --> header (absorb into timestamp:)")
-                    break  # only inspect the first non-blank body line
+                    break
 
     if errors:
         print("OKF validation FAILED:")

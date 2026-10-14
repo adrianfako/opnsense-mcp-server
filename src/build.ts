@@ -5,25 +5,18 @@ import { fileURLToPath } from 'url';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
-// Read the tools data from parent directory
 const toolsData = JSON.parse(fs.readFileSync(path.join(__dirname, '..', 'tools-generated.json'), 'utf8'));
 
 // The live MVC API surface, discovered off a box running the newest OPNsense
 // (see tools/discover_routes.py + tools/probe_verbs.py). This is the source of
 // truth for what exists; @richard-stovall/opnsense-typescript-client 0.5.3 ships
 // a spec that is several releases stale and has been wrong about routes, verbs
-// and whole controllers. Every entry here is {path, post, params, search}.
+// and whole controllers.
 const apiRoutes: Record<string, Record<string, { path: string; post: boolean; params: number; search: boolean }>> =
   JSON.parse(fs.readFileSync(path.join(__dirname, 'api-routes.json'), 'utf8'));
 
-// OPNsense keeps these in its own namespace, but the MCP surfaces them as
-// plugin tools (client.plugins.<name>), so they attach one level deeper.
 const PLUGIN_MODULES = ['telegraf', 'dmidecode', 'hwprobe'];
 
-// Union the discovered methods into the generated tool definitions. `methods`
-// is the allowlist the dispatcher checks and `inputSchema...enum` is what the
-// model sees, so both have to grow. Descriptions are left alone: firewall_manage
-// carries the hand-written write-schema cheat sheet.
 for (const [key, routes] of Object.entries(apiRoutes)) {
   const names = Object.keys(routes);
   let tool = toolsData.tools.find((t: any) => (t.module === 'plugins' ? t.submodule : t.module) === key);
@@ -53,7 +46,6 @@ toolsData.coreTools = toolsData.tools.filter((t: any) => t.module !== 'plugins')
 toolsData.pluginTools = toolsData.tools.filter((t: any) => t.module === 'plugins').length;
 toolsData.totalTools = toolsData.tools.length;
 
-// Generate the single-file server with modular tools
 const serverCode = `#!/usr/bin/env node
 import { Server } from '@modelcontextprotocol/sdk/server/index.js';
 import { StdioServerTransport } from '@modelcontextprotocol/sdk/server/stdio.js';
@@ -680,7 +672,6 @@ main().catch((error) => {
 });
 `;
 
-// Write the single-file server to parent directory
 fs.writeFileSync(path.join(__dirname, '..', 'index.js'), serverCode);
 console.log('Built index.js successfully');
 console.log(`Total tools: ${toolsData.totalTools} modules`);

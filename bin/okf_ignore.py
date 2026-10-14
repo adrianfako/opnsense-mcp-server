@@ -43,17 +43,14 @@ def is_ignored(rel, pats):
     base = segs[-1]
     for pat in pats:
         core = pat[3:] if pat.startswith("**/") else pat
-        # bare name (no glob, no slash): match any path segment
         if "/" not in core and "*" not in core and "?" not in core:
             if core in segs:
                 return True
             continue
-        # basename glob (no slash): match the basename
         if "/" not in core:
             if fnmatch.fnmatch(base, core):
                 return True
             continue
-        # path glob (has slash): match the full relpath (+ subtree)
         if fnmatch.fnmatch(rel, core) or fnmatch.fnmatch(rel, core + "/*"):
             return True
     return False

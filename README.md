@@ -109,9 +109,7 @@ node tools/smoke.mjs opnsense-eu-2   # read-only end-to-end check vs a live box
 ```
 
 Stack: Node.js with tsx, TypeScript 5.3+, @modelcontextprotocol/sdk, Zod
-validation, Jest tests. Contributions via fork + feature branch + PR are
-welcome. MIT licensed (see LICENSE). Built on the
-[Model Context Protocol](https://modelcontextprotocol.io/) by Anthropic.
+validation, Jest tests. MIT licensed (see LICENSE).
 
 ## See also
 
