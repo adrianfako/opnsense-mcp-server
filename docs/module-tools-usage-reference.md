@@ -7,7 +7,7 @@ timestamp: "2026-07-17"
 
 # Module tools and usage
 
-How the modular tool surface works. Parent: [README.md](../README.md).
+Parent: [README.md](../README.md).
 
 ## How it works
 
@@ -42,7 +42,7 @@ operations group by module: all firewall operations live in
 
 ## Core modules (24 tools)
 
-Each tool provides access to all methods within that module. Highlights:
+Highlights:
 
 | Tool name            | Description              | Example methods                                         |
 | -------------------- | ------------------------ | ------------------------------------------------------- |
@@ -69,24 +69,3 @@ Enabled with `--plugins` / `INCLUDE_PLUGINS=true`. Popular modules:
 | `plugin_caddy_manage`      | Caddy web server      | `reverseProxySearchDomain`, `serviceStatus` |
 | `plugin_bind_manage`       | BIND DNS              | `domainSearchDomain`, `recordSearchRecord`  |
 | `plugin_acmeclient_manage` | Let's Encrypt         | `certificatesSearch`, `certificatesIssue`   |
-
-## API client
-
-Calls go through
-[@richard-stovall/opnsense-typescript-client](https://www.npmjs.com/package/@richard-stovall/opnsense-typescript-client):
-complete type safety, built-in error handling and retries, all 601 OPNsense
-API endpoints, modern Fetch-based implementation.
-
-Example tool implementation:
-
-```typescript
-const response = await client.system.getStatus();
-return {
-  content: [
-    {
-      type: 'text',
-      text: JSON.stringify(response.data, null, 2),
-    },
-  ],
-};
-```

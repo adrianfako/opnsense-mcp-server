@@ -36,14 +36,8 @@ POST_CORRECTIONS = {
     "firmware.firmwareCleanup",
 }
 
-# The MCP tool for these OPNsense modules is named differently, or the module is
-# split out. Everything else maps by lowercasing the namespace directory.
 MODULE_ALIAS = {"core.Firmware": "firmware"}
 
-# An action whose name starts with one of these changes state, so it is POST and
-# must never be probed. Everything else is treated as a read (GET) and gets
-# verified against a live box; `probe_verbs.py` flips the ones that answer
-# `{"status":"error"}` because they guard on isPost().
 MUTATING = {
     "abort", "add", "apply", "audit", "check", "cleanup", "clear", "configure",
     "connect", "copy", "create", "del", "delete", "disable", "disconnect",
@@ -57,7 +51,6 @@ MUTATING = {
 
 
 def body_of(src: str, start: int) -> str:
-    """Source of one function, by brace matching from its signature."""
     i = src.find("{", start)
     if i < 0:
         return ""
@@ -121,7 +114,6 @@ def main():
         ctrl = cls[: -len("Controller")]
         module = parts[parts.index("OPNsense") + 1]
 
-        # fold inherited actions in, own definitions winning
         eff, node, hops = {}, f, 0
         chain = []
         while node and hops < 8:

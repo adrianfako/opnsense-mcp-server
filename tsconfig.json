@@ -1,6 +1,5 @@
 {
   "compilerOptions": {
-    // Environment setup & latest features
     "lib": ["ES2022", "ES2019", "ES2017", "ES2015", "DOM"],
     "types": ["node"],
     "target": "ES2022",
@@ -8,7 +7,6 @@
     "moduleDetection": "force",
     "allowJs": true,
 
-    // Node.js mode
     "moduleResolution": "bundler",
     "esModuleInterop": true,
     "allowSyntheticDefaultImports": true,
@@ -20,7 +18,6 @@
     "declaration": false,
     "noEmit": true,
 
-    // Best practices
     "strict": true,
     "skipLibCheck": true,
     "allowImportingTsExtensions": false,
@@ -29,7 +26,6 @@
     "noImplicitOverride": true,
     "forceConsistentCasingInFileNames": true,
 
-    // Some stricter flags (disabled by default)
     "noUnusedLocals": false,
     "noUnusedParameters": false,
     "noPropertyAccessFromIndexSignature": false

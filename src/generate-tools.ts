@@ -2,7 +2,6 @@ import * as fs from 'fs';
 import * as path from 'path';
 import { OPNsenseClient } from '@richard-stovall/opnsense-typescript-client';
 
-// Create client to introspect
 const client = new OPNsenseClient({
   baseUrl: 'https://dummy',
   apiKey: 'dummy',
@@ -26,7 +25,6 @@ const DEAD_METHODS = new Set([
   'filterBaseCancelRollback',
 ]);
 
-// Get all methods from a module
 function getModuleMethods(obj: any): string[] {
   if (!obj || typeof obj !== 'object') return [];
   
@@ -38,7 +36,6 @@ function getModuleMethods(obj: any): string[] {
   );
 }
 
-// Generate schema for modular tools
 function generateModularSchema(methods: string[]): any {
   return {
     type: 'object',
@@ -52,7 +49,6 @@ function generateModularSchema(methods: string[]): any {
         type: 'object',
         description: 'Parameters for the method (varies by method)',
         properties: {
-          // Common parameters that many methods use
           uuid: {
             type: 'string',
             description: 'First path segment of the action. Usually an item UUID, but many routes take some other scalar there instead: an IP (kea leases4DelLease), a name, a filename. Pass that scalar here - do NOT wrap it in data/item, which sends it as a body and the route then reports the path parameter missing.'
@@ -90,10 +86,8 @@ function generateModularSchema(methods: string[]): any {
   };
 }
 
-// Analyze all modules and create modular tools
 const modularTools: ModularToolDefinition[] = [];
 
-// Core module
 const coreMethods = getModuleMethods(client.core);
 if (coreMethods.length > 0) {
   modularTools.push({
@@ -105,7 +99,6 @@ if (coreMethods.length > 0) {
   });
 }
 
-// Firewall module
 const firewallMethods = getModuleMethods(client.firewall);
 if (firewallMethods.length > 0) {
   modularTools.push({
@@ -117,7 +110,6 @@ if (firewallMethods.length > 0) {
   });
 }
 
-// Auth module
 const authMethods = getModuleMethods(client.auth);
 if (authMethods.length > 0) {
   modularTools.push({
@@ -129,7 +121,6 @@ if (authMethods.length > 0) {
   });
 }
 
-// Interfaces module
 const interfacesMethods = getModuleMethods(client.interfaces);
 if (interfacesMethods.length > 0) {
   modularTools.push({
@@ -141,7 +132,6 @@ if (interfacesMethods.length > 0) {
   });
 }
 
-// Direct modules (not under core)
 const directModules = [
   'captiveportal', 'cron', 'dhcpv4', 'dhcpv6', 'dhcrelay',
   'diagnostics', 'dnsmasq', 'firmware', 'ids', 'ipsec', 'kea',
@@ -165,7 +155,6 @@ directModules.forEach(moduleName => {
   }
 });
 
-// Plugin modules - group all plugins into one tool
 const plugins = client.plugins as any;
 const pluginNames = Object.keys(plugins).filter(key => key !== 'http');
 const allPluginMethods: { plugin: string; methods: string[] }[] = [];
@@ -180,7 +169,6 @@ pluginNames.forEach(pluginName => {
   }
 });
 
-// Create individual plugin tools
 allPluginMethods.forEach(({ plugin, methods }) => {
   modularTools.push({
     name: `plugin_${plugin}_manage`,
@@ -196,7 +184,6 @@ console.log(`\nTotal modular tools generated: ${modularTools.length}`);
 console.log(`Core tools: ${modularTools.filter(t => t.module !== 'plugins').length}`);
 console.log(`Plugin tools: ${modularTools.filter(t => t.module === 'plugins').length}`);
 
-// Generate method documentation
 const methodDocs: any = {};
 modularTools.forEach(tool => {
   const key = tool.submodule ? `${tool.module}.${tool.submodule}` : tool.module;
@@ -206,7 +193,6 @@ modularTools.forEach(tool => {
   };
 });
 
-// Save tool definitions
 fs.writeFileSync('tools-generated.json', JSON.stringify({
   totalTools: modularTools.length,
   coreTools: modularTools.filter(t => t.module !== 'plugins').length,

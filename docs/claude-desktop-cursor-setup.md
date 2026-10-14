@@ -7,7 +7,7 @@ timestamp: "2026-07-17"
 
 # Claude Desktop / Cursor setup
 
-How MCP clients register this server. Parent: [README.md](../README.md).
+Parent: [README.md](../README.md).
 
 ## Claude Desktop
 

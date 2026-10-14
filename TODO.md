@@ -6,8 +6,7 @@ timestamp: "2026-10-12"
 
 # TODO - opnsense-mcp-server
 
-Open items only; completed work lives in [log.md](log.md) (write-schema embed
-DONE 2026-06-11, incl. the proven per-family schema cheat-sheet).
+Open items only; completed work lives in [log.md](log.md).
 
 ## Remaining (operator step)
 
@@ -25,10 +24,6 @@ picked up by **restarting Claude Code** - no npx cache to clear.
 - Only `firewall_manage` carries embedded write-body schemas. The 315 methods
   added on 2026-08-12 are documented by route and verb only; the model has to
   fetch the editable-model template (`*Get*` with no uuid) to learn a body.
-  Less painful since 2026-09-22: responses are pruned to the selected values,
-  so a template fetch costs about a tenth of what it did and comes back in the
-  shape the matching `*Set*` expects. Embedded per-family schemas would still
-  beat a round trip.
 
 ## References
 
