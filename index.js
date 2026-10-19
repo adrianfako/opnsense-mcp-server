@@ -12286,6 +12286,10 @@ const PLUGIN_MODULES = ["telegraf","dmidecode","hwprobe"];
 // One selected -> the bare key (write-ready). Several -> an array, because the
 // separator is per-family (alias content = newline, categories = comma) and
 // guessing one here would corrupt writes. None -> "".
+// WireGuard private keys and PSKs are dropped, never masked: every result lands
+// in a transcript, and a masked value fed back into a *Set* would overwrite the
+// real key (OPNsense leaves a field that is not in the body as it is).
+const SECRET_FIELDS = new Set(['privkey', 'psk']);
 function pruneOptions(node) {
   if (Array.isArray(node)) return node.map(pruneOptions);
   if (node === null || typeof node !== 'object') return node;
@@ -12303,7 +12307,7 @@ function pruneOptions(node) {
     return chosen.length === 1 ? chosen[0] : chosen.length === 0 ? '' : chosen;
   }
   const out = {};
-  for (const [k, v] of Object.entries(node)) out[k] = pruneOptions(v);
+  for (const [k, v] of Object.entries(node)) if (!SECRET_FIELDS.has(k)) out[k] = pruneOptions(v);
   return out;
 }
 
