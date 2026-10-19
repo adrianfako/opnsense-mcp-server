@@ -1,6 +1,13 @@
 # Log
 
-Completed work lands here (TODO.md keeps open items only). Newest first.
+Completed work lands here; open work is in the handbook todo stack (see TODO.md). Newest first.
+
+## 2026-10-19
+
+- **TODO.md is now a pointer to the handbook todo stack (#3).** Route
+  discovery upkeep moved to handbook `backlog/todo/opnsense-mcp-server-upkeep.md`;
+  write-body schemas for the other managers were closed in
+  `backlog/leave-it/fleet-parked-ideas.md`; the restart note moved to README.
 
 ## 2026-09-22
 
