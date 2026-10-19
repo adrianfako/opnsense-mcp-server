@@ -17,7 +17,7 @@ carrying write-route re-maps and embedded write-body schemas the upstream
 client gets wrong (firewall/NAT, WireGuard, Kea/dhcpv4), plus a route table
 discovered from a live box so the whole current API surface is reachable even
 where the client's bundled spec is stale. The fleet's opnsense-homelab / eu-2 /
-eu-6 / eu-8 MCP servers run this checkout directly (see [TODO.md](TODO.md)).
+eu-6 / eu-8 MCP servers run this checkout directly (a rebuild takes effect when Claude Code restarts; see Development).
 
 ## Shape
 
@@ -111,11 +111,13 @@ node tools/smoke.mjs opnsense-eu-2   # read-only end-to-end check vs a live box
 Stack: Node.js with tsx, TypeScript 5.3+, @modelcontextprotocol/sdk, Zod
 validation, Jest tests. MIT licensed (see LICENSE).
 
+The four fleet MCP servers launch `index.js` directly. After a rebuild, restart Claude Code to pick it up.
+
 ## See also
 
 - [docs/claude-desktop-cursor-setup.md](docs/claude-desktop-cursor-setup.md) - client setup + troubleshooting
 - [docs/module-tools-usage-reference.md](docs/module-tools-usage-reference.md) - module tool tables + prompts
 - [docs/firewall-write-schema-cheatsheet.md](docs/firewall-write-schema-cheatsheet.md) - proven write bodies
-- [TODO.md](TODO.md) - open items
+- [TODO.md](TODO.md) - pointer to the handbook todo stack
 - [log.md](log.md) - history
 - Upstream: [richard-stovall/opnsense-mcp-server](https://github.com/richard-stovall/opnsense-mcp-server)
