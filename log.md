@@ -2,6 +2,16 @@
 
 Completed work lands here (TODO.md keeps open items only). Newest first.
 
+## 2026-10-19
+
+- **WireGuard private keys and PSKs are dropped from every result.** The WG
+  search and get calls returned `privkey` and `psk` in clear, so each read put
+  them in a transcript. `pruneOptions()` now drops both fields. They are
+  dropped, not masked: a masked value sent back in a `*Set*` body would replace
+  the real key, and OPNsense keeps a field that is not in the body. Checked live
+  on all four firewalls: no `privkey` or `psk` left in search or get results,
+  `pubkey` kept; the old build returned both.
+
 ## 2026-09-22
 
 - **Option maps pruned out of every response (about 90% fewer tokens, and the
