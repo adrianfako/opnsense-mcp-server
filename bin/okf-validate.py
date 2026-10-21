@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Validate the handbook is a conformant OKF v0.1 bundle (ADR-0023).
+"""Validate the handbook is a conformant OKF v0.1 bundle (handbook conventions/docs/frontmatter.md).
 
 Rules enforced:
   1. Every non-reserved `.md` has parseable YAML frontmatter with a non-empty
