@@ -1,6 +1,6 @@
 """Shared .okfignore support for the OKF tree-walkers (okf-frontmatter, okf-validate).
 
-ADR-0027 makes every .md in a fleet repo an OKF doc — but repos that vendor
+handbook conventions/docs/frontmatter.md makes every .md in a fleet repo an OKF doc — but repos that vendor
 third-party code (node_modules, .venv, test fixtures, bundled SDKs) carry
 hundreds of .md that cannot and must not get frontmatter. A repo declares those
 trees in a `.okfignore` at its root; the walkers skip anything matching.
