@@ -4,7 +4,7 @@
 check:
 	yarn install --immutable
 	yarn type-check
-	-yarn npm audit --all --recursive --environment production   # advisory: express 5.1.0 pulls a vulnerable dependency (2026-10-22); bump, then drop the dash
+	yarn npm audit --all --recursive --environment production
 	yarn build:all
 	test -f tools-generated.json
 	test -s index.js
