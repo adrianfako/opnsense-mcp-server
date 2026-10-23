@@ -35,9 +35,12 @@
   "author": "Richard Stovall",
   "license": "MIT",
   "dependencies": {
-    "@modelcontextprotocol/sdk": "^1.0.1",
+    "@modelcontextprotocol/sdk": "^1.32.1",
     "@richard-stovall/opnsense-typescript-client": "0.5.3",
     "zod": "^4.6.5"
+  },
+  "resolutions": {
+    "axios": "^1.15.1"
   },
   "devDependencies": {
     "@types/node": "^20.11.0",
