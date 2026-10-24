@@ -20,7 +20,7 @@
     "build": "tsx src/build.ts",
     "generate-tools": "tsx src/generate-tools.ts",
     "build:all": "yarn generate-tools && yarn build",
-    "validate": "node index.js --help > /dev/null 2>&1; echo 'Validation passed'",
+    "validate": "node index.js --help > /dev/null 2>&1 && echo 'Validation passed'",
     "type-check": "tsc --noEmit"
   },
   "keywords": [
@@ -37,7 +37,7 @@
   "dependencies": {
     "@modelcontextprotocol/sdk": "^1.32.1",
     "@richard-stovall/opnsense-typescript-client": "0.5.3",
-    "zod": "^4.6.5"
+    "zod": "^4.6.7"
   },
   "resolutions": {
     "axios": "^1.15.1"

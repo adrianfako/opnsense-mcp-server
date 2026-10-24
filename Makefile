@@ -4,6 +4,7 @@
 check:
 	yarn install --immutable
 	yarn type-check
+	node --test tools/validate.test.mjs
 	yarn npm audit --all --recursive --environment production
 	yarn build:all
 	test -f tools-generated.json
