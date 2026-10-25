@@ -75,6 +75,17 @@ def foundation(root):
             if path.suffix == '.py':
                 ast.parse(content, filename=str(path.relative_to(root)))
             elif path.suffix == '.json':
+                if path.parent.name == '.vscode' and path.name in {
+                        'settings.json', 'tasks.json', 'launch.json', 'extensions.json'}:
+                    # VS Code configuration is JSON with comments and trailing
+                    # commas. Preserve strings during both normalization passes.
+                    quoted = r'"(?:\\.|[^"\\])*"'
+                    text = content.decode('utf8')
+                    text = re.sub(quoted + r'|//[^\r\n]*|/\*[\s\S]*?\*/',
+                                  lambda m: m[0] if m[0].startswith('"') else ' ', text)
+                    text = re.sub(quoted + r'|,\s*([}\]])',
+                                  lambda m: m[0] if m[0].startswith('"') else m[1], text)
+                    content = text
                 json.loads(content)
             elif path.suffix == '.toml':
                 tomllib.loads(content.decode('utf8'))
@@ -99,6 +110,23 @@ def foundation(root):
                     if not destination.exists():
                         raise ValueError('missing local link: ' + target.path)
             elif path.suffix == '.csv':
+                # SOPS binary-mode files retain their plaintext extension but
+                # contain a JSON envelope. Validate that container, not ciphertext
+                # as CSV; encrypted row contents cannot be checked without keys.
+                with path.open('rb') as stream:
+                    json_candidate = stream.read(64).lstrip().startswith(b'{')
+                if json_candidate:
+                    try:
+                        envelope = json.loads(bounded_read(path))
+                    except (ValueError, UnicodeError):
+                        envelope = None
+                    if (isinstance(envelope, dict) and set(envelope) == {'data', 'sops'}
+                            and isinstance(envelope['sops'], dict)
+                            and isinstance(envelope['data'], str)
+                            and envelope['data'].startswith('ENC[AES256_GCM,')
+                            and envelope['data'].endswith(']')):
+                        print('UNVERIFIED encrypted CSV contents:', path.relative_to(root), flush=True)
+                        continue
                 with path.open(newline='') as stream:
                     rows = csv.reader(stream, strict=True)
                     width = None
