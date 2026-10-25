@@ -1,0 +1,27 @@
+{
+  "version": 1,
+  "baseline_version": 1,
+  "managed_by": "fleet-validation",
+  "profile": "node",
+  "adapter_status": "configured",
+  "setup": [],
+  "default_branch": "main",
+  "runtime": {
+    "node": "24"
+  },
+  "checks": [
+    {
+      "name": "approved-check-1",
+      "argv": [
+        "node",
+        "--test",
+        "tools/validate.test.mjs"
+      ],
+      "cwd": ".",
+      "timeout": 300
+    }
+  ],
+  "notes": [
+    "Approved enrollment-plan adapter; no deployment or live data required."
+  ]
+}
