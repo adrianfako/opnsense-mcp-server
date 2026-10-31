@@ -17,6 +17,13 @@ const apiRoutes: Record<string, Record<string, { path: string; post: boolean; pa
 
 const PLUGIN_MODULES = ['telegraf', 'dmidecode', 'hwprobe'];
 
+// OPNsense serves every log (core/audit, core/system, wireguard/wireguard, ...) through
+// one catch-all action on diagnostics/LogController, so discover_routes.py never sees
+// it. Kept here, not in api-routes.json, so a route refresh does not drop it. The
+// caller is attached in ensureClient (it checks the segments: the same path takes a
+// `clear` action).
+(apiRoutes.diagnostics ??= {}).logSearch = { path: '/api/diagnostics/log', post: true, params: 2, search: true, mutating: false } as any;
+
 for (const [key, routes] of Object.entries(apiRoutes)) {
   const names = Object.keys(routes);
   let tool = toolsData.tools.find((t: any) => (t.module === 'plugins' ? t.submodule : t.module) === key);
@@ -105,15 +112,62 @@ function pruneOptions(node) {
   return out;
 }
 
+// Read-only mode (OPNSENSE_READ_ONLY=true or --read-only) checks every request the
+// client sends, not the method name or the discovered "mutating" flag: that flag is
+// wrong for actions like revertBackup, snapshots/activate and routes/delroute. A
+// request goes out only when its action (the word after /api/<module>/<controller>/)
+// is a read. Anything else is refused, so it fails closed.
+// First camel word of the action: a read verb or a read noun. No camel word may be a
+// write word; a lowercase compound (getroute, listlocalzones) passes on a read prefix
+// when no write word sits inside it.
+const READ_FIRST = new Set(('get search show status list info log is dump dumpcache dumpinfra stats count ' +
+  'backups system version health memory statistics totals top interfaces pf rule cache ca mac running ' +
+  'upgradestatus providers zones meta view tree timeserie aliases accounts find diff report services ' +
+  'templates pools user gps swanctl raw reverse searchroute connection').split(' '));
+const READ_PREFIX = ['get', 'search', 'list', 'dump', 'show'];
+const WRITE = new Set(('set add del delete apply toggle toggleroute reconfigure restart start stop upload revert ' +
+  'flush kill reboot halt update upgrade install remove reset save import clear drop lock unlock connect ' +
+  'disconnect generate gen run exec activate expire logon logoff reload store carp register sync create ' +
+  'rename move clone restore revoke renew sign issue kick disable enable wake fetch download commit rollback ' +
+  'cancel abort purge rotate trigger test export new psk key otp seed stream').split(' '));
+function camelWords(a) {
+  return (String(a).match(/[A-Z]?[a-z0-9]+|[A-Z]+(?![a-z])/g) || []).map((w) => w.toLowerCase());
+}
+function isReadRequest(url) {
+  const parts = String(url).split('?')[0].split('/').filter(Boolean);
+  if (parts[0] !== 'api' || parts.length < 4) return false;
+  if (parts[1] === 'diagnostics' && parts[2] === 'log') return parts.length === 5;
+  const words = camelWords(parts[3]);
+  if (!words.length || words.some((w) => WRITE.has(w))) return false;
+  const first = words[0];
+  if (READ_FIRST.has(first)) return true;
+  return READ_PREFIX.some((v) => first.startsWith(v)) && ![...WRITE].some((w) => first.slice(3).includes(w));
+}
+// Every path segment a caller supplies (uuid, name, module) is one plain word, so a
+// value cannot climb to another endpoint (../core/backup/revertBackup).
+const PLAIN_SEGMENT = /^[A-Za-z0-9_.:@-]+$/;
+function checkSegment(v) {
+  const t = String(v);
+  if (!PLAIN_SEGMENT.test(t) || t === '.' || t === '..') {
+    throw new Error('Path parameter must be one plain word (letters, digits, _ . : @ -), got: ' + t.slice(0, 40));
+  }
+  return t;
+}
+function badPath(url) {
+  const p = String(url).split('?')[0];
+  if (p.includes('%') || p.includes('//') || p.includes(String.fromCharCode(92))) return true;
+  return p.split('/').some((s) => s === '.' || s === '..');
+}
+
 function makeRoute(mod, r) {
   const seg = (v) => v !== undefined && v !== null && typeof v !== 'object';
   return function (a, b) {
     let url = r.path;
     let body;
     if (r.params > 0 && seg(a)) {
-      url += '/' + a;
+      url += '/' + checkSegment(a);
       if (r.params > 1 && seg(b)) {
-        url += '/' + b;
+        url += '/' + checkSegment(b);
       } else {
         body = b;
       }
@@ -155,6 +209,22 @@ class OPNsenseMCPServer {
         verifySsl: this.config.verifySsl ?? true,
       });
 
+      // Read-only: check every request at the HTTP client, after all routes and fork
+      // fixes built their URL. Path tricks are refused in every mode.
+      const __http = this.client.http;
+      const __readOnly = !!this.config.readOnly;
+      for (const verb of ['get', 'post', 'put', 'delete', 'patch']) {
+        const orig = __http[verb] && __http[verb].bind(__http);
+        if (!orig) continue;
+        __http[verb] = (url, ...rest) => {
+          if (badPath(url)) throw new Error('Refused request path: ' + String(url).slice(0, 80));
+          if (__readOnly && !isReadRequest(url)) {
+            throw new McpError(ErrorCode.InvalidRequest, 'Read-only server: ' + verb.toUpperCase() + ' ' + String(url).split('?')[0] + ' can change the firewall and is refused. Firewall changes go through make firewall.');
+          }
+          return orig(url, ...rest);
+        };
+      }
+
       // Attach every discovered route. These OVERWRITE the client's own methods
       // on purpose — the routes come from a live box, the client's spec does
       // not — and they create the modules the client omits entirely (backup,
@@ -169,6 +239,19 @@ class OPNsenseMCPServer {
           target[name] = makeRoute(target, r);
         }
       }
+
+      // logSearch(module, scope, body?): POST /api/diagnostics/log/<module>/<scope>, the
+      // bootgrid search the GUI log pages use. Segments are plain words only: the same
+      // controller clears a log on <module>/<scope>/clear.
+      const __diag = this.client.diagnostics;
+      __diag.logSearch = (module, scope, body) => {
+        const word = /^[a-z0-9_]+$/;
+        if (!word.test(String(module)) || !word.test(String(scope))) {
+          throw new Error('logSearch takes params.args = [module, scope, {searchPhrase?, rowCount?}], plain words only (e.g. ["core", "audit"])');
+        }
+        return __diag.http.post('/api/diagnostics/log/' + module + '/' + scope,
+          { current: 1, rowCount: 200, searchPhrase: '', ...(body && typeof body === 'object' ? body : {}) });
+      };
 
       // OPNsense 26.7 moved the captive-portal template actions off
       // ServiceController onto a TemplateController. The fleet is all 26.7 as of
@@ -557,6 +640,7 @@ function parseArgs() {
     apiSecret: '',
     verifySsl: true,
     includePlugins: false,
+    readOnly: false,
   };
 
   for (let i = 0; i < args.length; i++) {
@@ -578,6 +662,9 @@ function parseArgs() {
         break;
       case '--plugins':
         config.includePlugins = true;
+        break;
+      case '--read-only':
+        config.readOnly = true;
         break;
       case '--help':
       case '-h':
@@ -604,6 +691,7 @@ Required:
 Options:
   --no-verify-ssl           Disable SSL certificate verification
   --plugins                 Include plugin tools (adds ${toolsData.pluginTools} plugin modules)
+  --read-only               Refuse every method that can change the firewall
   -h, --help                Show this help message
 
 Environment Variables:
@@ -612,6 +700,7 @@ Environment Variables:
   OPNSENSE_API_SECRET       API Secret
   OPNSENSE_VERIFY_SSL       Set to 'false' to disable SSL verification
   INCLUDE_PLUGINS           Set to 'true' to include plugin tools
+  OPNSENSE_READ_ONLY        Set to 'true' for read-only mode
 
 Examples:
   # Basic usage (${toolsData.coreTools} core modules)
@@ -655,6 +744,9 @@ async function main() {
   }
   if (config.includePlugins || process.env.INCLUDE_PLUGINS === 'true') {
     config.includePlugins = true;
+  }
+  if (config.readOnly || process.env.OPNSENSE_READ_ONLY === 'true') {
+    config.readOnly = true;
   }
 
   // Validate required arguments
