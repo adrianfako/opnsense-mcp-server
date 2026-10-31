@@ -2,6 +2,19 @@
 
 Completed work lands here; open work is in the handbook todo stack (see TODO.md). Newest first.
 
+## 2026-10-31
+
+- **Logs readable: `diagnostics_manage logSearch`.** OPNsense serves every log through
+  one catch-all action, so route discovery never found it and the audit log was out of
+  reach (a change history had only the 16 config backups). Call it with
+  `params.args = ["core", "audit", {"rowCount": 50}]`. Segments are plain words: the
+  same path clears a log with `/clear`. The route lives in `build.ts`, so a discovery
+  refresh keeps it.
+- **Server-side read-only mode: `OPNSENSE_READ_ONLY=true` or `--read-only`.** Until now
+  only a Claude Code hook stopped writes, so any other client could change a firewall.
+  A method runs only when its route is not mutating; a method with no route passes
+  only on a read verb name. Unknown methods fail closed. Test: `tools/read-only.test.mjs`.
+
 ## 2026-10-19
 
 - **TODO.md is now a pointer to the handbook todo stack (#3).** Route

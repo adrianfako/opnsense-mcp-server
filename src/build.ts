@@ -17,6 +17,13 @@ const apiRoutes: Record<string, Record<string, { path: string; post: boolean; pa
 
 const PLUGIN_MODULES = ['telegraf', 'dmidecode', 'hwprobe'];
 
+// OPNsense serves every log (core/audit, core/system, wireguard/wireguard, ...) through
+// one catch-all action on diagnostics/LogController, so discover_routes.py never sees
+// it. Kept here, not in api-routes.json, so a route refresh does not drop it. The
+// caller is attached in ensureClient (it checks the segments: the same path takes a
+// `clear` action).
+(apiRoutes.diagnostics ??= {}).logSearch = { path: '/api/diagnostics/log', post: true, params: 2, search: true, mutating: false } as any;
+
 for (const [key, routes] of Object.entries(apiRoutes)) {
   const names = Object.keys(routes);
   let tool = toolsData.tools.find((t: any) => (t.module === 'plugins' ? t.submodule : t.module) === key);
@@ -105,6 +112,18 @@ function pruneOptions(node) {
   return out;
 }
 
+// Read-only mode (OPNSENSE_READ_ONLY=true or --read-only): a method runs only when its
+// discovered route is not mutating. Methods that come from the client or a fork fix
+// have no route entry; they pass only when the name is a read verb and holds no
+// write verb. Anything else is refused, so an unknown method fails closed.
+const READ_VERB = /(Get|Search|Show|Status|List|Info|Log)[A-Z0-9]?[A-Za-z0-9]*$/;
+const WRITE_VERB = /(Set|Add|Del|Apply|Toggle|Reconfigure|Restart|Start|Stop|Upload|Revert|Flush|Kill|Reboot|Halt|Update|Upgrade|Install|Remove|Reset|Save|Import|Clear|Drop|Lock|Unlock|Connect|Disconnect|Generate|Run|Exec)/;
+function isReadMethod(mod, name) {
+  const r = API_ROUTES[mod] && API_ROUTES[mod][name];
+  if (r) return r.mutating === false;
+  return READ_VERB.test(name) && !WRITE_VERB.test(name);
+}
+
 function makeRoute(mod, r) {
   const seg = (v) => v !== undefined && v !== null && typeof v !== 'object';
   return function (a, b) {
@@ -169,6 +188,19 @@ class OPNsenseMCPServer {
           target[name] = makeRoute(target, r);
         }
       }
+
+      // logSearch(module, scope, body?): POST /api/diagnostics/log/<module>/<scope>, the
+      // bootgrid search the GUI log pages use. Segments are plain words only: the same
+      // controller clears a log on <module>/<scope>/clear.
+      const __diag = this.client.diagnostics;
+      __diag.logSearch = (module, scope, body) => {
+        const word = /^[a-z0-9_]+$/;
+        if (!word.test(String(module)) || !word.test(String(scope))) {
+          throw new Error('logSearch takes params.args = [module, scope, {searchPhrase?, rowCount?}], plain words only (e.g. ["core", "audit"])');
+        }
+        return __diag.http.post('/api/diagnostics/log/' + module + '/' + scope,
+          { current: 1, rowCount: 200, searchPhrase: '', ...(body && typeof body === 'object' ? body : {}) });
+      };
 
       // OPNsense 26.7 moved the captive-portal template actions off
       // ServiceController onto a TemplateController. The fleet is all 26.7 as of
@@ -483,6 +515,13 @@ class OPNsenseMCPServer {
       throw new Error(\`Invalid method '\${args.method}'. Available methods: \${tool.methods.join(', ')}\`);
     }
     
+    if (this.config.readOnly) {
+      const mod = tool.module === 'plugins' && tool.submodule ? tool.submodule : tool.module;
+      if (!isReadMethod(mod, args.method)) {
+        throw new McpError(ErrorCode.InvalidRequest, \`Read-only server: \${tool.name} \${args.method} can change the firewall and is refused. Firewall changes go through make firewall.\`);
+      }
+    }
+
     // Get the module
     let moduleObj;
     if (tool.module === 'plugins' && tool.submodule) {
@@ -557,6 +596,7 @@ function parseArgs() {
     apiSecret: '',
     verifySsl: true,
     includePlugins: false,
+    readOnly: false,
   };
 
   for (let i = 0; i < args.length; i++) {
@@ -578,6 +618,9 @@ function parseArgs() {
         break;
       case '--plugins':
         config.includePlugins = true;
+        break;
+      case '--read-only':
+        config.readOnly = true;
         break;
       case '--help':
       case '-h':
@@ -604,6 +647,7 @@ Required:
 Options:
   --no-verify-ssl           Disable SSL certificate verification
   --plugins                 Include plugin tools (adds ${toolsData.pluginTools} plugin modules)
+  --read-only               Refuse every method that can change the firewall
   -h, --help                Show this help message
 
 Environment Variables:
@@ -612,6 +656,7 @@ Environment Variables:
   OPNSENSE_API_SECRET       API Secret
   OPNSENSE_VERIFY_SSL       Set to 'false' to disable SSL verification
   INCLUDE_PLUGINS           Set to 'true' to include plugin tools
+  OPNSENSE_READ_ONLY        Set to 'true' for read-only mode
 
 Examples:
   # Basic usage (${toolsData.coreTools} core modules)
@@ -655,6 +700,9 @@ async function main() {
   }
   if (config.includePlugins || process.env.INCLUDE_PLUGINS === 'true') {
     config.includePlugins = true;
+  }
+  if (config.readOnly || process.env.OPNSENSE_READ_ONLY === 'true') {
+    config.readOnly = true;
   }
 
   // Validate required arguments
