@@ -12337,9 +12337,14 @@ function camelWords(a) {
 function isReadRequest(url) {
   const parts = String(url).split('?')[0].split('/').filter(Boolean);
   if (parts[0] !== 'api' || parts.length < 4) return false;
-  // No word after the controller may be a write word: path parameters carry actions
-  // too (firmware/log/clear, diagnostics/log/core/audit/clear).
-  if (parts.slice(3).some((p) => camelWords(p).some((w) => WRITE.has(w)))) return false;
+  // Path parameters carry actions too (firmware/log/clear, log/core/audit/clear). A
+  // parameter passes when it is an id (hex or uuid with a digit) or when its letters,
+  // joined and lowercased, hold no write word anywhere (CLEAR, cLear, clear_x).
+  for (const p of parts.slice(4)) {
+    if (/^(?=.*[0-9])[0-9a-f-]+$/i.test(p)) continue;
+    const flat = p.toLowerCase().replace(/[^a-z]/g, '');
+    if ([...WRITE].some((w) => flat.includes(w))) return false;
+  }
   if (parts[1] === 'diagnostics' && parts[2] === 'log') return parts.length === 5;
   const words = camelWords(parts[3]);
   if (!words.length || words.some((w) => WRITE.has(w))) return false;

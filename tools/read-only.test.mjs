@@ -53,6 +53,8 @@ const WRITES = [
   ['captiveportal_manage', 'accessLogon', { args: ['0'] }],
   // A write action carried as a path parameter.
   ['firmware_manage', 'firmwareLog', { args: ['clear'] }],
+  ['firmware_manage', 'firmwareLog', { args: ['cLear'] }],
+  ['firmware_manage', 'firmwareLog', { args: ['CLEAR'] }],
 ];
 const READS = [
   ['firewall_manage', 'filterSearchRule', {}],
@@ -62,6 +64,7 @@ const READS = [
   ['diagnostics_manage', 'systemSystemInformation', {}],
   ['firmware_manage', 'firmwareDetails', { args: ['os-wireguard'] }],
   ['firmware_manage', 'firmwareLog', {}],
+  ['firewall_manage', 'filterGetRule', { uuid: '0add3b2c-1d4e-4f5a-9b6c-7d8e9f0a1b2c' }],
 ];
 
 test('read-only refuses writes and lets reads through', async () => {
