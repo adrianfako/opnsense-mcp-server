@@ -7,7 +7,7 @@ import test from 'node:test';
 async function calls(readOnly, cases) {
   const child = spawn(process.execPath, [new URL('../index.js', import.meta.url).pathname], {
     env: { ...process.env, OPNSENSE_URL: 'https://127.0.0.1:9', OPNSENSE_API_KEY: 'x', OPNSENSE_API_SECRET: 'y',
-           OPNSENSE_VERIFY_SSL: 'false', OPNSENSE_READ_ONLY: String(readOnly) },
+           OPNSENSE_VERIFY_SSL: 'false', OPNSENSE_READ_ONLY: readOnly ? '1' : 'false' },
     stdio: ['pipe', 'pipe', 'ignore'],
   });
   let buf = '';
@@ -22,8 +22,12 @@ async function calls(readOnly, cases) {
       if (line) { const m = JSON.parse(line); pending.get(m.id)?.(m); }
     }
   });
+  // A child that exits or hangs answers every open call, so a test fails instead of
+  // leaving a pending promise.
+  child.on('exit', (code) => { for (const r of pending.values()) r({ error: { message: 'server exited ' + code } }); pending.clear(); });
   const rpc = (method, params) => new Promise((r) => {
     const n = ++id; pending.set(n, r);
+    setTimeout(() => { if (pending.delete(n)) r({ error: { message: 'timeout' } }); }, 15000).unref();
     child.stdin.write(JSON.stringify({ jsonrpc: '2.0', id: n, method, params }) + '\n');
   });
   await rpc('initialize', { protocolVersion: '2024-11-05', capabilities: {}, clientInfo: { name: 'test', version: '0' } });
@@ -47,6 +51,8 @@ const WRITES = [
   ['routes_manage', 'routesDelroute', { args: ['x'] }],
   ['diagnostics_manage', 'interfaceCarpStatus', { args: ['maintenance'] }],
   ['captiveportal_manage', 'accessLogon', { args: ['0'] }],
+  // A write action carried as a path parameter.
+  ['firmware_manage', 'firmwareLog', { args: ['clear'] }],
 ];
 const READS = [
   ['firewall_manage', 'filterSearchRule', {}],
@@ -54,6 +60,8 @@ const READS = [
   ['diagnostics_manage', 'logSearch', { args: ['core', 'audit'] }],
   ['core_manage', 'backupBackups', { args: ['this'] }],
   ['diagnostics_manage', 'systemSystemInformation', {}],
+  ['firmware_manage', 'firmwareDetails', { args: ['os-wireguard'] }],
+  ['firmware_manage', 'firmwareLog', {}],
 ];
 
 test('read-only refuses writes and lets reads through', async () => {

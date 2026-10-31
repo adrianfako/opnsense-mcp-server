@@ -2,6 +2,13 @@
 
 Completed work lands here; open work is in the handbook todo stack (see TODO.md). Newest first.
 
+## 2026-10-31 (review fixes)
+
+- **Read-only: Codex review round 1.** `OPNSENSE_READ_ONLY=1` now turns it on (only
+  `true` did). No word after the controller may be a write word, so a write carried as
+  a path parameter (`firmware/log/clear`) is refused. `firmwareDetails` and changelog
+  reads pass. The offline test no longer hangs when the server exits.
+
 ## 2026-10-31
 
 - **Logs readable: `diagnostics_manage logSearch`.** OPNsense serves every log through
