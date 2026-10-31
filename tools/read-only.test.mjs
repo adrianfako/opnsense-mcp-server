@@ -41,11 +41,19 @@ const WRITES = [
   ['firewall_manage', 'filterSetRule', { uuid: 'x', data: {} }],
   ['wireguard_manage', 'serviceReconfigure', {}],
   ['ids_manage', 'settingsSetRule', {}],
+  // Discovered as mutating: false, but they write.
+  ['core_manage', 'backupRevertBackup', { args: ['config-1.xml'] }],
+  ['core_manage', 'snapshotsActivate', { args: ['x'] }],
+  ['routes_manage', 'routesDelroute', { args: ['x'] }],
+  ['diagnostics_manage', 'interfaceCarpStatus', { args: ['maintenance'] }],
+  ['captiveportal_manage', 'accessLogon', { args: ['0'] }],
 ];
 const READS = [
   ['firewall_manage', 'filterSearchRule', {}],
   ['ids_manage', 'settingsGet', {}],
   ['diagnostics_manage', 'logSearch', { args: ['core', 'audit'] }],
+  ['core_manage', 'backupBackups', { args: ['this'] }],
+  ['diagnostics_manage', 'systemSystemInformation', {}],
 ];
 
 test('read-only refuses writes and lets reads through', async () => {
@@ -62,4 +70,12 @@ test('without read-only, writes reach the client', async () => {
 test('logSearch refuses a segment that is not a plain word', async () => {
   const [t] = await calls(false, [['diagnostics_manage', 'logSearch', { args: ['core', 'audit/clear'] }]]);
   assert.match(t, /plain words only/);
+});
+
+test('a path parameter cannot climb to another endpoint', async () => {
+  const out = await calls(false, [
+    ['firewall_manage', 'filterGetRule', { uuid: '../../core/backup/revertBackup' }],
+    ['firewall_manage', 'aliasGetItem', { uuid: '%2e%2e' }],
+  ]);
+  out.forEach((t) => assert.match(t, /one plain word|Refused request path/));
 });

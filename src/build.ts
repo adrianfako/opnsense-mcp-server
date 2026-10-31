@@ -112,16 +112,51 @@ function pruneOptions(node) {
   return out;
 }
 
-// Read-only mode (OPNSENSE_READ_ONLY=true or --read-only): a method runs only when its
-// discovered route is not mutating. Methods that come from the client or a fork fix
-// have no route entry; they pass only when the name is a read verb and holds no
-// write verb. Anything else is refused, so an unknown method fails closed.
-const READ_VERB = /(Get|Search|Show|Status|List|Info|Log)[A-Z0-9]?[A-Za-z0-9]*$/;
-const WRITE_VERB = /(Set|Add|Del|Apply|Toggle|Reconfigure|Restart|Start|Stop|Upload|Revert|Flush|Kill|Reboot|Halt|Update|Upgrade|Install|Remove|Reset|Save|Import|Clear|Drop|Lock|Unlock|Connect|Disconnect|Generate|Run|Exec)/;
-function isReadMethod(mod, name) {
-  const r = API_ROUTES[mod] && API_ROUTES[mod][name];
-  if (r) return r.mutating === false;
-  return READ_VERB.test(name) && !WRITE_VERB.test(name);
+// Read-only mode (OPNSENSE_READ_ONLY=true or --read-only) checks every request the
+// client sends, not the method name or the discovered "mutating" flag: that flag is
+// wrong for actions like revertBackup, snapshots/activate and routes/delroute. A
+// request goes out only when its action (the word after /api/<module>/<controller>/)
+// is a read. Anything else is refused, so it fails closed.
+// First camel word of the action: a read verb or a read noun. No camel word may be a
+// write word; a lowercase compound (getroute, listlocalzones) passes on a read prefix
+// when no write word sits inside it.
+const READ_FIRST = new Set(('get search show status list info log is dump dumpcache dumpinfra stats count ' +
+  'backups system version health memory statistics totals top interfaces pf rule cache ca mac running ' +
+  'upgradestatus providers zones meta view tree timeserie aliases accounts find diff report services ' +
+  'templates pools user gps swanctl raw reverse searchroute connection').split(' '));
+const READ_PREFIX = ['get', 'search', 'list', 'dump', 'show'];
+const WRITE = new Set(('set add del delete apply toggle toggleroute reconfigure restart start stop upload revert ' +
+  'flush kill reboot halt update upgrade install remove reset save import clear drop lock unlock connect ' +
+  'disconnect generate gen run exec activate expire logon logoff reload store carp register sync create ' +
+  'rename move clone restore revoke renew sign issue kick disable enable wake fetch download commit rollback ' +
+  'cancel abort purge rotate trigger test export new psk key otp seed stream').split(' '));
+function camelWords(a) {
+  return (String(a).match(/[A-Z]?[a-z0-9]+|[A-Z]+(?![a-z])/g) || []).map((w) => w.toLowerCase());
+}
+function isReadRequest(url) {
+  const parts = String(url).split('?')[0].split('/').filter(Boolean);
+  if (parts[0] !== 'api' || parts.length < 4) return false;
+  if (parts[1] === 'diagnostics' && parts[2] === 'log') return parts.length === 5;
+  const words = camelWords(parts[3]);
+  if (!words.length || words.some((w) => WRITE.has(w))) return false;
+  const first = words[0];
+  if (READ_FIRST.has(first)) return true;
+  return READ_PREFIX.some((v) => first.startsWith(v)) && ![...WRITE].some((w) => first.slice(3).includes(w));
+}
+// Every path segment a caller supplies (uuid, name, module) is one plain word, so a
+// value cannot climb to another endpoint (../core/backup/revertBackup).
+const PLAIN_SEGMENT = /^[A-Za-z0-9_.:@-]+$/;
+function checkSegment(v) {
+  const t = String(v);
+  if (!PLAIN_SEGMENT.test(t) || t === '.' || t === '..') {
+    throw new Error('Path parameter must be one plain word (letters, digits, _ . : @ -), got: ' + t.slice(0, 40));
+  }
+  return t;
+}
+function badPath(url) {
+  const p = String(url).split('?')[0];
+  if (p.includes('%') || p.includes('//') || p.includes(String.fromCharCode(92))) return true;
+  return p.split('/').some((s) => s === '.' || s === '..');
 }
 
 function makeRoute(mod, r) {
@@ -130,9 +165,9 @@ function makeRoute(mod, r) {
     let url = r.path;
     let body;
     if (r.params > 0 && seg(a)) {
-      url += '/' + a;
+      url += '/' + checkSegment(a);
       if (r.params > 1 && seg(b)) {
-        url += '/' + b;
+        url += '/' + checkSegment(b);
       } else {
         body = b;
       }
@@ -173,6 +208,22 @@ class OPNsenseMCPServer {
         apiSecret: this.config.apiSecret,
         verifySsl: this.config.verifySsl ?? true,
       });
+
+      // Read-only: check every request at the HTTP client, after all routes and fork
+      // fixes built their URL. Path tricks are refused in every mode.
+      const __http = this.client.http;
+      const __readOnly = !!this.config.readOnly;
+      for (const verb of ['get', 'post', 'put', 'delete', 'patch']) {
+        const orig = __http[verb] && __http[verb].bind(__http);
+        if (!orig) continue;
+        __http[verb] = (url, ...rest) => {
+          if (badPath(url)) throw new Error('Refused request path: ' + String(url).slice(0, 80));
+          if (__readOnly && !isReadRequest(url)) {
+            throw new McpError(ErrorCode.InvalidRequest, 'Read-only server: ' + verb.toUpperCase() + ' ' + String(url).split('?')[0] + ' can change the firewall and is refused. Firewall changes go through make firewall.');
+          }
+          return orig(url, ...rest);
+        };
+      }
 
       // Attach every discovered route. These OVERWRITE the client's own methods
       // on purpose — the routes come from a live box, the client's spec does
@@ -515,13 +566,6 @@ class OPNsenseMCPServer {
       throw new Error(\`Invalid method '\${args.method}'. Available methods: \${tool.methods.join(', ')}\`);
     }
     
-    if (this.config.readOnly) {
-      const mod = tool.module === 'plugins' && tool.submodule ? tool.submodule : tool.module;
-      if (!isReadMethod(mod, args.method)) {
-        throw new McpError(ErrorCode.InvalidRequest, \`Read-only server: \${tool.name} \${args.method} can change the firewall and is refused. Firewall changes go through make firewall.\`);
-      }
-    }
-
     // Get the module
     let moduleObj;
     if (tool.module === 'plugins' && tool.submodule) {

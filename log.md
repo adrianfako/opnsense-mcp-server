@@ -12,8 +12,11 @@ Completed work lands here; open work is in the handbook todo stack (see TODO.md)
   refresh keeps it.
 - **Server-side read-only mode: `OPNSENSE_READ_ONLY=true` or `--read-only`.** Until now
   only a Claude Code hook stopped writes, so any other client could change a firewall.
-  A method runs only when its route is not mutating; a method with no route passes
-  only on a read verb name. Unknown methods fail closed. Test: `tools/read-only.test.mjs`.
+  The gate checks every request at the HTTP client: its action must start with a read
+  verb or noun and hold no write word. The discovered `mutating` flag is not used, because
+  it is wrong for revertBackup, snapshots/activate, routes/delroute and others. Unknown
+  actions fail closed. In every mode a path parameter must be one plain word, so a value
+  cannot climb to another endpoint (`../`). Test: `tools/read-only.test.mjs`.
 
 ## 2026-10-19
 
