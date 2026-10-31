@@ -12313,7 +12313,7 @@ function pruneOptions(node) {
   return out;
 }
 
-// Read-only mode (OPNSENSE_READ_ONLY=true or --read-only) checks every request the
+// Read-only mode (OPNSENSE_READ_ONLY=1 or true, or --read-only) checks every request the
 // client sends, not the method name or the discovered "mutating" flag: that flag is
 // wrong for actions like revertBackup, snapshots/activate and routes/delroute. A
 // request goes out only when its action (the word after /api/<module>/<controller>/)
@@ -12324,7 +12324,7 @@ function pruneOptions(node) {
 const READ_FIRST = new Set(('get search show status list info log is dump dumpcache dumpinfra stats count ' +
   'backups system version health memory statistics totals top interfaces pf rule cache ca mac running ' +
   'upgradestatus providers zones meta view tree timeserie aliases accounts find diff report services ' +
-  'templates pools user gps swanctl raw reverse searchroute connection').split(' '));
+  'templates pools user gps swanctl raw reverse searchroute connection details changelog').split(' '));
 const READ_PREFIX = ['get', 'search', 'list', 'dump', 'show'];
 const WRITE = new Set(('set add del delete apply toggle toggleroute reconfigure restart start stop upload revert ' +
   'flush kill reboot halt update upgrade install remove reset save import clear drop lock unlock connect ' +
@@ -12337,6 +12337,14 @@ function camelWords(a) {
 function isReadRequest(url) {
   const parts = String(url).split('?')[0].split('/').filter(Boolean);
   if (parts[0] !== 'api' || parts.length < 4) return false;
+  // Path parameters carry actions too (firmware/log/clear, log/core/audit/clear). A
+  // parameter passes when it is an id (hex or uuid with a digit) or when its letters,
+  // joined and lowercased, hold no write word anywhere (CLEAR, cLear, clear_x).
+  for (const p of parts.slice(4)) {
+    if (/^(?=.*[0-9])[0-9a-f-]+$/i.test(p)) continue;
+    const flat = p.toLowerCase().replace(/[^a-z]/g, '');
+    if ([...WRITE].some((w) => flat.includes(w))) return false;
+  }
   if (parts[1] === 'diagnostics' && parts[2] === 'log') return parts.length === 5;
   const words = camelWords(parts[3]);
   if (!words.length || words.some((w) => WRITE.has(w))) return false;
@@ -12901,7 +12909,7 @@ Environment Variables:
   OPNSENSE_API_SECRET       API Secret
   OPNSENSE_VERIFY_SSL       Set to 'false' to disable SSL verification
   INCLUDE_PLUGINS           Set to 'true' to include plugin tools
-  OPNSENSE_READ_ONLY        Set to 'true' for read-only mode
+  OPNSENSE_READ_ONLY        Set to '1' or 'true' for read-only mode
 
 Examples:
   # Basic usage (28 core modules)
@@ -12946,7 +12954,7 @@ async function main() {
   if (config.includePlugins || process.env.INCLUDE_PLUGINS === 'true') {
     config.includePlugins = true;
   }
-  if (config.readOnly || process.env.OPNSENSE_READ_ONLY === 'true') {
+  if (config.readOnly || /^(1|true|yes|on)$/i.test(process.env.OPNSENSE_READ_ONLY || '')) {
     config.readOnly = true;
   }
 

@@ -71,7 +71,7 @@ MCP clients launch it via `npx -y @richard-stovall/opnsense-mcp-server` with
 env vars: `OPNSENSE_URL`, `OPNSENSE_API_KEY`, `OPNSENSE_API_SECRET`
 (required); `INCLUDE_PLUGINS=true` enables the 64 plugin module tools;
 `OPNSENSE_VERIFY_SSL=false` disables SSL verification (development only);
-`OPNSENSE_READ_ONLY=true` refuses every method that can change the firewall (the fleet
+`OPNSENSE_READ_ONLY=1` (or `true`) refuses every method that can change the firewall (the fleet
 servers run with it: firewall changes go through `make firewall`).
 CLI-flag equivalents, Claude Desktop / Cursor config blocks, testing, and
 troubleshooting:
