@@ -118,6 +118,6 @@ The four fleet MCP servers launch `index.js` directly. After a rebuild, restart 
 - [docs/claude-desktop-cursor-setup.md](docs/claude-desktop-cursor-setup.md) - client setup + troubleshooting
 - [docs/module-tools-usage-reference.md](docs/module-tools-usage-reference.md) - module tool tables + prompts
 - [docs/firewall-write-schema-cheatsheet.md](docs/firewall-write-schema-cheatsheet.md) - proven write bodies
-- [TODO.md](TODO.md) - pointer to the handbook todo stack
+- [Handbook backlog](file:///home/adrian/STORAGE/VAULTS/handbook/backlog/todo/) - open work (repo ID `adrianfako/opnsense-mcp-server`)
 - [log.md](log.md) - history
 - Upstream: [richard-stovall/opnsense-mcp-server](https://github.com/richard-stovall/opnsense-mcp-server)
