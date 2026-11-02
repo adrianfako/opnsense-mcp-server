@@ -1,6 +1,6 @@
 # Log
 
-Completed work lands here; open work is in the handbook todo stack (see TODO.md). Newest first.
+Completed work lands here; open work is in the handbook todo stack (repo ID `adrianfako/opnsense-mcp-server`). Newest first.
 
 ## 2026-10-31 (review fixes)
 
