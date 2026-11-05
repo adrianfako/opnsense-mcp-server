@@ -12605,6 +12605,24 @@ class OPNsenseMCPServer {
       if (__wg && __wg.http) {
         const WG = '/api/wireguard/';
         __wg.clientAddClient = (data, config) => __wg.http.post(WG + 'client/add_client', data, config);
+        // FORK FIX (partial set wipes fields): set_client/set_server reset fields the
+        // body leaves out — a {client:{enabled:"0"}} set saved the peer with servers=""
+        // and serviceReconfigure dropped it from the tunnel (live 2026-11-04). Merge the
+        // caller's fields onto the live item first, so a partial set changes only them.
+        // The get shape differs from the set shape: option maps {key:{selected:1}} and
+        // lists become comma-separated keys.
+        const __flat = (v) => Array.isArray(v) ? v.join(',')
+          : (v && typeof v === 'object') ? Object.keys(v).filter((k) => v[k] && Number(v[k].selected) === 1).join(',')
+          : v;
+        const __mergeSet = (get, key, set) => async (uuid, data, config) => {
+          const live = (await get(uuid, config))?.data?.[key];
+          if (!uuid || !live || typeof live !== 'object' || Array.isArray(live)) {
+            throw new Error('wireguard ' + key + ' ' + uuid + ' not found; refusing a set that could reset its fields');
+          }
+          const merged = {};
+          for (const [k, v] of Object.entries(live)) merged[k] = __flat(v);
+          return set(uuid, { ...data, [key]: { ...merged, ...(data?.[key] || {}) } }, config);
+        };
         __wg.clientSetClient = (uuid, data, config) => __wg.http.post(WG + 'client/set_client/' + uuid, data, config);
         __wg.clientDelClient = (uuid, config) => __wg.http.post(WG + 'client/del_client/' + uuid, {}, config);
         __wg.clientToggleClient = (uuid, data, config) => __wg.http.post(WG + 'client/toggle_client/' + (uuid || ''), data, config);
@@ -12620,6 +12638,8 @@ class OPNsenseMCPServer {
         // .../get_client returns the empty template (verified live 2026-06-15).
         __wg.clientGetClient = (uuid, config) => __wg.http.get(WG + 'client/get_client/' + (uuid || ''), config);
         __wg.serverGetServer = (uuid, config) => __wg.http.get(WG + 'server/get_server/' + (uuid || ''), config);
+        __wg.clientSetClient = __mergeSet(__wg.clientGetClient, 'client', __wg.clientSetClient);
+        __wg.serverSetServer = __mergeSet(__wg.serverGetServer, 'server', __wg.serverSetServer);
         __wg.serviceReconfigure = (data, config) => __wg.http.post(WG + 'service/reconfigure', data || {}, config);
         __wg.serviceRestart = (data, config) => __wg.http.post(WG + 'service/restart', data || {}, config);
         __wg.serviceStart = (data, config) => __wg.http.post(WG + 'service/start', data || {}, config);
