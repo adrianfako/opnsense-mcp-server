@@ -2,6 +2,15 @@
 
 Completed work lands here; open work is in the handbook todo stack (repo ID `adrianfako/opnsense-mcp-server`). Newest first.
 
+## 2026-11-05
+
+- **WireGuard partial set keeps the other fields.** `clientSetClient` and
+  `serverSetServer` reset every field the body left out. A set of only `enabled` or
+  `tunneladdress` saved the peer with `servers` empty, and the next reconfigure took a
+  site-to-site tunnel down for 2.5 h (2026-11-04). Both now fetch the live item, flatten
+  its option maps and lists to comma-separated keys, and post it with the caller's
+  fields on top. An unknown uuid is refused. Offline test: `tools/wg-partial-set.test.mjs`.
+
 ## 2026-10-31 (review fixes)
 
 - **Read-only: Codex review round 1.** `OPNSENSE_READ_ONLY=1` now turns it on (only

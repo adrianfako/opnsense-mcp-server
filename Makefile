@@ -9,5 +9,5 @@ check:
 	yarn build:all
 	test -f tools-generated.json
 	test -s index.js
-	node --test tools/read-only.test.mjs
+	node --test tools/read-only.test.mjs tools/wg-partial-set.test.mjs
 	yarn validate
