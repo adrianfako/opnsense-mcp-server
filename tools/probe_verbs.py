@@ -6,11 +6,15 @@ on isPost() — OPNsense answers those with HTTP 200 and a body of
 to be corrected from the response, not the status code.
 
 Only entries with `mutating=false` and no path parameters are called, and
-anything streaming is skipped (those sockets never close). Credentials are read
-straight out of the Claude MCP config so no secret is written to disk here.
+anything streaming is skipped (those sockets never close). The firewall's URL and
+credentials file come from the targets file (OPNSENSE_TARGETS, default
+~/.config/opnsense-mcp/targets.json), so no secret is written to disk here.
+
+Usage: python tools/probe_verbs.py <api-routes.json> <firewall> <out.json>
 """
 import base64
 import json
+import os
 import ssl
 import sys
 import urllib.error
@@ -18,14 +22,14 @@ import urllib.request
 from concurrent.futures import ThreadPoolExecutor
 from pathlib import Path
 
-SCRATCH = Path(__file__).parent
-TABLE = SCRATCH / sys.argv[1]
+TABLE = Path(sys.argv[1])
 SERVER = sys.argv[2]
-OUT = SCRATCH / sys.argv[3]
+OUT = Path(sys.argv[3])
 
-cfg = json.loads(Path("C:/Users/Administrator/.claude.json").read_text(encoding="utf-8"))
-env = cfg["mcpServers"][SERVER]["env"]
-BASE = env["OPNSENSE_URL"]
+targets_file = Path(os.environ.get("OPNSENSE_TARGETS") or "~/.config/opnsense-mcp/targets.json").expanduser()
+target = json.loads(targets_file.read_text(encoding="utf-8"))["targets"][SERVER]
+env = json.loads(Path(target["credentials"]).expanduser().read_text(encoding="utf-8"))
+BASE = target["url"]
 AUTH = base64.b64encode(f"{env['OPNSENSE_API_KEY']}:{env['OPNSENSE_API_SECRET']}".encode()).decode()
 CTX = ssl._create_unverified_context()
 

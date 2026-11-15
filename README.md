@@ -47,9 +47,9 @@ release:
 ```bash
 ssh <fw> 'tar czf - -C /usr/local/opnsense/mvc/app controllers' | tar xz -C /tmp/ctl
 python tools/discover_routes.py /tmp/ctl/controllers src/api-routes.json          # pass 1
-python tools/probe_verbs.py src/api-routes.json <mcp-server-name> /tmp/probe.json # live probe
+python tools/probe_verbs.py src/api-routes.json <firewall> /tmp/probe.json      # live probe
 python tools/discover_routes.py /tmp/ctl/controllers src/api-routes.json /tmp/probe.json
-yarn build && node tools/smoke.mjs <mcp-server-name>
+yarn build && node tools/smoke.mjs <firewall>
 ```
 
 The probe only ever issues GETs, and only to actions whose names do not imply a
@@ -137,7 +137,7 @@ yarn build:all       # both
 yarn dev             # hot reload
 yarn type-check      # tsc --noEmit
 yarn start           # run the built server
-node tools/smoke.mjs opnsense-eu-2   # read-only end-to-end check vs a live box
+node tools/smoke.mjs eu-2            # read-only end-to-end check vs a live box
 ```
 
 Stack: Node.js with tsx, TypeScript 5.3+, @modelcontextprotocol/sdk, Zod

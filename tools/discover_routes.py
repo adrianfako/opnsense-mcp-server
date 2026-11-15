@@ -157,7 +157,8 @@ def main():
         flips = 0
         for e in json.loads(Path(sys.argv[3]).read_text(encoding="utf-8")):
             row = table.get(e["module"], {}).get(e["name"])
-            if not row or e["code"] != "200":
+            # query* answers a GET with 200 and an empty grid, so the probe cannot demote it.
+            if not row or e["code"] != "200" or row["path"].rsplit("/", 1)[-1].startswith("query"):
                 continue
             post = bool(fail.match(e["body"]))
             flips += post != row["post"]
