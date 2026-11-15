@@ -8,6 +8,8 @@ import {
   McpError,
 } from '@modelcontextprotocol/sdk/types.js';
 import { OPNsenseClient } from '@richard-stovall/opnsense-typescript-client';
+import { existsSync, readFileSync } from 'node:fs';
+import { homedir } from 'node:os';
 
 // Embedded modular tool definitions
 const TOOLS = [
@@ -12390,10 +12392,54 @@ function makeRoute(mod, r) {
   };
 }
 
+function expandHome(p) {
+  return String(p).replace(/^~(?=\/|$)/, homedir());
+}
+
+// Multi-target mode: every tool takes a required firewall, one of the target names.
+function withFirewall(schema, targets) {
+  const names = Object.keys(targets).sort();
+  return {
+    ...schema,
+    properties: {
+      firewall: {
+        type: 'string',
+        enum: names,
+        description: 'Which firewall: ' + names.map((n) => targets[n].label ? n + ' (' + targets[n].label + ')' : n).join(', '),
+      },
+      ...schema.properties,
+    },
+    required: [...new Set(['firewall', ...(schema.required || [])])],
+  };
+}
+
+// The targets file names each firewall and where its credentials live. It holds no
+// secrets, so it is checked in full at start; credentials are read on first use.
+function loadTargets(file) {
+  let data;
+  try {
+    data = JSON.parse(readFileSync(file, 'utf8'));
+  } catch (e) {
+    throw new Error('Cannot read targets file ' + file + ': ' + (e && e.code ? e.code : 'invalid JSON'));
+  }
+  const targets = data && data.targets;
+  if (!targets || typeof targets !== 'object' || Array.isArray(targets) || !Object.keys(targets).length) {
+    throw new Error('Targets file ' + file + ' needs a non-empty "targets" object');
+  }
+  for (const [name, t] of Object.entries(targets)) {
+    if (!/^[A-Za-z0-9_.-]+$/.test(name)) throw new Error('Target name must be a plain word: ' + name);
+    if (!t || typeof t.url !== 'string' || !t.url || typeof t.credentials !== 'string' || !t.credentials) {
+      throw new Error('Target ' + name + ' needs "url" and "credentials" strings');
+    }
+  }
+  return targets;
+}
+
 class OPNsenseMCPServer {
   constructor(config) {
     this.config = config;
-    this.client = null;
+    // One client per firewall, built on first use. Single-target mode uses the key ''.
+    this.clients = new Map();
     this.server = new Server(
       {
         name: 'opnsense-mcp-server',
@@ -12409,26 +12455,53 @@ class OPNsenseMCPServer {
     this.setupHandlers();
   }
 
-  ensureClient() {
-    if (!this.client) {
-      this.client = new OPNsenseClient({
-        baseUrl: this.config.url,
-        apiKey: this.config.apiKey,
-        apiSecret: this.config.apiSecret,
-        verifySsl: this.config.verifySsl ?? true,
+  // Connection settings for one firewall. Multi-target mode reads the credentials
+  // file here, on first use, and never puts its content in an error message.
+  targetConfig(name) {
+    if (!this.config.targets) return this.config;
+    const t = this.config.targets[name];
+    let creds;
+    try {
+      creds = JSON.parse(readFileSync(expandHome(t.credentials), 'utf8'));
+    } catch {
+      throw new Error('Cannot read credentials for ' + name + ' from ' + t.credentials);
+    }
+    if (!creds || typeof creds.OPNSENSE_API_KEY !== 'string' || !creds.OPNSENSE_API_KEY ||
+        typeof creds.OPNSENSE_API_SECRET !== 'string' || !creds.OPNSENSE_API_SECRET) {
+      throw new Error('Credentials for ' + name + ' in ' + t.credentials + ' lack OPNSENSE_API_KEY or OPNSENSE_API_SECRET');
+    }
+    return {
+      url: t.url,
+      apiKey: creds.OPNSENSE_API_KEY,
+      apiSecret: creds.OPNSENSE_API_SECRET,
+      verifySsl: t.verifySsl ?? true,
+      readOnly: !!t.readOnly || !!this.config.readOnly,
+    };
+  }
+
+  ensureClient(name = '') {
+    let client = this.clients.get(name);
+    if (!client) {
+      const config = this.targetConfig(name);
+      const label = name ? name + ' firewall' : 'server';
+      client = new OPNsenseClient({
+        baseUrl: config.url,
+        apiKey: config.apiKey,
+        apiSecret: config.apiSecret,
+        verifySsl: config.verifySsl ?? true,
       });
 
       // Read-only: check every request at the HTTP client, after all routes and fork
       // fixes built their URL. Path tricks are refused in every mode.
-      const __http = this.client.http;
-      const __readOnly = !!this.config.readOnly;
+      const __http = client.http;
+      const __readOnly = !!config.readOnly;
       for (const verb of ['get', 'post', 'put', 'delete', 'patch']) {
         const orig = __http[verb] && __http[verb].bind(__http);
         if (!orig) continue;
         __http[verb] = (url, ...rest) => {
           if (badPath(url)) throw new Error('Refused request path: ' + String(url).slice(0, 80));
           if (__readOnly && !isReadRequest(url)) {
-            throw new McpError(ErrorCode.InvalidRequest, 'Read-only server: ' + verb.toUpperCase() + ' ' + String(url).split('?')[0] + ' can change the firewall and is refused. Firewall changes go through make firewall.');
+            throw new McpError(ErrorCode.InvalidRequest, 'Read-only ' + label + ': ' + verb.toUpperCase() + ' ' + String(url).split('?')[0] + ' can change the firewall and is refused. Firewall changes go through make firewall.');
           }
           return orig(url, ...rest);
         };
@@ -12440,10 +12513,10 @@ class OPNsenseMCPServer {
       // hostdiscovery, ntpd, radvd). The hand-written fork fixes below run
       // afterwards and still win where they exist.
       for (const [mod, routes] of Object.entries(API_ROUTES)) {
-        const parent = PLUGIN_MODULES.includes(mod) ? this.client.plugins : this.client;
+        const parent = PLUGIN_MODULES.includes(mod) ? client.plugins : client;
         if (!parent[mod]) parent[mod] = {};
         const target = parent[mod];
-        if (!target.http) target.http = this.client.http;
+        if (!target.http) target.http = client.http;
         for (const [name, r] of Object.entries(routes)) {
           target[name] = makeRoute(target, r);
         }
@@ -12452,7 +12525,7 @@ class OPNsenseMCPServer {
       // logSearch(module, scope, body?): POST /api/diagnostics/log/<module>/<scope>, the
       // bootgrid search the GUI log pages use. Segments are plain words only: the same
       // controller clears a log on <module>/<scope>/clear.
-      const __diag = this.client.diagnostics;
+      const __diag = client.diagnostics;
       __diag.logSearch = (module, scope, body) => {
         const word = /^[a-z0-9_]+$/;
         if (!word.test(String(module)) || !word.test(String(scope))) {
@@ -12467,7 +12540,7 @@ class OPNsenseMCPServer {
       // 2026-08-12, but the pre-26.7 method names are kept working on both
       // versions — new route first, old route on 404 — so this server stays
       // usable against a 26.1.x box.
-      const __cp = this.client.captiveportal;
+      const __cp = client.captiveportal;
       if (__cp && __cp.http) {
         for (const verb of ['getTemplate', 'saveTemplate', 'delTemplate', 'searchTemplates']) {
           const name = 'service' + verb[0].toUpperCase() + verb.slice(1);
@@ -12492,7 +12565,7 @@ class OPNsenseMCPServer {
       // vs live OPNsense 2026-06-10: filter/get=401, filter/apply=411 EXIST;
       // filter_base/get=404). filterBaseApply being broken = firewall changes
       // never applied. Re-map the 8 to the correct route. Upstream bug.
-      const __fw = this.client.firewall;
+      const __fw = client.firewall;
       if (__fw && __fw.http) {
         __fw.filterBaseGet = (config) => __fw.http.get('/api/firewall/filter/get', config);
         __fw.filterBaseSet = (data, config) => __fw.http.post('/api/firewall/filter/set', data, config);
@@ -12565,7 +12638,7 @@ class OPNsenseMCPServer {
       // *SettingsSearchItem (the box controllers have searchItem) and the entire
       // BridgeSettings controller. Verified live 2026-06-10 (vlan_settings/searchItem
       // = 17 rows on eu-6). Same stale-spec gap as the firewall searchRule.
-      const __if = this.client.interfaces;
+      const __if = client.interfaces;
       if (__if && __if.http) {
         const S = (p) => (data, config) => __if.http.post('/api/interfaces/' + p + '/searchItem', data || { current: 1, rowCount: 200 }, config);
         __if.vlanSettingsSearchItem = S('vlan_settings');
@@ -12601,7 +12674,7 @@ class OPNsenseMCPServer {
       // /api/wireguard/client/set_client/<uuid> with body {client:{...}} =
       // {result:"saved"} (camelCase setClient -> {result:"failed"}). Body passed
       // straight through (caller sends {client:{...}} / {server:{...}}).
-      const __wg = this.client.wireguard;
+      const __wg = client.wireguard;
       if (__wg && __wg.http) {
         const WG = '/api/wireguard/';
         __wg.clientAddClient = (data, config) => __wg.http.post(WG + 'client/add_client', data, config);
@@ -12656,7 +12729,7 @@ class OPNsenseMCPServer {
       // the pkg in the path. Read methods restore firmware/update visibility; the
       // POST/action methods are remapped for correctness but are disruptive — do
       // not fire them casually.
-      const __firm = this.client.firmware;
+      const __firm = client.firmware;
       if (__firm && __firm.http) {
         const FW = '/api/core/firmware/';
         // reads (GET)
@@ -12697,7 +12770,7 @@ class OPNsenseMCPServer {
       // needs searchReservation (POST); the single editable model is getReservation/<uuid>
       // (GET) — verified live read-side. add/set/del share the /api/kea/dhcpv4/ controller
       // (camelCase actions, like the core firewall — NOT snake_case like the WG plugin).
-      const __kea = this.client.kea;
+      const __kea = client.kea;
       if (__kea && __kea.http) {
         const KR = '/api/kea/dhcpv4/';
         // Overloaded: a uuid string -> the one editable model; a params object
@@ -12711,8 +12784,9 @@ class OPNsenseMCPServer {
         __kea.dhcpv4SetReservation = (uuid, data, config) => __kea.http.post(KR + 'setReservation/' + uuid, data, config);
         __kea.dhcpv4DelReservation = (uuid, config) => __kea.http.post(KR + 'delReservation/' + (uuid || ''), {}, config);
       }
+      this.clients.set(name, client);
     }
-    return this.client;
+    return client;
   }
 
   setupHandlers() {
@@ -12728,18 +12802,27 @@ class OPNsenseMCPServer {
         throw new McpError(ErrorCode.MethodNotFound, `Tool ${name} not found`);
       }
 
+      // The firewall is checked before any client exists, so a bad name touches nothing.
+      const firewall = this.config.targets ? args?.firewall : '';
+      if (this.config.targets && !Object.hasOwn(this.config.targets, String(firewall))) {
+        throw new McpError(ErrorCode.InvalidParams,
+          `Unknown or missing firewall '${firewall ?? ''}'. Use one of: ${Object.keys(this.config.targets).sort().join(', ')}`);
+      }
+      const where = firewall ? firewall + ' ' : '';
+
       // Skip plugin tools if not enabled
       if (tool.module === 'plugins' && !this.config.includePlugins) {
         throw new McpError(ErrorCode.MethodNotFound, `Plugin tools not enabled. Use --plugins flag to enable.`);
       }
 
       try {
-        const result = await this.callModularTool(tool, args);
+        const result = await this.callModularTool(tool, args, firewall);
         return {
           content: [{ type: 'text', text: JSON.stringify(pruneOptions(result), null, 2) }],
         };
       } catch (error) {
         console.error('Tool call error:', {
+          firewall: firewall || undefined,
           tool: tool.name,
           module: tool.module,
           args,
@@ -12763,7 +12846,7 @@ class OPNsenseMCPServer {
         return {
           content: [{
             type: 'text',
-            text: `Error calling ${tool.name}.${args.method || 'unknown'}: ${errorMessage}`
+            text: `Error calling ${where}${tool.name}.${args.method || 'unknown'}: ${errorMessage}`
           }],
         };
       }
@@ -12779,12 +12862,12 @@ class OPNsenseMCPServer {
     }).map(tool => ({
       name: tool.name,
       description: tool.description,
-      inputSchema: tool.inputSchema
+      inputSchema: this.config.targets ? withFirewall(tool.inputSchema, this.config.targets) : tool.inputSchema
     }));
   }
 
-  async callModularTool(tool, args) {
-    const client = this.ensureClient();
+  async callModularTool(tool, args, firewall = '') {
+    const client = this.ensureClient(firewall);
     
     // Validate method parameter
     if (!args.method) {
@@ -12814,10 +12897,10 @@ class OPNsenseMCPServer {
     }
 
     // Call the method with params (if provided)
-    console.error(`Calling ${tool.module}.${args.method} with params:`, args.params);
+    console.error(`Calling ${firewall ? firewall + ' ' : ''}${tool.module}.${args.method} with params:`, args.params);
     
     // Extract params, excluding the method field
-    const { method: _, params = {}, ...otherArgs } = args;
+    const { method: _, firewall: __, params = {}, ...otherArgs } = args;
     const callParams = { ...params, ...otherArgs };
 
     // Power-user escape hatch: explicit ordered positional args, for methods whose
@@ -12854,6 +12937,7 @@ class OPNsenseMCPServer {
     const transport = new StdioServerTransport();
     await this.server.connect(transport);
     console.error('OPNsense MCP server v0.7.0 (modular) started');
+    if (this.config.targets) console.error('Firewalls: ' + Object.keys(this.config.targets).sort().join(', '));
     console.error(`Core tools: 28 modules`);
     console.error(`Plugin tools: 64 modules (${this.config.includePlugins ? 'enabled' : 'disabled'})`);
     console.error(`Total available: ${this.config.includePlugins ? '92' : '28'} modules`);
@@ -12929,7 +13013,10 @@ Environment Variables:
   OPNSENSE_API_SECRET       API Secret
   OPNSENSE_VERIFY_SSL       Set to 'false' to disable SSL verification
   INCLUDE_PLUGINS           Set to 'true' to include plugin tools
-  OPNSENSE_READ_ONLY        Set to '1' or 'true' for read-only mode
+  OPNSENSE_READ_ONLY        Set to '1' or 'true' for read-only mode (all firewalls)
+  OPNSENSE_TARGETS          Targets file for several firewalls in one server
+                            (default ~/.config/opnsense-mcp/targets.json when no URL is given);
+                            every tool then takes a required 'firewall' argument
 
 Examples:
   # Basic usage (28 core modules)
@@ -12978,8 +13065,13 @@ async function main() {
     config.readOnly = true;
   }
 
-  // Validate required arguments
-  if (!config.url || !config.apiKey || !config.apiSecret) {
+  // OPNSENSE_TARGETS wins. Without it, an explicit URL keeps single-target mode, and
+  // the default targets file is used only when there is no URL.
+  const targetsFile = process.env.OPNSENSE_TARGETS ? expandHome(process.env.OPNSENSE_TARGETS)
+    : config.url ? '' : expandHome('~/.config/opnsense-mcp/targets.json');
+  if (targetsFile && (process.env.OPNSENSE_TARGETS || existsSync(targetsFile))) {
+    config.targets = loadTargets(targetsFile);
+  } else if (!config.url || !config.apiKey || !config.apiSecret) {
     console.error('Error: Missing required arguments\n');
     showHelp();
     process.exit(1);

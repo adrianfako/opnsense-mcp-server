@@ -74,6 +74,43 @@ env vars: `OPNSENSE_URL`, `OPNSENSE_API_KEY`, `OPNSENSE_API_SECRET`
 servers run with it: firewall changes go through `make firewall`).
 Client setup and troubleshooting follow below.
 
+### Several firewalls in one server
+
+Set `OPNSENSE_TARGETS` to a targets file. Without it, and with no `OPNSENSE_URL` or
+`--url`, the server reads `~/.config/opnsense-mcp/targets.json` when that file exists.
+
+```json
+{
+  "targets": {
+    "eu-2": {
+      "url": "https://172.16.52.1:99",
+      "verifySsl": false,
+      "credentials": "~/STORAGE/SECRETS/opnsense/claude-opnsense-eu-2.json",
+      "readOnly": false,
+      "label": "fw-leon"
+    }
+  }
+}
+```
+
+- `url` and `credentials` are required. `verifySsl` defaults to `true`, `readOnly` to `false`.
+  `label` is optional and shows in the `firewall` description.
+- The credentials file is JSON with `OPNSENSE_API_KEY` and `OPNSENSE_API_SECRET`. The server
+  reads it on the first call to that firewall. The targets file holds no secrets.
+- `~` expands to the home directory.
+- `OPNSENSE_READ_ONLY=1` makes every target read-only.
+
+In this mode every tool takes a required `firewall` argument, one of the target names:
+
+```json
+{ "firewall": "eu-2", "method": "filterSearchRule", "params": {} }
+```
+
+An unknown or missing `firewall` returns an InvalidParams error and sends no request.
+Each firewall gets its own client, built on first use, with the same read-only and path
+guards. Without a targets file the server runs in single-target mode with the env vars
+above, and the tools have no `firewall` argument.
+
 ## Usage
 
 Each tool is one OPNsense module and takes a `method` plus `params`:
@@ -106,7 +143,7 @@ node tools/smoke.mjs opnsense-eu-2   # read-only end-to-end check vs a live box
 Stack: Node.js with tsx, TypeScript 5.3+, @modelcontextprotocol/sdk, Zod
 validation, Jest tests. MIT licensed (see LICENSE).
 
-The four fleet MCP servers launch `index.js` directly. After a rebuild, restart Claude Code to pick it up.
+The fleet MCP servers launch `index.js` directly. After a rebuild, restart Claude Code to pick it up.
 
 ## See also
 
