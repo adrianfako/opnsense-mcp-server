@@ -384,6 +384,13 @@
    "post": false,
    "search": false
   },
+  "dashboardGetDefaults": {
+   "mutating": false,
+   "params": 0,
+   "path": "/api/core/dashboard/getDefaults",
+   "post": false,
+   "search": false
+  },
   "dashboardPicture": {
    "mutating": true,
    "params": 0,
@@ -2996,6 +3003,13 @@
    "post": false,
    "search": false
   },
+  "assignmentPending": {
+   "mutating": false,
+   "params": 0,
+   "path": "/api/interfaces/assignment/pending",
+   "post": false,
+   "search": false
+  },
   "assignmentReconfigure": {
    "mutating": true,
    "params": 0,
@@ -3325,6 +3339,48 @@
    "post": true,
    "search": false
   },
+  "tapSettingsAddItem": {
+   "mutating": true,
+   "params": 0,
+   "path": "/api/interfaces/tap_settings/addItem",
+   "post": true,
+   "search": false
+  },
+  "tapSettingsDelItem": {
+   "mutating": true,
+   "params": 1,
+   "path": "/api/interfaces/tap_settings/delItem",
+   "post": true,
+   "search": false
+  },
+  "tapSettingsGetItem": {
+   "mutating": false,
+   "params": 1,
+   "path": "/api/interfaces/tap_settings/getItem",
+   "post": false,
+   "search": false
+  },
+  "tapSettingsReconfigure": {
+   "mutating": true,
+   "params": 0,
+   "path": "/api/interfaces/tap_settings/reconfigure",
+   "post": true,
+   "search": false
+  },
+  "tapSettingsSearchItem": {
+   "mutating": false,
+   "params": 0,
+   "path": "/api/interfaces/tap_settings/searchItem",
+   "post": false,
+   "search": true
+  },
+  "tapSettingsSetItem": {
+   "mutating": true,
+   "params": 1,
+   "path": "/api/interfaces/tap_settings/setItem",
+   "post": true,
+   "search": false
+  },
   "vipSettingsAddItem": {
    "mutating": true,
    "params": 0,
@@ -3455,6 +3511,48 @@
    "mutating": true,
    "params": 1,
    "path": "/api/interfaces/vxlan_settings/setItem",
+   "post": true,
+   "search": false
+  },
+  "wirelessSettingsAddItem": {
+   "mutating": true,
+   "params": 0,
+   "path": "/api/interfaces/wireless_settings/addItem",
+   "post": true,
+   "search": false
+  },
+  "wirelessSettingsDelItem": {
+   "mutating": true,
+   "params": 1,
+   "path": "/api/interfaces/wireless_settings/delItem",
+   "post": true,
+   "search": false
+  },
+  "wirelessSettingsGetItem": {
+   "mutating": false,
+   "params": 1,
+   "path": "/api/interfaces/wireless_settings/getItem",
+   "post": false,
+   "search": false
+  },
+  "wirelessSettingsReconfigure": {
+   "mutating": true,
+   "params": 0,
+   "path": "/api/interfaces/wireless_settings/reconfigure",
+   "post": true,
+   "search": false
+  },
+  "wirelessSettingsSearchItem": {
+   "mutating": false,
+   "params": 0,
+   "path": "/api/interfaces/wireless_settings/searchItem",
+   "post": false,
+   "search": true
+  },
+  "wirelessSettingsSetItem": {
+   "mutating": true,
+   "params": 1,
+   "path": "/api/interfaces/wireless_settings/setItem",
    "post": true,
    "search": false
   }
@@ -4402,20 +4500,6 @@
   }
  },
  "monit": {
-  "serviceCheck": {
-   "mutating": true,
-   "params": 0,
-   "path": "/api/monit/service/check",
-   "post": true,
-   "search": false
-  },
-  "serviceReconfigure": {
-   "mutating": true,
-   "params": 0,
-   "path": "/api/monit/service/reconfigure",
-   "post": true,
-   "search": false
-  },
   "settingsAddAlert": {
    "mutating": true,
    "params": 0,
@@ -5717,6 +5801,13 @@
    "post": true,
    "search": false
   },
+  "settingsDownloadHostOverrides": {
+   "mutating": false,
+   "params": 0,
+   "path": "/api/unbound/settings/downloadHostOverrides",
+   "post": false,
+   "search": false
+  },
   "settingsGetAcl": {
    "mutating": false,
    "params": 1,
@@ -5868,6 +5959,13 @@
    "mutating": true,
    "params": 0,
    "path": "/api/unbound/settings/updateBlocklist",
+   "post": true,
+   "search": false
+  },
+  "settingsUploadHostOverrides": {
+   "mutating": true,
+   "params": 0,
+   "path": "/api/unbound/settings/uploadHostOverrides",
    "post": true,
    "search": false
   }
