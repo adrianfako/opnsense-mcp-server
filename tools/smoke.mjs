@@ -4,7 +4,8 @@
 // parameter, captive-portal fallback, hand-written override) so a broken route
 // table or a bad build fails here rather than mid-session.
 //
-//   node tools/smoke.mjs <mcp-server-name-from-.claude.json> [extra:calls...]
+//   node tools/smoke.mjs <firewall> [extra:calls...]       one firewall of the targets file (eu-2, eu-6, ...)
+//   node tools/smoke.mjs <mcp-server-name-from-.claude.json>  legacy single-firewall entry
 //
 // Exits non-zero if any call fails.
 import { spawn } from 'node:child_process';
@@ -33,16 +34,27 @@ const DEFAULT_CALLS = [
 
 const [server, ...extra] = process.argv.slice(2);
 if (!server) {
-  console.error('usage: node tools/smoke.mjs <mcp-server-name> [tool:method[:jsonParams] ...]');
+  console.error('usage: node tools/smoke.mjs <firewall|mcp-server-name> [tool:method[:jsonParams] ...]');
   process.exit(2);
 }
 const calls = extra.length ? extra : DEFAULT_CALLS;
 
-const claudeConfig = join(process.env.USERPROFILE || process.env.HOME, '.claude.json');
-const entry = JSON.parse(readFileSync(claudeConfig, 'utf8')).mcpServers[server];
-if (!entry) {
-  console.error(`no mcpServers entry named ${server} in ${claudeConfig}`);
-  process.exit(2);
+// Multi-firewall: the argument names a firewall of the targets file and every call carries it.
+const home = process.env.USERPROFILE || process.env.HOME;
+const targetsFile = (process.env.OPNSENSE_TARGETS || join(home, '.config/opnsense-mcp/targets.json')).replace(/^~(?=\/)/, home);
+let targets = {};
+try { targets = JSON.parse(readFileSync(targetsFile, 'utf8')).targets || {}; } catch {}
+let entry, firewall;
+if (Object.hasOwn(targets, server)) {
+  firewall = server;
+  entry = { env: { OPNSENSE_TARGETS: targetsFile } };
+} else {
+  const claudeConfig = join(home, '.claude.json');
+  entry = (JSON.parse(readFileSync(claudeConfig, 'utf8')).mcpServers || {})[server];
+  if (!entry) {
+    console.error(`${server} is neither a firewall in ${targetsFile} nor an mcpServers entry in ${claudeConfig}`);
+    process.exit(2);
+  }
 }
 
 const child = spawn(process.execPath, [join(dirname(fileURLToPath(import.meta.url)), '..', 'index.js')], {
@@ -87,7 +99,7 @@ let failed = 0;
 for (const c of calls) {
   const [tool, method, ...rest] = c.split(':');
   const params = rest.length ? JSON.parse(rest.join(':')) : {};
-  const r = await rpc('tools/call', { name: tool, arguments: { method, params } });
+  const r = await rpc('tools/call', { name: tool, arguments: firewall ? { firewall, method, params } : { method, params } });
   const text = (r.result?.content?.[0]?.text ?? JSON.stringify(r.error)).replace(/\s+/g, ' ');
   const bad = /^Error calling/.test(text);
   if (bad) failed++;
