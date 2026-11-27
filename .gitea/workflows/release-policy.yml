@@ -1,0 +1,27 @@
+# Source: tools/ci-kit/workflows/release-policy.yml. Copy this file unchanged.
+name: release-policy
+'on':
+  pull_request:
+    branches: [main]
+permissions:
+  contents: read
+jobs:
+  branch-policy:
+    runs-on: ubuntu-22.04
+    timeout-minutes: 2
+    steps:
+      - name: Check pull request source
+        shell: bash
+        env:
+          BASE_BRANCH: ${{ github.event.pull_request.base.ref }}
+          HEAD_BRANCH: ${{ github.event.pull_request.head.ref }}
+          HEAD_REPO: ${{ github.event.pull_request.head.repo.full_name }}
+          BASE_REPO: ${{ github.repository }}
+        run: |
+          if [[ "$BASE_BRANCH" == main && "$HEAD_BRANCH" == dev &&
+                -n "$BASE_REPO" && "$HEAD_REPO" == "$BASE_REPO" ]]; then
+            echo "Release pull request from this repository's dev branch"
+          else
+            echo "Pull requests to main must come from this repository's dev branch" >&2
+            exit 1
+          fi
