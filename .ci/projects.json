@@ -1,0 +1,15 @@
+{
+  "version": 1,
+  "projects": [
+    {
+      "id": "opnsense-mcp-server",
+      "paths": [
+        "."
+      ],
+      "workflows": [
+        ".gitea/workflows/ci.yml",
+        ".gitea/workflows/fleet-validation.yml"
+      ]
+    }
+  ]
+}
